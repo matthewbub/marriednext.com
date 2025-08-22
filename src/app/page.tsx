@@ -1,8 +1,24 @@
+"use client";
 import Image from "next/image";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import GuestListCreator from "@/components/GuestListCreator";
+import GuestList from "@/components/GuestList";
+import { useEffect, useState } from "react";
+import type { Guest, Invitation } from "@/lib/types";
 
 export default function Home() {
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [guests, setGuests] = useState<Guest[]>([]);
+
+  useEffect(() => {
+    const fetchGuestList = async () => {
+      const response = await fetch("/api/guest-list");
+      const data = await response.json();
+      setInvitations(data.invitations);
+      setGuests(data.guests);
+    };
+    fetchGuestList();
+  }, []);
+
   return (
     <div className="font-sans min-h-screen">
       <main className="container mx-auto px-4 py-8">
@@ -26,7 +42,7 @@ export default function Home() {
         </SignedOut>
 
         <SignedIn>
-          <GuestListCreator />
+          <GuestList invitations={invitations} guests={guests} />
         </SignedIn>
 
         <SignedOut>

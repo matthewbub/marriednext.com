@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Weddings - Matt Bub",
-  description: "Wedding planning and management application",
+  title: "Yulissa and Matthew's Wedding",
+  description: "View your guest list and manage who has RSVP'd to the wedding.",
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center py-4">
                 <h1 className="text-xl font-semibold text-gray-900">
-                  Weddings - Matt Bub
+                  Yulissa and Matthew&apos;s Wedding
                 </h1>
                 <div className="flex items-center gap-4">
                   <SignedOut>
