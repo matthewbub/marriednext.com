@@ -1,50 +1,10 @@
 "use client";
 import { Users, UserPlus, User } from "lucide-react";
 import { useEffect } from "react";
+import { guestList } from "@/lib/guestList";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 type Entry = [string] | [string, string];
-
-const guestList: Entry[] = [
-  ["Ken", "Terri"],
-  ["Jordan", "Harlie"],
-  ["Letty"],
-  ["Brandy"],
-  ["Thomas"],
-  ["Liam"],
-  ["Alex"],
-  ["Enzo"],
-  ["Ezequiel", "Shayna"],
-  ["Javier", "PLUSONE"],
-  ["Johnny", "Alyssa"],
-  ["Daniel", "Daisy"],
-  ["Hunter"],
-  ["Zach"],
-  ["Tyler", "PLUSONE"],
-  ["Jessica", "PLUSONE"],
-  ["Barbara", "PLUSONE"],
-  ["Jim", "PLUSONE"],
-  ["Evelynn", "PLUSONE"],
-  ["Elia", "Ofe"],
-  ["Greg", "Frida"],
-  ["John", "PLUSONE"],
-  ["Kathleen", "PLUSONE"],
-  ["Cheri", "PLUSONE"],
-  ["Illiana", "PLUSONE"],
-  ["Dulce", "PLUSONE"],
-  ["Lisa", "PLUSONE"],
-  ["Teri", "PLUSONE"],
-  ["Sydney", "PLUSONE"],
-  ["Taylor", "PLUSONE"],
-  ["Josh", "PLUSONE"],
-  ["Hannah", "Isaac"],
-  ["David", "Vickie"],
-  ["Ryan", "PLUSONE"],
-  ["Lauren", "Cody"],
-  ["Tim", "Denise"],
-  ["Mike", "Judy"],
-  ["Chuck", "Ricky"],
-  ["Granny", "Poppy"],
-];
 
 function displayName(entry: Entry) {
   const [a, b] = entry;
@@ -64,10 +24,17 @@ function entryIcon(entry: Entry) {
 }
 
 export default function Home() {
-  const invitationsCount = guestList.length;
-  const expectedPeople = guestList.reduce((acc, e) => acc + (e[1] ? 2 : 1), 0);
+  const list = guestList as unknown as Entry[];
+  const invitationsCount = list.length;
+  const expectedPeople = list.reduce((acc, e) => acc + (e[1] ? 2 : 1), 0);
   useEffect(() => {
     fetch("/api/web-analytics-overview")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+
+    fetch("/api/guest-list")
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -99,46 +66,57 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-3 mb-8">
             <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
               <p className="text-2xl font-semibold font-handwritten-font">
-                {invitationsCount}
+                <SignedIn>{invitationsCount}</SignedIn>
+                <SignedOut>?</SignedOut>
               </p>
               <p className="text-stone-700 text-sm">Invitations</p>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
               <p className="text-2xl font-semibold font-handwritten-font">
-                {expectedPeople}
+                <SignedIn>{expectedPeople}</SignedIn>
+                <SignedOut>?</SignedOut>
               </p>
               <p className="text-stone-700 text-sm">Expected Guests</p>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
               <p className="text-2xl font-semibold font-handwritten-font">
-                {guestList.filter(([, b]) => b === "PLUSONE").length}
+                <SignedIn>
+                  {list.filter(([, b]) => b === "PLUSONE").length}
+                </SignedIn>
+                <SignedOut>?</SignedOut>
               </p>
               <p className="text-stone-700 text-sm">Plus Ones</p>
             </div>
           </div>
 
           <ul className="divide-y divide-white/10">
-            {guestList.map((entry, i) => {
-              return (
-                <li key={i} className="py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-10 rounded-full bg-violet-100 border border-violet-300 flex items-center justify-center text-violet-700 shadow-sm">
-                      {entryIcon(entry)}
+            <SignedIn>
+              {list.map((entry, i) => {
+                return (
+                  <li
+                    key={i}
+                    className="py-3 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-10 w-10 rounded-full bg-violet-100 border border-violet-300 flex items-center justify-center text-violet-700 shadow-sm">
+                        {entryIcon(entry)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-lg font-medium font-handwritten-font">
+                          {displayName(entry)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-lg font-medium font-handwritten-font">
-                        {displayName(entry)}
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-medium">
+                        Pending
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-medium">
-                      Pending
-                    </span>
-                  </div>
-                </li>
-              );
-            })}
+                  </li>
+                );
+              })}
+            </SignedIn>
+            <SignedOut>{/* no list when signed out */}</SignedOut>
           </ul>
         </div>
       </div>
