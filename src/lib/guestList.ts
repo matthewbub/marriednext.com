@@ -18,7 +18,6 @@ export const guestList = [
   ["Jim", "PLUSONE"],
   ["Evelynn", "PLUSONE"],
   ["Elia", "Ofe"],
-  // ["Greg", "Frida"],
   ["John", "Johns GF"],
   ["Kathleen", "PLUSONE"],
   ["Dulce", "PLUSONE"],
