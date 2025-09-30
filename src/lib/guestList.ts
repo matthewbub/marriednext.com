@@ -28,10 +28,11 @@ export const guestList = [
   ["Josh", "Nicole"],
   ["Hannah", "Isaac"],
   ["David", "Vickie"],
-  ["Ryan"],
+  ["Ryan", "Gracie"],
   ["Lauren", "Cody"],
   ["Tim", "Denise"],
   ["Mike", "Judy"],
   ["Chuck", "Ricky"],
   ["Granny", "Poppy"],
+  ["Kami"],
 ];
