@@ -4,6 +4,7 @@ import "./globals.css";
 import RollingHillsBackground from "@/components/RollingHillsBackground";
 import { Rubik, Gloria_Hallelujah } from "next/font/google";
 import NavBar from "@/components/NavBar";
+import { Analytics } from "@vercel/analytics/next";
 
 const rubik = Rubik({
   variable: "--font-rubik",
@@ -38,6 +39,7 @@ export default function RootLayout({
           </div>
           {children}
         </body>
+        <Analytics />
       </html>
     </ClerkProvider>
   );
