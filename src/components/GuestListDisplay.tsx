@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
 import { LayoutGrid, List } from "lucide-react";
+import { telemetry } from "@/lib/telemetry";
+import { useDebouncedTelemetry } from "@/hooks/useDebouncedTelemetry";
 
 interface GuestListDisplayProps {
   guestListWithGroups: DbInvitationGroupWithGuests[];
@@ -14,6 +16,14 @@ export default function GuestListDisplay({
   const [viewMode, setViewMode] = useState<"expanded" | "condensed">(
     "expanded"
   );
+
+  const { trackEvent, trackOnMount } = useDebouncedTelemetry({ delay: 3000 });
+
+  // Track component mount after 3 seconds to capture users who stay on default view
+  useEffect(() => {
+    trackOnMount(() => telemetry.trackGuestListComponentMount());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const calculateAttendance = (entry: DbInvitationGroupWithGuests) => {
     let attending = 0;
@@ -45,7 +55,10 @@ export default function GuestListDisplay({
       {/* View Toggle */}
       <div className="flex justify-end gap-2 mb-4">
         <button
-          onClick={() => setViewMode("expanded")}
+          onClick={() => {
+            setViewMode("expanded");
+            trackEvent(() => telemetry.trackGuestListViewToggle("expanded"));
+          }}
           className={`p-2 rounded-lg transition-colors ${
             viewMode === "expanded"
               ? "bg-white/40 text-gray-900"
@@ -56,7 +69,10 @@ export default function GuestListDisplay({
           <LayoutGrid className="w-5 h-5" />
         </button>
         <button
-          onClick={() => setViewMode("condensed")}
+          onClick={() => {
+            setViewMode("condensed");
+            trackEvent(() => telemetry.trackGuestListViewToggle("condensed"));
+          }}
           className={`p-2 rounded-lg transition-colors ${
             viewMode === "condensed"
               ? "bg-white/40 text-gray-900"

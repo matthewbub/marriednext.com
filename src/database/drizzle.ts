@@ -5,7 +5,7 @@ import * as schema from "@/drizzle/schema";
 import * as relations from "@/drizzle/relations";
 import type { InferSelectModel } from "drizzle-orm";
 
-const db = drizzle(queryClient, { schema: { ...schema, ...relations } });
+export const db = drizzle(queryClient, { schema: { ...schema, ...relations } });
 
 export type DbInvitation = InferSelectModel<typeof invitations>;
 export type DbInvitationGroup = InferSelectModel<typeof invitationGroups>;
