@@ -17,6 +17,11 @@ export interface GuestListDisplayProps {
   isUpdating: boolean;
   editingId: number | null;
   onEditingIdChange: (id: number | null) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  searchResults: DbInvitationGroupWithGuests[] | null;
+  searchResultsCount: number;
+  isSearching: boolean;
 }
 
 export interface EditFormData {

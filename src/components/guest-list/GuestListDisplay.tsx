@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, Search } from "lucide-react";
 import { telemetry } from "@/lib/telemetry";
 import { useDebouncedTelemetry } from "@/hooks/useDebouncedTelemetry";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import {
   GuestListDisplayProps,
   EditFormData,
@@ -26,6 +27,11 @@ export default function GuestListDisplay({
   isUpdating,
   editingId,
   onEditingIdChange,
+  searchQuery,
+  onSearchChange,
+  searchResults,
+  searchResultsCount,
+  isSearching,
 }: GuestListDisplayProps) {
   const [viewMode, setViewMode] = useState<"expanded" | "condensed">(
     "expanded"
@@ -70,7 +76,10 @@ export default function GuestListDisplay({
     });
   };
 
-  const sortedGuestList = [...guestListWithGroups].sort((a, b) => {
+  const displayList =
+    searchQuery && searchResults ? searchResults : guestListWithGroups;
+
+  const sortedGuestList = [...displayList].sort((a, b) => {
     const getDisplayName = (entry: DbInvitationGroupWithGuests) =>
       entry.inviteGroupName ||
       (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
@@ -158,60 +167,99 @@ export default function GuestListDisplay({
         </div>
       </div>
 
-      <ul className="space-y-3">
-        {sortedGuestList.map((entry) => {
-          const attending = entry.attending ?? 0;
-          const total = entry.total ?? 0;
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search by guest name or group..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        {searchQuery && (
+          <p className="text-sm text-gray-600 mt-2">
+            {isSearching ? (
+              "Searching..."
+            ) : (
+              <>
+                Found {searchResultsCount}{" "}
+                {searchResultsCount === 1 ? "result" : "results"}
+              </>
+            )}
+          </p>
+        )}
+      </div>
 
-          if (viewMode === "condensed") {
-            const displayName =
-              entry.inviteGroupName ||
-              (entry.guestB
-                ? `${entry.guestA} & ${entry.guestB}`
-                : entry.guestA);
+      {searchQuery && searchResultsCount === 0 && !isSearching ? (
+        <div className="text-center py-12 px-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No results found
+          </h3>
+          <p className="text-gray-600">
+            No guests match your search for &quot;{searchQuery}&quot;
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {sortedGuestList.map((entry) => {
+            const attending = entry.attending ?? 0;
+            const total = entry.total ?? 0;
+
+            if (viewMode === "condensed") {
+              const displayName =
+                entry.inviteGroupName ||
+                (entry.guestB
+                  ? `${entry.guestA} & ${entry.guestB}`
+                  : entry.guestA);
+
+              return (
+                <li
+                  key={entry.id}
+                  className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {displayName}
+                    </h3>
+                    <span
+                      className={clsx(
+                        "text-sm font-bold px-2 py-1 rounded",
+                        attending === total && "text-green-800 bg-green-50",
+                        attending > 0 &&
+                          attending < total &&
+                          "text-amber-800 bg-amber-50",
+                        attending === 0 && "text-gray-700 bg-gray-100"
+                      )}
+                    >
+                      ({attending}/{total})
+                    </span>
+                  </div>
+                </li>
+              );
+            }
 
             return (
-              <li
+              <InvitationCard
                 key={entry.id}
-                className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {displayName}
-                  </h3>
-                  <span
-                    className={clsx(
-                      "text-sm font-bold px-2 py-1 rounded",
-                      attending === total && "text-green-800 bg-green-50",
-                      attending > 0 &&
-                        attending < total &&
-                        "text-amber-800 bg-amber-50",
-                      attending === 0 && "text-gray-700 bg-gray-100"
-                    )}
-                  >
-                    ({attending}/{total})
-                  </span>
-                </div>
-              </li>
+                entry={entry}
+                isEditing={editingId === entry.id}
+                editForm={editForm}
+                onEdit={() => handleEdit(entry)}
+                onRemove={() => console.log("Remove", entry.id)}
+                onSave={() => handleSubmitEdit(entry.id)}
+                onCancel={handleCancelEdit}
+                onFormChange={setEditForm}
+                isSaving={isUpdating && editingId === entry.id}
+              />
             );
-          }
-
-          return (
-            <InvitationCard
-              key={entry.id}
-              entry={entry}
-              isEditing={editingId === entry.id}
-              editForm={editForm}
-              onEdit={() => handleEdit(entry)}
-              onRemove={() => console.log("Remove", entry.id)}
-              onSave={() => handleSubmitEdit(entry.id)}
-              onCancel={handleCancelEdit}
-              onFormChange={setEditForm}
-              isSaving={isUpdating && editingId === entry.id}
-            />
-          );
-        })}
-      </ul>
+          })}
+        </ul>
+      )}
     </div>
   );
 }

@@ -8,10 +8,14 @@ import {
   GuestListData,
   UpdateGuestPayload,
 } from "@/components/guest-list/guestList.types";
+import { DbInvitationGroupWithGuests } from "@/database/drizzle";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function GuestListPage() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const { data } = useQuery<GuestListData>({
     queryKey: ["guest-list"],
@@ -19,6 +23,28 @@ export default function GuestListPage() {
       const res = await fetch("/api/guest-list");
       return res.json();
     },
+  });
+
+  const { data: searchData, isLoading: isSearching } = useQuery<{
+    results: DbInvitationGroupWithGuests[];
+    count: number;
+  }>({
+    queryKey: ["guest-list-search", debouncedSearchQuery],
+    queryFn: async () => {
+      if (!debouncedSearchQuery) {
+        return { results: [], count: 0 };
+      }
+      const res = await fetch(
+        `/api/guest-list/search?query=${encodeURIComponent(
+          debouncedSearchQuery
+        )}`
+      );
+      if (!res.ok) {
+        throw new Error("Search failed");
+      }
+      return res.json();
+    },
+    enabled: debouncedSearchQuery.length > 0,
   });
 
   const updateGuestMutation = useMutation({
@@ -92,6 +118,11 @@ export default function GuestListPage() {
               isUpdating={updateGuestMutation.isPending}
               editingId={editingId}
               onEditingIdChange={setEditingId}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              searchResults={searchData?.results ?? null}
+              searchResultsCount={searchData?.count ?? 0}
+              isSearching={isSearching}
             />
           </SignedIn>
           <SignedOut>
