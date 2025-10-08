@@ -33,10 +33,13 @@ export default function GuestListDisplay({
   const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
   const [editForm, setEditForm] = useState<EditFormData | null>(null);
 
-  const { trackEvent, trackOnMount } = useDebouncedTelemetry({ delay: 3000 });
+  const { trackEvent, trackOnMount, trackImmediate } = useDebouncedTelemetry({
+    delay: 3000,
+  });
 
   useEffect(() => {
     trackOnMount(() => telemetry.trackGuestListComponentMount());
+    trackImmediate(() => telemetry.trackGuestListSortDefault(sortBy));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,7 +101,10 @@ export default function GuestListDisplay({
       <div className="flex justify-between items-center gap-2 mb-4">
         <Select
           value={sortBy}
-          onValueChange={(value: SortOption) => setSortBy(value)}
+          onValueChange={(value: SortOption) => {
+            setSortBy(value);
+            trackImmediate(() => telemetry.trackGuestListSortOption(value));
+          }}
         >
           <SelectTrigger className="w-[200px]">
             <SelectValue />

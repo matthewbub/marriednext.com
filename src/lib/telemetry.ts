@@ -65,7 +65,21 @@ export const telemetry = {
     trackEvent({
       componentName: "GuestListDisplay",
       eventType: "component_mount",
-      eventValue: "expanded", // default view
+      eventValue: "expanded",
+    });
+  },
+  trackGuestListSortOption: (sortOption: string) => {
+    trackEvent({
+      componentName: "GuestListDisplay",
+      eventType: "sort_option_change",
+      eventValue: sortOption,
+    });
+  },
+  trackGuestListSortDefault: (sortOption: string) => {
+    trackEvent({
+      componentName: "GuestListDisplay",
+      eventType: "sort_option_default",
+      eventValue: sortOption,
     });
   },
 };

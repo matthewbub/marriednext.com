@@ -2,7 +2,18 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
-import { LayoutGrid, List, Loader2, AlertCircle } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  Loader2,
+  AlertCircle,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  Calendar,
+  CalendarClock,
+  Clock,
+} from "lucide-react";
+import clsx from "clsx";
 
 type TelemetryStats = {
   viewPreference: {
@@ -13,12 +24,37 @@ type TelemetryStats = {
   totalSessions: number;
 };
 
+type SortOptionStats = {
+  sortPreference: {
+    "alpha-asc": number;
+    "alpha-desc": number;
+    "date-newest": number;
+    "date-oldest": number;
+    "updated-newest": number;
+  };
+  stayedOnDefault: number;
+  totalSessions: number;
+};
+
 export default function TelemetryPage() {
   const { data, isLoading, error } = useQuery<TelemetryStats>({
     queryKey: ["telemetry-stats"],
     queryFn: async () => {
       const res = await fetch("/api/zz/v1/telementary/stats");
       if (!res.ok) throw new Error("Failed to fetch telemetry stats");
+      return res.json();
+    },
+  });
+
+  const {
+    data: sortData,
+    isLoading: sortLoading,
+    error: sortError,
+  } = useQuery<SortOptionStats>({
+    queryKey: ["sort-option-stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/zz/v1/telementary/stats/sort-options");
+      if (!res.ok) throw new Error("Failed to fetch sort option stats");
       return res.json();
     },
   });
@@ -39,7 +75,46 @@ export default function TelemetryPage() {
       ? ((data!.viewPreference.condensed / totalSessions) * 100).toFixed(1)
       : "0.0";
 
-  if (isLoading) {
+  const sortTotalSessions = sortData ? sortData.totalSessions : 0;
+  const sortOptions = [
+    {
+      key: "alpha-asc",
+      label: "A → Z",
+      icon: ArrowDownAZ,
+      color: "purple",
+      count: sortData?.sortPreference["alpha-asc"] || 0,
+    },
+    {
+      key: "alpha-desc",
+      label: "Z → A",
+      icon: ArrowUpAZ,
+      color: "blue",
+      count: sortData?.sortPreference["alpha-desc"] || 0,
+    },
+    {
+      key: "date-newest",
+      label: "Newest First",
+      icon: Calendar,
+      color: "green",
+      count: sortData?.sortPreference["date-newest"] || 0,
+    },
+    {
+      key: "date-oldest",
+      label: "Oldest First",
+      icon: CalendarClock,
+      color: "amber",
+      count: sortData?.sortPreference["date-oldest"] || 0,
+    },
+    {
+      key: "updated-newest",
+      label: "Recently Updated",
+      icon: Clock,
+      color: "pink",
+      count: sortData?.sortPreference["updated-newest"] || 0,
+    },
+  ];
+
+  if (isLoading || sortLoading) {
     return (
       <div className="container mx-auto p-8">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -52,7 +127,7 @@ export default function TelemetryPage() {
     );
   }
 
-  if (error) {
+  if (error || sortError) {
     return (
       <div className="container mx-auto p-8">
         <Card className="p-6">
@@ -61,7 +136,11 @@ export default function TelemetryPage() {
             <div>
               <h3 className="font-semibold">Error loading telemetry data</h3>
               <p className="text-sm text-gray-600">
-                {error instanceof Error ? error.message : "Unknown error"}
+                {error instanceof Error
+                  ? error.message
+                  : sortError instanceof Error
+                  ? sortError.message
+                  : "Unknown error"}
               </p>
             </div>
           </div>
@@ -176,20 +255,101 @@ export default function TelemetryPage() {
         </div>
       </Card>
 
+      {/* Sort Options Analytics */}
+      {sortData && sortTotalSessions > 0 && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Guest List Display: Sort Option Preference (All Users)
+          </h2>
+          <p className="text-gray-600 mb-6">
+            This tracks which sort options users prefer. The default sort is A →
+            Z (alpha-asc).
+          </p>
+          <div className="space-y-4">
+            {sortOptions.map((option) => {
+              const percent =
+                sortTotalSessions > 0
+                  ? ((option.count / sortTotalSessions) * 100).toFixed(1)
+                  : "0.0";
+              const Icon = option.icon;
+              const colorClasses = {
+                purple: {
+                  text: "text-purple-600",
+                  bg: "bg-purple-600",
+                },
+                blue: {
+                  text: "text-blue-600",
+                  bg: "bg-blue-600",
+                },
+                green: {
+                  text: "text-green-600",
+                  bg: "bg-green-600",
+                },
+                amber: {
+                  text: "text-amber-600",
+                  bg: "bg-amber-600",
+                },
+                pink: {
+                  text: "text-pink-600",
+                  bg: "bg-pink-600",
+                },
+              };
+              const colors =
+                colorClasses[option.color as keyof typeof colorClasses];
+
+              return (
+                <div key={option.key}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-5 h-5 text-gray-600" />
+                      <span className="font-medium">{option.label}</span>
+                    </div>
+                    <span className={clsx("text-2xl font-bold", colors.text)}>
+                      {percent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className={clsx("h-3 rounded-full", colors.bg)}
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {option.count} sessions ended on {option.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* Summary Stats */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Summary</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-gray-600">Total Sessions</p>
             <p className="text-3xl font-bold">{data.totalSessions}</p>
           </div>
           <div>
-            <p className="text-gray-600">Sessions with Toggles</p>
+            <p className="text-gray-600">Sessions with View Toggles</p>
             <p className="text-3xl font-bold">
               {data.viewPreference.expanded + data.viewPreference.condensed}
             </p>
           </div>
+          {sortData && (
+            <>
+              <div>
+                <p className="text-gray-600">Sessions with Sort Data</p>
+                <p className="text-3xl font-bold">{sortData.totalSessions}</p>
+              </div>
+              <div>
+                <p className="text-gray-600">Stayed on Default Sort</p>
+                <p className="text-3xl font-bold">{sortData.stayedOnDefault}</p>
+              </div>
+            </>
+          )}
         </div>
       </Card>
     </div>
