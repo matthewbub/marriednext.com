@@ -97,19 +97,35 @@ export default function TelemetryDocPage() {
 
       {/* Events We Capture Section */}
       <DocsSection title="Events We Capture" id="events-we-capture">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">
-              Guest List Display: View Mode Preference
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="text-base leading-relaxed">
-              The Guest List Display component tracks how users prefer to view
-              their guest list.
-            </CardDescription>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">
+                Guest List Display: View Mode Preference
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base leading-relaxed">
+                The Guest List Display component tracks how users prefer to view
+                their guest list.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">
+                Guest List Display: Sort Option Preference
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base leading-relaxed">
+                The Guest List Display component tracks which sort options users
+                prefer when organizing their guest list.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </div>
       </DocsSection>
     </DocsLayout>
   );
