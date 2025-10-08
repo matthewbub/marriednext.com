@@ -8,6 +8,7 @@ export interface UpdateGuestPayload {
   guestB: string | null;
   guestBAttending: boolean | null;
   guestBHasPlusOne: boolean;
+  inviteGroupName: string | null;
 }
 
 export interface GuestListDisplayProps {
@@ -25,6 +26,7 @@ export interface EditFormData {
   guestB: string | null;
   guestBAttending: boolean | null;
   guestBHasPlusOne: boolean;
+  inviteGroupName: string | null;
 }
 
 export interface InvitationCardProps {

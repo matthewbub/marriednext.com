@@ -52,6 +52,7 @@ export default function GuestListDisplay({
       guestB: entry.guestB ?? null,
       guestBAttending: entry.invitation_guestB?.isAttending ?? null,
       guestBHasPlusOne: entry.invitation_guestB?.hasPlusOne ?? false,
+      inviteGroupName: entry.inviteGroupName ?? null,
     });
   };
 
@@ -70,11 +71,15 @@ export default function GuestListDisplay({
   };
 
   const sortedGuestList = [...guestListWithGroups].sort((a, b) => {
+    const getDisplayName = (entry: DbInvitationGroupWithGuests) =>
+      entry.inviteGroupName ||
+      (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
+
     switch (sortBy) {
       case "alpha-asc":
-        return a.guestA.localeCompare(b.guestA);
+        return getDisplayName(a).localeCompare(getDisplayName(b));
       case "alpha-desc":
-        return b.guestA.localeCompare(a.guestA);
+        return getDisplayName(b).localeCompare(getDisplayName(a));
       case "date-newest":
         if (!a.createdAt || !b.createdAt) return 0;
         return (
@@ -159,20 +164,20 @@ export default function GuestListDisplay({
           const total = entry.total ?? 0;
 
           if (viewMode === "condensed") {
+            const displayName =
+              entry.inviteGroupName ||
+              (entry.guestB
+                ? `${entry.guestA} & ${entry.guestB}`
+                : entry.guestA);
+
             return (
               <li
                 key={entry.id}
                 className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold font-handwritten-font text-gray-900">
-                    {entry.guestA}
-                    {entry.guestB && (
-                      <>
-                        <span className="text-gray-700 mx-2">&</span>
-                        {entry.guestB}
-                      </>
-                    )}
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {displayName}
                   </h3>
                   <span
                     className={clsx(

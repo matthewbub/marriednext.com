@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { InvitationCardProps } from "@/components/guest-list/guestList.types";
 import GuestFieldsView from "@/components/guest-list/GuestFieldsView";
 import GuestFieldsEdit from "@/components/guest-list/GuestFieldsEdit";
@@ -23,18 +24,31 @@ export default function InvitationCard({
   onFormChange,
   isSaving,
 }: InvitationCardProps) {
+  const displayName =
+    entry.inviteGroupName ||
+    (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
+
   return (
     <li className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all">
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="text-lg font-semibold font-handwritten-font text-gray-900">
-          {entry.guestA}
-          {entry.guestB && (
-            <>
-              <span className="font-handwritten-font mx-2">&</span>
-              {entry.guestB}
-            </>
-          )}
-        </h3>
+      <div className="flex items-start justify-between mb-3 gap-2">
+        {isEditing && editForm ? (
+          <Input
+            value={editForm.inviteGroupName || ""}
+            onChange={(e) =>
+              onFormChange({
+                ...editForm,
+                inviteGroupName: e.target.value || null,
+              })
+            }
+            placeholder={
+              entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA
+            }
+            className="text-lg font-semibold font-handwritten-font"
+            disabled={isSaving}
+          />
+        ) : (
+          <h3 className="text-lg font-semibold text-gray-900">{displayName}</h3>
+        )}
         {isEditing ? (
           <div className="flex gap-2">
             <Button

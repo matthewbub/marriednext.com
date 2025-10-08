@@ -81,6 +81,7 @@ const updateGuestSchema = z.object({
   guestB: z.string().nullable(),
   guestBAttending: z.boolean().nullable(),
   guestBHasPlusOne: z.boolean(),
+  inviteGroupName: z.string().nullable(),
 });
 
 export async function PUT(request: Request): Promise<NextResponse> {
@@ -135,6 +136,7 @@ export async function PUT(request: Request): Promise<NextResponse> {
         .set({
           guestA: validatedData.guestA,
           guestB: validatedData.guestB,
+          inviteGroupName: validatedData.inviteGroupName,
           lastUpdatedAt: new Date().toISOString(),
         })
         .where(eq(invitationGroups.id, validatedData.entryId));

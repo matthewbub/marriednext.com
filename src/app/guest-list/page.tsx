@@ -59,6 +59,10 @@ export default function GuestListPage() {
           <SignedIn>
             <div className="mb-6">
               <h1 className="text-5xl font-bold mb-1">Guest List</h1>
+              <p className="text-stone-700 text-sm">
+                Guests may RSVP by entering the name entered on their
+                invitation.
+              </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-8">
