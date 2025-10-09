@@ -10,17 +10,20 @@ import {
 } from "@/components/guest-list/guestList.types";
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
 import { useDebounce } from "@/hooks/useDebounce";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function GuestListPage() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loadingGuestList, setLoadingGuestList] = useState(true);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const { data } = useQuery<GuestListData>({
     queryKey: ["guest-list"],
     queryFn: async () => {
       const res = await fetch("/api/guest-list");
+      setLoadingGuestList(false);
       return res.json();
     },
   });
@@ -77,6 +80,10 @@ export default function GuestListPage() {
   const guestListCount = data?.guestListCount ?? 0;
   const guestListWithGroupsCount = data?.guestListWithGroupsCount ?? 0;
   const plusOneCount = data?.plusOneCount ?? 0;
+
+  if (loadingGuestList) {
+    return <LoadingSpinner message="Loading guest list..." />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">

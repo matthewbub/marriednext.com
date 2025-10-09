@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import {
   LayoutGrid,
   List,
-  Loader2,
   AlertCircle,
   ArrowDownAZ,
   ArrowUpAZ,
@@ -14,6 +13,7 @@ import {
   Clock,
 } from "lucide-react";
 import clsx from "clsx";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 type TelemetryStats = {
   viewPreference: {
@@ -115,16 +115,7 @@ export default function TelemetryPage() {
   ];
 
   if (isLoading || sortLoading) {
-    return (
-      <div className="container mx-auto p-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600">Loading telemetry data...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading telemetry data..." />;
   }
 
   if (error || sortError) {
