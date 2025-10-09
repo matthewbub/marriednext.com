@@ -9,3 +9,4 @@ alwaysApply: true
 - use `clsx` in class names
 - no ternary operators unless they are simple
 - use schadcn/ui
+- always use react-query

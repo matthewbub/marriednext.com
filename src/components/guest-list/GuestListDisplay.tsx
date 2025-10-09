@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
 import { LayoutGrid, List, Search } from "lucide-react";
 import { telemetry } from "@/lib/telemetry";
-import { useDebouncedTelemetry } from "@/hooks/useDebouncedTelemetry";
+import { useTelemetry } from "@/hooks/useTelemetry";
 import clsx from "clsx";
 import {
   Select,
@@ -39,13 +39,12 @@ export default function GuestListDisplay({
   const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
   const [editForm, setEditForm] = useState<EditFormData | null>(null);
 
-  const { trackEvent, trackOnMount, trackImmediate } = useDebouncedTelemetry({
-    delay: 3000,
-  });
+  const { track } = useTelemetry();
 
   useEffect(() => {
-    trackOnMount(() => telemetry.trackGuestListComponentMount());
-    trackImmediate(() => telemetry.trackGuestListSortDefault(sortBy));
+    track(() => telemetry.trackGuestListComponentMount());
+    track(() => telemetry.trackGuestListSortDefault(sortBy));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -117,7 +116,7 @@ export default function GuestListDisplay({
           value={sortBy}
           onValueChange={(value: SortOption) => {
             setSortBy(value);
-            trackImmediate(() => telemetry.trackGuestListSortOption(value));
+            track(() => telemetry.trackGuestListSortOption(value));
           }}
         >
           <SelectTrigger className="w-[200px]">
@@ -135,7 +134,7 @@ export default function GuestListDisplay({
           <button
             onClick={() => {
               setViewMode("expanded");
-              trackEvent(() => telemetry.trackGuestListViewToggle("expanded"));
+              track(() => telemetry.trackGuestListViewToggle("expanded"));
             }}
             className={clsx(
               "p-2 rounded-lg transition-colors border",
@@ -151,7 +150,7 @@ export default function GuestListDisplay({
           <button
             onClick={() => {
               setViewMode("condensed");
-              trackEvent(() => telemetry.trackGuestListViewToggle("condensed"));
+              track(() => telemetry.trackGuestListViewToggle("condensed"));
             }}
             className={clsx(
               "p-2 rounded-lg transition-colors border",
