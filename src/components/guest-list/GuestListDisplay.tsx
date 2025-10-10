@@ -24,6 +24,7 @@ import InvitationCard from "@/components/guest-list/InvitationCard";
 export default function GuestListDisplay({
   guestListWithGroups,
   onUpdateGuest,
+  onDeleteGuest,
   isUpdating,
   editingId,
   onEditingIdChange,
@@ -249,7 +250,7 @@ export default function GuestListDisplay({
                 isEditing={editingId === entry.id}
                 editForm={editForm}
                 onEdit={() => handleEdit(entry)}
-                onRemove={() => console.log("Remove", entry.id)}
+                onRemove={() => onDeleteGuest(entry.id)}
                 onSave={() => handleSubmitEdit(entry.id)}
                 onCancel={handleCancelEdit}
                 onFormChange={setEditForm}

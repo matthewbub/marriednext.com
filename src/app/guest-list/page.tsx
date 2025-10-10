@@ -105,6 +105,31 @@ export default function GuestListPage() {
     },
   });
 
+  const deleteGuestMutation = useMutation({
+    mutationFn: async (entryId: number) => {
+      const response = await fetch("/api/guest-list/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ entryId }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete guest");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guest-list"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting guest:", error);
+    },
+  });
+
   const guestListWithGroups = data?.guestListWithGroups ?? [];
   const guestListCount = data?.guestListCount ?? 0;
   const guestListWithGroupsCount = data?.guestListWithGroupsCount ?? 0;
@@ -164,6 +189,7 @@ export default function GuestListPage() {
             <GuestListDisplay
               guestListWithGroups={guestListWithGroups}
               onUpdateGuest={(payload) => updateGuestMutation.mutate(payload)}
+              onDeleteGuest={(entryId) => deleteGuestMutation.mutate(entryId)}
               isUpdating={updateGuestMutation.isPending}
               editingId={editingId}
               onEditingIdChange={setEditingId}

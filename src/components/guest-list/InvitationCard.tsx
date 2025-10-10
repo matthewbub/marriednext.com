@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { MoreVertical, Edit, Trash2, Check, X } from "lucide-react";
 import {
   DropdownMenu,
@@ -7,6 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InvitationCardProps } from "@/components/guest-list/guestList.types";
@@ -24,9 +35,20 @@ export default function InvitationCard({
   onFormChange,
   isSaving,
 }: InvitationCardProps) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const displayName =
     entry.inviteGroupName ||
     (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
+
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteDialog(false);
+    onRemove();
+  };
 
   return (
     <li className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all">
@@ -82,7 +104,7 @@ export default function InvitationCard({
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={onRemove}
+                onClick={handleDeleteClick}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
@@ -127,6 +149,27 @@ export default function InvitationCard({
           </p>
         )}
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Guest</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {displayName}? This action cannot
+              be undone and will remove all associated invitation data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </li>
   );
 }

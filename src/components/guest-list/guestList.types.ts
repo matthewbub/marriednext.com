@@ -14,6 +14,7 @@ export interface UpdateGuestPayload {
 export interface GuestListDisplayProps {
   guestListWithGroups: DbInvitationGroupWithGuests[];
   onUpdateGuest: (payload: UpdateGuestPayload) => void;
+  onDeleteGuest: (entryId: number) => void;
   isUpdating: boolean;
   editingId: number | null;
   onEditingIdChange: (id: number | null) => void;
