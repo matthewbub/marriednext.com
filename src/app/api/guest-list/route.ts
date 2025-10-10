@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   getGuestList,
   getGuestListWithGroups,
+  getGuestListWithGroupsCount,
   type DbInvitation,
   type DbInvitationGroupWithGuests,
   db,
@@ -44,10 +45,18 @@ export async function GET(
 ): Promise<NextResponse<{ guestList: DbInvitation[] }>> {
   const { searchParams } = new URL(request.url);
   const sortBy = searchParams.get("sortBy") || "alpha-asc";
+  const limit = parseInt(searchParams.get("limit") || "25");
+  const offset = parseInt(searchParams.get("offset") || "0");
 
   const guestList = await getGuestList();
 
-  const guestListWithGroups = await getGuestListWithGroups(sortBy);
+  const guestListWithGroups = await getGuestListWithGroups(
+    sortBy,
+    limit,
+    offset
+  );
+
+  const totalCount = await getGuestListWithGroupsCount();
 
   const guestListWithGroupsAndAttendance = guestListWithGroups.map((group) => {
     const { attending, total } = calculateAttendance(group);
@@ -74,9 +83,12 @@ export async function GET(
     guestListWithGroups: guestListWithGroupsAndAttendance,
     guestList,
     guestListCount: guestList.length + plusOneCount,
-    guestListWithGroupsCount: guestListWithGroups.length,
+    guestListWithGroupsCount: totalCount,
     displayGuestListWithGroups,
     plusOneCount,
+    hasMore: offset + limit < totalCount,
+    currentOffset: offset,
+    currentLimit: limit,
   });
 }
 

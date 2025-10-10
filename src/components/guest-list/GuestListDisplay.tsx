@@ -21,6 +21,7 @@ import {
 } from "@/components/guest-list/guestList.types";
 import InvitationCard from "@/components/guest-list/InvitationCard";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/ui/button";
 
 export default function GuestListDisplay({
   guestListWithGroups,
@@ -37,6 +38,9 @@ export default function GuestListDisplay({
   sortBy,
   onSortChange,
   isSorting,
+  hasMore,
+  onLoadMore,
+  isLoadingMore,
 }: GuestListDisplayProps) {
   const [viewMode, setViewMode] = useState<"expanded" | "condensed">(
     "expanded"
@@ -221,32 +225,11 @@ export default function GuestListDisplay({
             No guests match your search for &quot;{searchQuery}&quot;
           </p>
         </div>
-      ) : viewMode === "expanded" ? (
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {displayList.map((entry) => (
-            <InvitationCard
-              key={entry.id}
-              entry={entry}
-              isEditing={editingId === entry.id}
-              editForm={editForm}
-              onEdit={() => handleEdit(entry)}
-              onRemove={() => onDeleteGuest(entry.id)}
-              onSave={() => handleSubmitEdit(entry.id)}
-              onCancel={handleCancelEdit}
-              onFormChange={setEditForm}
-              isSaving={isUpdating && editingId === entry.id}
-            />
-          ))}
-        </ul>
       ) : (
-        <ul className="space-y-3">
-          {displayList.map((entry) => {
-            const attending = entry.attending ?? 0;
-            const total = entry.total ?? 0;
-            const isExpanded = expandedId === entry.id;
-
-            if (isExpanded) {
-              return (
+        <>
+          {viewMode === "expanded" ? (
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {displayList.map((entry) => (
                 <InvitationCard
                   key={entry.id}
                   entry={entry}
@@ -258,38 +241,77 @@ export default function GuestListDisplay({
                   onCancel={handleCancelEdit}
                   onFormChange={setEditForm}
                   isSaving={isUpdating && editingId === entry.id}
-                  onCollapse={() => setExpandedId(null)}
                 />
-              );
-            }
+              ))}
+            </ul>
+          ) : (
+            <ul className="space-y-3">
+              {displayList.map((entry) => {
+                const attending = entry.attending ?? 0;
+                const total = entry.total ?? 0;
+                const isExpanded = expandedId === entry.id;
 
-            return (
-              <li
-                key={entry.id}
-                onClick={() => setExpandedId(entry.id)}
-                className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {getDisplayName(entry)}
-                  </h3>
-                  <span
-                    className={clsx(
-                      "text-sm font-bold px-2 py-1 rounded",
-                      attending === total && "text-green-800 bg-green-50",
-                      attending > 0 &&
-                        attending < total &&
-                        "text-amber-800 bg-amber-50",
-                      attending === 0 && "text-gray-700 bg-gray-100"
-                    )}
+                if (isExpanded) {
+                  return (
+                    <InvitationCard
+                      key={entry.id}
+                      entry={entry}
+                      isEditing={editingId === entry.id}
+                      editForm={editForm}
+                      onEdit={() => handleEdit(entry)}
+                      onRemove={() => onDeleteGuest(entry.id)}
+                      onSave={() => handleSubmitEdit(entry.id)}
+                      onCancel={handleCancelEdit}
+                      onFormChange={setEditForm}
+                      isSaving={isUpdating && editingId === entry.id}
+                      onCollapse={() => setExpandedId(null)}
+                    />
+                  );
+                }
+
+                return (
+                  <li
+                    key={entry.id}
+                    onClick={() => setExpandedId(entry.id)}
+                    className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
                   >
-                    ({attending}/{total})
-                  </span>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {getDisplayName(entry)}
+                      </h3>
+                      <span
+                        className={clsx(
+                          "text-sm font-bold px-2 py-1 rounded",
+                          attending === total && "text-green-800 bg-green-50",
+                          attending > 0 &&
+                            attending < total &&
+                            "text-amber-800 bg-amber-50",
+                          attending === 0 && "text-gray-700 bg-gray-100"
+                        )}
+                      >
+                        ({attending}/{total})
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          {!searchQuery && (
+            <>
+              {isLoadingMore ? (
+                <LoadingSpinner message="Loading more guests..." size="small" />
+              ) : hasMore ? (
+                <div className="flex justify-center mt-6">
+                  <Button onClick={onLoadMore} variant="outline" size="lg">
+                    Load More
+                  </Button>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
+              ) : null}
+            </>
+          )}
+        </>
       )}
     </div>
   );

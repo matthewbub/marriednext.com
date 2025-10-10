@@ -28,7 +28,11 @@ export const getGuestList = async (): Promise<DbInvitation[]> => {
   return guestList;
 };
 
-export const getGuestListWithGroups = async (sortBy?: string) => {
+export const getGuestListWithGroups = async (
+  sortBy?: string,
+  limit?: number,
+  offset?: number
+) => {
   try {
     const result = await db.query.invitationGroups.findMany({
       with: {
@@ -64,11 +68,23 @@ export const getGuestListWithGroups = async (sortBy?: string) => {
             ];
         }
       },
+      limit: limit,
+      offset: offset,
     });
     return result;
   } catch (error) {
     console.error("Error getting guest list with groups", error);
     return [];
+  }
+};
+
+export const getGuestListWithGroupsCount = async () => {
+  try {
+    const result = await db.select().from(invitationGroups);
+    return result.length;
+  } catch (error) {
+    console.error("Error getting guest list with groups count", error);
+    return 0;
   }
 };
 

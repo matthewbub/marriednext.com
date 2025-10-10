@@ -22,14 +22,33 @@ export default function GuestListPage() {
   const [loadingGuestList, setLoadingGuestList] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
+  const [offset, setOffset] = useState(0);
+  const [accumulatedGuests, setAccumulatedGuests] = useState<
+    DbInvitationGroupWithGuests[]
+  >([]);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
+  const limit = 25;
+
   const { data, isFetching: isFetchingGuestList } = useQuery<GuestListData>({
-    queryKey: ["guest-list", sortBy],
+    queryKey: ["guest-list", sortBy, offset],
     queryFn: async () => {
-      const res = await fetch(`/api/guest-list?sortBy=${sortBy}`);
+      const res = await fetch(
+        `/api/guest-list?sortBy=${sortBy}&limit=${limit}&offset=${offset}`
+      );
       setLoadingGuestList(false);
-      return res.json();
+      const result = await res.json();
+
+      if (offset === 0) {
+        setAccumulatedGuests(result.guestListWithGroups);
+      } else {
+        setAccumulatedGuests((prev) => [
+          ...prev,
+          ...result.guestListWithGroups,
+        ]);
+      }
+
+      return result;
     },
   });
 
@@ -74,6 +93,8 @@ export default function GuestListPage() {
     },
     onSuccess: () => {
       setEditingId(null);
+      setOffset(0);
+      setAccumulatedGuests([]);
       queryClient.invalidateQueries({ queryKey: ["guest-list"] });
     },
     onError: (error) => {
@@ -100,6 +121,8 @@ export default function GuestListPage() {
     },
     onSuccess: () => {
       setIsAddDialogOpen(false);
+      setOffset(0);
+      setAccumulatedGuests([]);
       queryClient.invalidateQueries({ queryKey: ["guest-list"] });
     },
     onError: (error) => {
@@ -125,6 +148,8 @@ export default function GuestListPage() {
       return response.json();
     },
     onSuccess: () => {
+      setOffset(0);
+      setAccumulatedGuests([]);
       queryClient.invalidateQueries({ queryKey: ["guest-list"] });
     },
     onError: (error) => {
@@ -132,10 +157,20 @@ export default function GuestListPage() {
     },
   });
 
-  const guestListWithGroups = data?.guestListWithGroups ?? [];
   const guestListCount = data?.guestListCount ?? 0;
   const guestListWithGroupsCount = data?.guestListWithGroupsCount ?? 0;
   const plusOneCount = data?.plusOneCount ?? 0;
+  const hasMore = data?.hasMore ?? false;
+
+  const handleLoadMore = () => {
+    setOffset((prev) => prev + limit);
+  };
+
+  const handleSortChange = (newSortBy: SortOption) => {
+    setSortBy(newSortBy);
+    setOffset(0);
+    setAccumulatedGuests([]);
+  };
 
   if (loadingGuestList) {
     return <LoadingSpinner message="Loading guest list..." />;
@@ -189,7 +224,7 @@ export default function GuestListPage() {
             />
 
             <GuestListDisplay
-              guestListWithGroups={guestListWithGroups}
+              guestListWithGroups={accumulatedGuests}
               onUpdateGuest={(payload) => updateGuestMutation.mutate(payload)}
               onDeleteGuest={(entryId) => deleteGuestMutation.mutate(entryId)}
               isUpdating={updateGuestMutation.isPending}
@@ -201,8 +236,11 @@ export default function GuestListPage() {
               searchResultsCount={searchData?.count ?? 0}
               isSearching={isSearching}
               sortBy={sortBy}
-              onSortChange={setSortBy}
-              isSorting={isFetchingGuestList}
+              onSortChange={handleSortChange}
+              isSorting={isFetchingGuestList && offset === 0}
+              hasMore={hasMore}
+              onLoadMore={handleLoadMore}
+              isLoadingMore={isFetchingGuestList && offset > 0}
             />
           </SignedIn>
           <SignedOut>

@@ -44,6 +44,9 @@ export interface GuestListDisplayProps {
   sortBy: SortOption;
   onSortChange: (sortBy: SortOption) => void;
   isSorting: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
+  isLoadingMore: boolean;
 }
 
 export interface EditFormData {
@@ -109,4 +112,7 @@ export type GuestListData = {
   guestListCount: number;
   guestListWithGroupsCount: number;
   plusOneCount: number;
+  hasMore: boolean;
+  currentOffset: number;
+  currentLimit: number;
 };
