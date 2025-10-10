@@ -40,6 +40,7 @@ export default function GuestListDisplay({
   );
   const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
   const [editForm, setEditForm] = useState<EditFormData | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const { track } = useTelemetry();
 
@@ -49,6 +50,10 @@ export default function GuestListDisplay({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setExpandedId(null);
+  }, [viewMode]);
 
   const handleEdit = (entry: DbInvitationGroupWithGuests) => {
     onEditingIdChange(entry.id);
@@ -239,52 +244,72 @@ export default function GuestListDisplay({
             No guests match your search for &quot;{searchQuery}&quot;
           </p>
         </div>
+      ) : viewMode === "expanded" ? (
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {sortedGuestList.map((entry) => (
+            <InvitationCard
+              key={entry.id}
+              entry={entry}
+              isEditing={editingId === entry.id}
+              editForm={editForm}
+              onEdit={() => handleEdit(entry)}
+              onRemove={() => onDeleteGuest(entry.id)}
+              onSave={() => handleSubmitEdit(entry.id)}
+              onCancel={handleCancelEdit}
+              onFormChange={setEditForm}
+              isSaving={isUpdating && editingId === entry.id}
+            />
+          ))}
+        </ul>
       ) : (
         <ul className="space-y-3">
           {sortedGuestList.map((entry) => {
             const attending = entry.attending ?? 0;
             const total = entry.total ?? 0;
+            const isExpanded = expandedId === entry.id;
 
-            if (viewMode === "condensed") {
+            if (isExpanded) {
               return (
-                <li
+                <InvitationCard
                   key={entry.id}
-                  className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {getDisplayName(entry)}
-                    </h3>
-                    <span
-                      className={clsx(
-                        "text-sm font-bold px-2 py-1 rounded",
-                        attending === total && "text-green-800 bg-green-50",
-                        attending > 0 &&
-                          attending < total &&
-                          "text-amber-800 bg-amber-50",
-                        attending === 0 && "text-gray-700 bg-gray-100"
-                      )}
-                    >
-                      ({attending}/{total})
-                    </span>
-                  </div>
-                </li>
+                  entry={entry}
+                  isEditing={editingId === entry.id}
+                  editForm={editForm}
+                  onEdit={() => handleEdit(entry)}
+                  onRemove={() => onDeleteGuest(entry.id)}
+                  onSave={() => handleSubmitEdit(entry.id)}
+                  onCancel={handleCancelEdit}
+                  onFormChange={setEditForm}
+                  isSaving={isUpdating && editingId === entry.id}
+                  onCollapse={() => setExpandedId(null)}
+                />
               );
             }
 
             return (
-              <InvitationCard
+              <li
                 key={entry.id}
-                entry={entry}
-                isEditing={editingId === entry.id}
-                editForm={editForm}
-                onEdit={() => handleEdit(entry)}
-                onRemove={() => onDeleteGuest(entry.id)}
-                onSave={() => handleSubmitEdit(entry.id)}
-                onCancel={handleCancelEdit}
-                onFormChange={setEditForm}
-                isSaving={isUpdating && editingId === entry.id}
-              />
+                onClick={() => setExpandedId(entry.id)}
+                className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {getDisplayName(entry)}
+                  </h3>
+                  <span
+                    className={clsx(
+                      "text-sm font-bold px-2 py-1 rounded",
+                      attending === total && "text-green-800 bg-green-50",
+                      attending > 0 &&
+                        attending < total &&
+                        "text-amber-800 bg-amber-50",
+                      attending === 0 && "text-gray-700 bg-gray-100"
+                    )}
+                  >
+                    ({attending}/{total})
+                  </span>
+                </div>
+              </li>
             );
           })}
         </ul>

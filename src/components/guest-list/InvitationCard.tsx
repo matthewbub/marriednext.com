@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreVertical, Edit, Trash2, Check, X } from "lucide-react";
+import { MoreVertical, Edit, Trash2, Check, X, ChevronUp } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +34,7 @@ export default function InvitationCard({
   onCancel,
   onFormChange,
   isSaving,
+  onCollapse,
 }: InvitationCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -112,24 +113,35 @@ export default function InvitationCard({
             </Button>
           </div>
         ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="p-1 hover:bg-gray-100 rounded transition-colors">
-              <MoreVertical className="w-4 h-4 text-gray-600" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={handleDeleteClick}
-                className="cursor-pointer text-red-600 focus:text-red-600"
+          <div className="flex gap-2">
+            {onCollapse && (
+              <button
+                onClick={onCollapse}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                aria-label="Collapse"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Remove
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <ChevronUp className="w-4 h-4 text-gray-600" />
+              </button>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="p-1 hover:bg-gray-100 rounded transition-colors">
+                <MoreVertical className="w-4 h-4 text-gray-600" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleDeleteClick}
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Remove
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )}
       </div>
 

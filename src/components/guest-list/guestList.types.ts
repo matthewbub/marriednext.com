@@ -81,6 +81,7 @@ export interface InvitationCardProps {
   onCancel: () => void;
   onFormChange: (form: EditFormData) => void;
   isSaving: boolean;
+  onCollapse?: () => void;
 }
 
 export interface GuestFieldsEditProps {
