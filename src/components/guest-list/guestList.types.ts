@@ -8,6 +8,24 @@ export interface UpdateGuestPayload {
   guestB: string | null;
   guestBAttending: boolean | null;
   guestBHasPlusOne: boolean;
+  guestC: string | null;
+  guestCAttending: boolean | null;
+  guestCHasPlusOne: boolean;
+  guestD: string | null;
+  guestDAttending: boolean | null;
+  guestDHasPlusOne: boolean;
+  guestE: string | null;
+  guestEAttending: boolean | null;
+  guestEHasPlusOne: boolean;
+  guestF: string | null;
+  guestFAttending: boolean | null;
+  guestFHasPlusOne: boolean;
+  guestG: string | null;
+  guestGAttending: boolean | null;
+  guestGHasPlusOne: boolean;
+  guestH: string | null;
+  guestHAttending: boolean | null;
+  guestHHasPlusOne: boolean;
   inviteGroupName: string | null;
 }
 
@@ -32,6 +50,24 @@ export interface EditFormData {
   guestB: string | null;
   guestBAttending: boolean | null;
   guestBHasPlusOne: boolean;
+  guestC: string | null;
+  guestCAttending: boolean | null;
+  guestCHasPlusOne: boolean;
+  guestD: string | null;
+  guestDAttending: boolean | null;
+  guestDHasPlusOne: boolean;
+  guestE: string | null;
+  guestEAttending: boolean | null;
+  guestEHasPlusOne: boolean;
+  guestF: string | null;
+  guestFAttending: boolean | null;
+  guestFHasPlusOne: boolean;
+  guestG: string | null;
+  guestGAttending: boolean | null;
+  guestGHasPlusOne: boolean;
+  guestH: string | null;
+  guestHAttending: boolean | null;
+  guestHHasPlusOne: boolean;
   inviteGroupName: string | null;
 }
 

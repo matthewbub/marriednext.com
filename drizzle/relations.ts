@@ -44,11 +44,6 @@ export const invitationGroupsRelations = relations(
       references: [invitations.nameOnInvitation],
       relationName: "invitationGroups_guestH_invitations_nameOnInvitation",
     }),
-    invitation_guestI: one(invitations, {
-      fields: [invitationGroups.guestI],
-      references: [invitations.nameOnInvitation],
-      relationName: "invitationGroups_guestI_invitations_nameOnInvitation",
-    }),
   })
 );
 
@@ -76,8 +71,5 @@ export const invitationsRelations = relations(invitations, ({ many }) => ({
   }),
   invitationGroups_guestH: many(invitationGroups, {
     relationName: "invitationGroups_guestH_invitations_nameOnInvitation",
-  }),
-  invitationGroups_guestI: many(invitationGroups, {
-    relationName: "invitationGroups_guestI_invitations_nameOnInvitation",
   }),
 }));

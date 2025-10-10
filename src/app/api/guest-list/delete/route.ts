@@ -34,7 +34,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
         existingGroup.guestF,
         existingGroup.guestG,
         existingGroup.guestH,
-        existingGroup.guestI,
       ].filter((name): name is string => name !== null);
 
       if (guestNames.length > 0) {

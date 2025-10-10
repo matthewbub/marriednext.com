@@ -37,9 +37,29 @@ export default function InvitationCard({
 }: InvitationCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const displayName =
-    entry.inviteGroupName ||
-    (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
+  const getGuestNames = () => {
+    const names = [];
+    if (entry.guestA) names.push(entry.guestA);
+    if (entry.guestB) names.push(entry.guestB);
+    if (entry.guestC) names.push(entry.guestC);
+    if (entry.guestD) names.push(entry.guestD);
+    if (entry.guestE) names.push(entry.guestE);
+    if (entry.guestF) names.push(entry.guestF);
+    if (entry.guestG) names.push(entry.guestG);
+    if (entry.guestH) names.push(entry.guestH);
+    return names;
+  };
+
+  const guestNames = getGuestNames();
+  const guestCount = guestNames.length;
+
+  const getDefaultDisplayName = () => {
+    if (guestCount === 1) return guestNames[0];
+    if (guestCount === 2) return `${guestNames[0]} & ${guestNames[1]}`;
+    return `${guestNames[0]} Group`;
+  };
+
+  const displayName = entry.inviteGroupName || getDefaultDisplayName();
 
   const handleDeleteClick = () => {
     setShowDeleteDialog(true);
@@ -62,9 +82,7 @@ export default function InvitationCard({
                 inviteGroupName: e.target.value || null,
               })
             }
-            placeholder={
-              entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA
-            }
+            placeholder={getDefaultDisplayName()}
             className="text-lg font-semibold font-handwritten-font"
             disabled={isSaving}
           />

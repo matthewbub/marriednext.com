@@ -58,6 +58,24 @@ export default function GuestListDisplay({
       guestB: entry.guestB ?? null,
       guestBAttending: entry.invitation_guestB?.isAttending ?? null,
       guestBHasPlusOne: entry.invitation_guestB?.hasPlusOne ?? false,
+      guestC: entry.guestC ?? null,
+      guestCAttending: entry.invitation_guestC?.isAttending ?? null,
+      guestCHasPlusOne: entry.invitation_guestC?.hasPlusOne ?? false,
+      guestD: entry.guestD ?? null,
+      guestDAttending: entry.invitation_guestD?.isAttending ?? null,
+      guestDHasPlusOne: entry.invitation_guestD?.hasPlusOne ?? false,
+      guestE: entry.guestE ?? null,
+      guestEAttending: entry.invitation_guestE?.isAttending ?? null,
+      guestEHasPlusOne: entry.invitation_guestE?.hasPlusOne ?? false,
+      guestF: entry.guestF ?? null,
+      guestFAttending: entry.invitation_guestF?.isAttending ?? null,
+      guestFHasPlusOne: entry.invitation_guestF?.hasPlusOne ?? false,
+      guestG: entry.guestG ?? null,
+      guestGAttending: entry.invitation_guestG?.isAttending ?? null,
+      guestGHasPlusOne: entry.invitation_guestG?.hasPlusOne ?? false,
+      guestH: entry.guestH ?? null,
+      guestHAttending: entry.invitation_guestH?.isAttending ?? null,
+      guestHHasPlusOne: entry.invitation_guestH?.hasPlusOne ?? false,
       inviteGroupName: entry.inviteGroupName ?? null,
     });
   };
@@ -79,11 +97,31 @@ export default function GuestListDisplay({
   const displayList =
     searchQuery && searchResults ? searchResults : guestListWithGroups;
 
-  const sortedGuestList = [...displayList].sort((a, b) => {
-    const getDisplayName = (entry: DbInvitationGroupWithGuests) =>
-      entry.inviteGroupName ||
-      (entry.guestB ? `${entry.guestA} & ${entry.guestB}` : entry.guestA);
+  const getGuestNames = (entry: DbInvitationGroupWithGuests) => {
+    const names = [];
+    if (entry.guestA) names.push(entry.guestA);
+    if (entry.guestB) names.push(entry.guestB);
+    if (entry.guestC) names.push(entry.guestC);
+    if (entry.guestD) names.push(entry.guestD);
+    if (entry.guestE) names.push(entry.guestE);
+    if (entry.guestF) names.push(entry.guestF);
+    if (entry.guestG) names.push(entry.guestG);
+    if (entry.guestH) names.push(entry.guestH);
+    return names;
+  };
 
+  const getDefaultDisplayName = (entry: DbInvitationGroupWithGuests) => {
+    const guestNames = getGuestNames(entry);
+    const guestCount = guestNames.length;
+    if (guestCount === 1) return guestNames[0];
+    if (guestCount === 2) return `${guestNames[0]} & ${guestNames[1]}`;
+    return `${guestNames[0]} Group`;
+  };
+
+  const getDisplayName = (entry: DbInvitationGroupWithGuests) =>
+    entry.inviteGroupName || getDefaultDisplayName(entry);
+
+  const sortedGuestList = [...displayList].sort((a, b) => {
     switch (sortBy) {
       case "alpha-asc":
         return getDisplayName(a).localeCompare(getDisplayName(b));
@@ -211,12 +249,6 @@ export default function GuestListDisplay({
             const total = entry.total ?? 0;
 
             if (viewMode === "condensed") {
-              const displayName =
-                entry.inviteGroupName ||
-                (entry.guestB
-                  ? `${entry.guestA} & ${entry.guestB}`
-                  : entry.guestA);
-
               return (
                 <li
                   key={entry.id}
@@ -224,7 +256,7 @@ export default function GuestListDisplay({
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {displayName}
+                      {getDisplayName(entry)}
                     </h3>
                     <span
                       className={clsx(

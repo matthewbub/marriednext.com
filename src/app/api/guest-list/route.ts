@@ -14,23 +14,27 @@ const calculateAttendance = (entry: DbInvitationGroupWithGuests) => {
   let attending = 0;
   let total = 0;
 
-  if (entry.invitation_guestA) {
-    total++;
-    if (entry.invitation_guestA.isAttending) attending++;
-    if (entry.invitation_guestA.hasPlusOne) {
-      total++;
-      if (entry.invitation_guestA.isAttending) attending++;
-    }
-  }
+  const allGuests = [
+    entry.invitation_guestA,
+    entry.invitation_guestB,
+    entry.invitation_guestC,
+    entry.invitation_guestD,
+    entry.invitation_guestE,
+    entry.invitation_guestF,
+    entry.invitation_guestG,
+    entry.invitation_guestH,
+  ];
 
-  if (entry.invitation_guestB) {
-    total++;
-    if (entry.invitation_guestB.isAttending) attending++;
-    if (entry.invitation_guestB.hasPlusOne) {
+  allGuests.forEach((guest) => {
+    if (guest) {
       total++;
-      if (entry.invitation_guestB.isAttending) attending++;
+      if (guest.isAttending) attending++;
+      if (guest.hasPlusOne) {
+        total++;
+        if (guest.isAttending) attending++;
+      }
     }
-  }
+  });
 
   return { attending, total };
 };
@@ -81,6 +85,24 @@ const updateGuestSchema = z.object({
   guestB: z.string().nullable(),
   guestBAttending: z.boolean().nullable(),
   guestBHasPlusOne: z.boolean(),
+  guestC: z.string().nullable(),
+  guestCAttending: z.boolean().nullable(),
+  guestCHasPlusOne: z.boolean(),
+  guestD: z.string().nullable(),
+  guestDAttending: z.boolean().nullable(),
+  guestDHasPlusOne: z.boolean(),
+  guestE: z.string().nullable(),
+  guestEAttending: z.boolean().nullable(),
+  guestEHasPlusOne: z.boolean(),
+  guestF: z.string().nullable(),
+  guestFAttending: z.boolean().nullable(),
+  guestFHasPlusOne: z.boolean(),
+  guestG: z.string().nullable(),
+  guestGAttending: z.boolean().nullable(),
+  guestGHasPlusOne: z.boolean(),
+  guestH: z.string().nullable(),
+  guestHAttending: z.boolean().nullable(),
+  guestHHasPlusOne: z.boolean(),
   inviteGroupName: z.string().nullable(),
 });
 
@@ -94,6 +116,12 @@ export async function PUT(request: Request): Promise<NextResponse> {
       with: {
         invitation_guestA: true,
         invitation_guestB: true,
+        invitation_guestC: true,
+        invitation_guestD: true,
+        invitation_guestE: true,
+        invitation_guestF: true,
+        invitation_guestG: true,
+        invitation_guestH: true,
       },
     });
 
@@ -105,30 +133,36 @@ export async function PUT(request: Request): Promise<NextResponse> {
     }
 
     await db.transaction(async (tx) => {
-      if (existingGroup.invitation_guestA) {
-        await tx
-          .update(invitations)
-          .set({
-            nameOnInvitation: validatedData.guestA,
-            isAttending: validatedData.guestAAttending,
-            hasPlusOne: validatedData.guestAHasPlusOne,
-          })
-          .where(eq(invitations.id, existingGroup.invitation_guestA.id));
-      }
+      const guestKeys = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
 
-      if (validatedData.guestB && existingGroup.invitation_guestB) {
-        await tx
-          .update(invitations)
-          .set({
-            nameOnInvitation: validatedData.guestB,
-            isAttending: validatedData.guestBAttending,
-            hasPlusOne: validatedData.guestBHasPlusOne,
-          })
-          .where(eq(invitations.id, existingGroup.invitation_guestB.id));
-      } else if (!validatedData.guestB && existingGroup.invitation_guestB) {
-        await tx
-          .delete(invitations)
-          .where(eq(invitations.id, existingGroup.invitation_guestB.id));
+      for (const key of guestKeys) {
+        const guestName = validatedData[
+          `guest${key}` as keyof typeof validatedData
+        ] as string | null;
+        const guestAttending = validatedData[
+          `guest${key}Attending` as keyof typeof validatedData
+        ] as boolean | null;
+        const guestHasPlusOne = validatedData[
+          `guest${key}HasPlusOne` as keyof typeof validatedData
+        ] as boolean;
+        const existingInvitation = existingGroup[
+          `invitation_guest${key}` as keyof typeof existingGroup
+        ] as typeof existingGroup.invitation_guestA;
+
+        if (guestName && existingInvitation) {
+          await tx
+            .update(invitations)
+            .set({
+              nameOnInvitation: guestName,
+              isAttending: guestAttending,
+              hasPlusOne: guestHasPlusOne,
+            })
+            .where(eq(invitations.id, existingInvitation.id));
+        } else if (!guestName && existingInvitation) {
+          await tx
+            .delete(invitations)
+            .where(eq(invitations.id, existingInvitation.id));
+        }
       }
 
       await tx
@@ -136,6 +170,12 @@ export async function PUT(request: Request): Promise<NextResponse> {
         .set({
           guestA: validatedData.guestA,
           guestB: validatedData.guestB,
+          guestC: validatedData.guestC,
+          guestD: validatedData.guestD,
+          guestE: validatedData.guestE,
+          guestF: validatedData.guestF,
+          guestG: validatedData.guestG,
+          guestH: validatedData.guestH,
           inviteGroupName: validatedData.inviteGroupName,
           lastUpdatedAt: new Date().toISOString(),
         })

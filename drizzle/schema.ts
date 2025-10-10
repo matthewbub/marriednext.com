@@ -34,7 +34,6 @@ export const invitationGroups = pgTable(
     guestF: text("guest_f"),
     guestG: text("guest_g"),
     guestH: text("guest_h"),
-    guestI: text("guest_i"),
     createdAt: timestamp("created_at", { mode: "string" })
       .defaultNow()
       .notNull(),
@@ -97,13 +96,6 @@ export const invitationGroups = pgTable(
       columns: [table.guestH],
       foreignColumns: [invitations.nameOnInvitation],
       name: "fk_guest_h",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.guestI],
-      foreignColumns: [invitations.nameOnInvitation],
-      name: "fk_guest_i",
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
