@@ -20,6 +20,7 @@ import {
   SortOption,
 } from "@/components/guest-list/guestList.types";
 import InvitationCard from "@/components/guest-list/InvitationCard";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function GuestListDisplay({
   guestListWithGroups,
@@ -216,21 +217,17 @@ export default function GuestListDisplay({
             className="pl-10"
           />
         </div>
-        {searchQuery && (
+        {searchQuery && !isSearching && (
           <p className="text-sm text-gray-600 mt-2">
-            {isSearching ? (
-              "Searching..."
-            ) : (
-              <>
-                Found {searchResultsCount}{" "}
-                {searchResultsCount === 1 ? "result" : "results"}
-              </>
-            )}
+            Found {searchResultsCount}{" "}
+            {searchResultsCount === 1 ? "result" : "results"}
           </p>
         )}
       </div>
 
-      {searchQuery && searchResultsCount === 0 && !isSearching ? (
+      {isSearching ? (
+        <LoadingSpinner message="Searching guests..." className="p-0" />
+      ) : searchQuery && searchResultsCount === 0 ? (
         <div className="text-center py-12 px-4">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
             <Search className="w-8 h-8 text-gray-400" />
