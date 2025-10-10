@@ -34,11 +34,13 @@ export default function GuestListDisplay({
   searchResults,
   searchResultsCount,
   isSearching,
+  sortBy,
+  onSortChange,
+  isSorting,
 }: GuestListDisplayProps) {
   const [viewMode, setViewMode] = useState<"expanded" | "condensed">(
     "expanded"
   );
-  const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
   const [editForm, setEditForm] = useState<EditFormData | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
@@ -127,40 +129,13 @@ export default function GuestListDisplay({
   const getDisplayName = (entry: DbInvitationGroupWithGuests) =>
     entry.inviteGroupName || getDefaultDisplayName(entry);
 
-  const sortedGuestList = [...displayList].sort((a, b) => {
-    switch (sortBy) {
-      case "alpha-asc":
-        return getDisplayName(a).localeCompare(getDisplayName(b));
-      case "alpha-desc":
-        return getDisplayName(b).localeCompare(getDisplayName(a));
-      case "date-newest":
-        if (!a.createdAt || !b.createdAt) return 0;
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case "date-oldest":
-        if (!a.createdAt || !b.createdAt) return 0;
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      case "updated-newest":
-        if (!a.lastUpdatedAt || !b.lastUpdatedAt) return 0;
-        return (
-          new Date(b.lastUpdatedAt).getTime() -
-          new Date(a.lastUpdatedAt).getTime()
-        );
-      default:
-        return 0;
-    }
-  });
-
   return (
     <div>
       <div className="flex justify-between items-center gap-2 mb-4">
         <Select
           value={sortBy}
           onValueChange={(value: SortOption) => {
-            setSortBy(value);
+            onSortChange(value);
             track(() => telemetry.trackGuestListSortOption(value));
           }}
         >
@@ -230,7 +205,9 @@ export default function GuestListDisplay({
         )}
       </div>
 
-      {isSearching ? (
+      {isSorting ? (
+        <LoadingSpinner message="Sorting guests..." className="p-0" />
+      ) : isSearching ? (
         <LoadingSpinner message="Searching guests..." className="p-0" />
       ) : searchQuery && searchResultsCount === 0 ? (
         <div className="text-center py-12 px-4">
@@ -246,7 +223,7 @@ export default function GuestListDisplay({
         </div>
       ) : viewMode === "expanded" ? (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {sortedGuestList.map((entry) => (
+          {displayList.map((entry) => (
             <InvitationCard
               key={entry.id}
               entry={entry}
@@ -263,7 +240,7 @@ export default function GuestListDisplay({
         </ul>
       ) : (
         <ul className="space-y-3">
-          {sortedGuestList.map((entry) => {
+          {displayList.map((entry) => {
             const attending = entry.attending ?? 0;
             const total = entry.total ?? 0;
             const isExpanded = expandedId === entry.id;

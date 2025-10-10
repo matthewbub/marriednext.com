@@ -7,6 +7,7 @@ import GuestListDisplay from "@/components/guest-list/GuestListDisplay";
 import {
   GuestListData,
   UpdateGuestPayload,
+  SortOption,
 } from "@/components/guest-list/guestList.types";
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -20,12 +21,13 @@ export default function GuestListPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingGuestList, setLoadingGuestList] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("alpha-asc");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const { data } = useQuery<GuestListData>({
-    queryKey: ["guest-list"],
+  const { data, isFetching: isFetchingGuestList } = useQuery<GuestListData>({
+    queryKey: ["guest-list", sortBy],
     queryFn: async () => {
-      const res = await fetch("/api/guest-list");
+      const res = await fetch(`/api/guest-list?sortBy=${sortBy}`);
       setLoadingGuestList(false);
       return res.json();
     },
@@ -35,7 +37,7 @@ export default function GuestListPage() {
     results: DbInvitationGroupWithGuests[];
     count: number;
   }>({
-    queryKey: ["guest-list-search", debouncedSearchQuery],
+    queryKey: ["guest-list-search", debouncedSearchQuery, sortBy],
     queryFn: async () => {
       if (!debouncedSearchQuery) {
         return { results: [], count: 0 };
@@ -43,7 +45,7 @@ export default function GuestListPage() {
       const res = await fetch(
         `/api/guest-list/search?query=${encodeURIComponent(
           debouncedSearchQuery
-        )}`
+        )}&sortBy=${sortBy}`
       );
       if (!res.ok) {
         throw new Error("Search failed");
@@ -198,6 +200,9 @@ export default function GuestListPage() {
               searchResults={searchData?.results ?? null}
               searchResultsCount={searchData?.count ?? 0}
               isSearching={isSearching}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              isSorting={isFetchingGuestList}
             />
           </SignedIn>
           <SignedOut>

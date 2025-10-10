@@ -41,6 +41,9 @@ export interface GuestListDisplayProps {
   searchResults: DbInvitationGroupWithGuests[] | null;
   searchResultsCount: number;
   isSearching: boolean;
+  sortBy: SortOption;
+  onSortChange: (sortBy: SortOption) => void;
+  isSorting: boolean;
 }
 
 export interface EditFormData {

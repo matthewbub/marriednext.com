@@ -28,7 +28,7 @@ export const getGuestList = async (): Promise<DbInvitation[]> => {
   return guestList;
 };
 
-export const getGuestListWithGroups = async () => {
+export const getGuestListWithGroups = async (sortBy?: string) => {
   try {
     const result = await db.query.invitationGroups.findMany({
       with: {
@@ -40,6 +40,29 @@ export const getGuestListWithGroups = async () => {
         invitation_guestF: true,
         invitation_guestG: true,
         invitation_guestH: true,
+      },
+      orderBy: (invitationGroups, { asc, desc, sql }) => {
+        switch (sortBy) {
+          case "alpha-desc":
+            return [
+              desc(
+                sql`COALESCE(${invitationGroups.inviteGroupName}, ${invitationGroups.guestA})`
+              ),
+            ];
+          case "date-newest":
+            return [desc(invitationGroups.createdAt)];
+          case "date-oldest":
+            return [asc(invitationGroups.createdAt)];
+          case "updated-newest":
+            return [desc(invitationGroups.lastUpdatedAt)];
+          case "alpha-asc":
+          default:
+            return [
+              asc(
+                sql`COALESCE(${invitationGroups.inviteGroupName}, ${invitationGroups.guestA})`
+              ),
+            ];
+        }
       },
     });
     return result;

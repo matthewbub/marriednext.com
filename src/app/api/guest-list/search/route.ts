@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
 import { invitationGroups } from "@/drizzle/schema";
-import { or, ilike } from "drizzle-orm";
+import { or, ilike, asc, desc, sql } from "drizzle-orm";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -12,6 +12,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query");
+    const sortBy = searchParams.get("sortBy") || "alpha-asc";
 
     if (!query) {
       return NextResponse.json(
@@ -32,6 +33,35 @@ export async function GET(request: Request): Promise<NextResponse> {
       with: {
         invitation_guestA: true,
         invitation_guestB: true,
+        invitation_guestC: true,
+        invitation_guestD: true,
+        invitation_guestE: true,
+        invitation_guestF: true,
+        invitation_guestG: true,
+        invitation_guestH: true,
+      },
+      orderBy: () => {
+        switch (sortBy) {
+          case "alpha-desc":
+            return [
+              desc(
+                sql`COALESCE(${invitationGroups.inviteGroupName}, ${invitationGroups.guestA})`
+              ),
+            ];
+          case "date-newest":
+            return [desc(invitationGroups.createdAt)];
+          case "date-oldest":
+            return [asc(invitationGroups.createdAt)];
+          case "updated-newest":
+            return [desc(invitationGroups.lastUpdatedAt)];
+          case "alpha-asc":
+          default:
+            return [
+              asc(
+                sql`COALESCE(${invitationGroups.inviteGroupName}, ${invitationGroups.guestA})`
+              ),
+            ];
+        }
       },
     });
 
@@ -39,23 +69,27 @@ export async function GET(request: Request): Promise<NextResponse> {
       let attending = 0;
       let total = 0;
 
-      if (group.invitation_guestA) {
-        total++;
-        if (group.invitation_guestA.isAttending) attending++;
-        if (group.invitation_guestA.hasPlusOne) {
-          total++;
-          if (group.invitation_guestA.isAttending) attending++;
-        }
-      }
+      const allGuests = [
+        group.invitation_guestA,
+        group.invitation_guestB,
+        group.invitation_guestC,
+        group.invitation_guestD,
+        group.invitation_guestE,
+        group.invitation_guestF,
+        group.invitation_guestG,
+        group.invitation_guestH,
+      ];
 
-      if (group.invitation_guestB) {
-        total++;
-        if (group.invitation_guestB.isAttending) attending++;
-        if (group.invitation_guestB.hasPlusOne) {
+      allGuests.forEach((guest) => {
+        if (guest) {
           total++;
-          if (group.invitation_guestB.isAttending) attending++;
+          if (guest.isAttending) attending++;
+          if (guest.hasPlusOne) {
+            total++;
+            if (guest.isAttending) attending++;
+          }
         }
-      }
+      });
 
       return {
         ...group,
@@ -64,33 +98,9 @@ export async function GET(request: Request): Promise<NextResponse> {
       };
     });
 
-    const sortedResults = resultsWithAttendance.sort((a, b) => {
-      const aMatchesGuestA = a.guestA
-        .toLowerCase()
-        .includes(validatedData.query.toLowerCase());
-      const bMatchesGuestA = b.guestA
-        .toLowerCase()
-        .includes(validatedData.query.toLowerCase());
-
-      if (aMatchesGuestA && !bMatchesGuestA) return -1;
-      if (!aMatchesGuestA && bMatchesGuestA) return 1;
-
-      const aMatchesGuestB = a.guestB
-        ?.toLowerCase()
-        .includes(validatedData.query.toLowerCase());
-      const bMatchesGuestB = b.guestB
-        ?.toLowerCase()
-        .includes(validatedData.query.toLowerCase());
-
-      if (aMatchesGuestB && !bMatchesGuestB) return -1;
-      if (!aMatchesGuestB && bMatchesGuestB) return 1;
-
-      return 0;
-    });
-
     return NextResponse.json({
-      results: sortedResults,
-      count: sortedResults.length,
+      results: resultsWithAttendance,
+      count: resultsWithAttendance.length,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

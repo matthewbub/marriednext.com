@@ -39,12 +39,15 @@ const calculateAttendance = (entry: DbInvitationGroupWithGuests) => {
   return { attending, total };
 };
 
-export async function GET(): Promise<
-  NextResponse<{ guestList: DbInvitation[] }>
-> {
+export async function GET(
+  request: Request
+): Promise<NextResponse<{ guestList: DbInvitation[] }>> {
+  const { searchParams } = new URL(request.url);
+  const sortBy = searchParams.get("sortBy") || "alpha-asc";
+
   const guestList = await getGuestList();
 
-  const guestListWithGroups = await getGuestListWithGroups();
+  const guestListWithGroups = await getGuestListWithGroups(sortBy);
 
   const guestListWithGroupsAndAttendance = guestListWithGroups.map((group) => {
     const { attending, total } = calculateAttendance(group);
