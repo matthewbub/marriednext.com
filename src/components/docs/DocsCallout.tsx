@@ -5,6 +5,7 @@ interface DocsCalloutProps {
   icon?: LucideIcon;
   title?: string;
   children: ReactNode;
+  className?: string;
   variant?: "info" | "warning" | "success" | "neutral";
 }
 
