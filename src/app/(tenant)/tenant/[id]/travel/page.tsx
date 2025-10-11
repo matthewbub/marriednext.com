@@ -3,43 +3,6 @@ import { getLocale } from "@/lib/tenant/locales/en-US";
 
 export default function Travel() {
   const t = getLocale();
-  const mapInfo = {
-    title: "Venue Location",
-    addressLines: ["33515 Rancho California Rd, Temecula, CA 92591"],
-    mapQuery: "33515 Rancho California Rd, Temecula, CA 92591",
-  };
-  const hotels = [
-    {
-      name: "South Coast Winery",
-      address: "34843 Rancho California Rd, Temecula, CA 92591",
-      phone: "(951) 566-4622",
-      phoneLink: "tel:9515664622",
-    },
-    {
-      name: "Embassy Suites by Hilton Temecula Valley Wine Country",
-      address: "29345 Rancho California Rd, Temecula, CA 92591",
-      phone: "(951) 676-5656",
-      phoneLink: "tel:9516765656",
-    },
-    {
-      name: "Stay Kentina",
-      address: "38801 Los Corralitos Rd, Temecula, CA 92592",
-      phone: "(951) 514-3120",
-      phoneLink: "tel:9515143120",
-    },
-    {
-      name: "Temecula Creek Inn",
-      address: "44501 Rainbow Canyon Rd, Temecula, CA 92592",
-      phone: "(866) 448-3612",
-      phoneLink: "tel:8664483612",
-    },
-    {
-      name: "Pechanga Casino & Resort",
-      address: "45000 Pechanga Pkwy, Temecula, CA 92592",
-      phone: "(877) 211-2946",
-      phoneLink: "tel:8772112946",
-    },
-  ];
 
   return (
     <div className="w-full flex flex-col items-center justify-center px-4">
@@ -50,9 +13,7 @@ export default function Travel() {
 
         <div className="text-center mb-16">
           <p className="text-xl leading-relaxed max-w-3xl mx-auto">
-            We're so excited to celebrate with you in beautiful Temecula,
-            California! Here's everything you need to know about getting here
-            and where to stay.
+            {t.pages.travel.intro}
           </p>
         </div>
 
@@ -75,9 +36,11 @@ export default function Travel() {
             </div>
             <div className="flex items-center justify-center h-full">
               <div className="text-center md:text-left">
-                <h3 className="text-2xl font-semibold mb-2">{mapInfo.title}</h3>
+                <h3 className="text-2xl font-semibold mb-2">
+                  {t.pages.travel.venueLocation}
+                </h3>
                 <div className="space-y-1">
-                  {mapInfo.addressLines.map((line, idx) => (
+                  {t.pages.travel.mapInfo.addressLines.map((line, idx) => (
                     <p key={idx} className="text-gray-700">
                       {line}
                     </p>
@@ -86,13 +49,13 @@ export default function Travel() {
                 <div className="mt-4">
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      mapInfo.mapQuery
+                      t.pages.travel.mapInfo.mapQuery
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block border-2 border-black px-6 py-2 uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
                   >
-                    Open in Google Maps
+                    {t.pages.travel.openInGoogleMaps}
                   </a>
                 </div>
               </div>

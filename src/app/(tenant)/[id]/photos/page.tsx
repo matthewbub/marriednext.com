@@ -109,7 +109,8 @@ export default function Photos() {
           <h1 className="text-4xl md:text-5xl mb-6 ">{t.pages.photos.title}</h1>
 
           <p className="text-lg leading-relaxed max-w-2xl mx-auto font-light">
-            {t.pages.photos.description}
+            A collection of our favorite moments together — from our early days
+            of dating to our engagement and everything in between.
           </p>
         </div>
 
@@ -131,7 +132,7 @@ export default function Photos() {
                 <div className="p-4">
                   <PhotoFrame
                     src={photoUrl}
-                    alt={`${t.pages.photos.altMemoriesFrom} ${year}`}
+                    alt={`Our memories from ${year}`}
                     aspectRatio="horizontal"
                     objectPosition={objectPosition}
                     className="mb-4"
@@ -144,9 +145,7 @@ export default function Photos() {
 
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl mb-6 ">
-              {t.pages.photos.proposalHeading}
-            </h2>
+            <h2 className="text-3xl md:text-4xl mb-6 ">The Proposal</h2>
           </div>
 
           {/* Mobile-optimized masonry-style grid for horizontal photos */}
@@ -179,8 +178,9 @@ export default function Photos() {
                   <div className="relative w-full h-[500px] lg:h-[400px] bg-rose-50">
                     <Image
                       src={photoUrl || "/placeholder.svg"}
-                      alt={`${t.pages.photos.altProposalPhoto} ${index + 1}`}
+                      alt={`Proposal photo ${index + 1}`}
                       fill
+                      // sizes="(min-width: 768px) 45vw, 90vw"
                       className={cn(
                         "object-cover",
                         positionClasses[objectPosition]
