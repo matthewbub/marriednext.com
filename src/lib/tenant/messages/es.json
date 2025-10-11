@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": {
+      "default": "Yulissa y Matthew’s Boda — 23 de Abril, 2026 — Temecula, CA",
+      "template": "%s | Yulissa y Matthew’s Boda"
+    },
+    "description": "Acompáñenos en Temecula, California, el 23 de abril de 2026 para celebrar la boda de Yulissa y Matthew. Descubra nuestra historia, fotos, indicaciones para llegar al lugar, preguntas frecuentes e información sobre el registro."
+  },
+  "header": {
+    "aria": {
+      "toggleNavigation": "Toggle navigation"
+    },
+    "hero": {
+      "theWord": "La",
+      "weddingWord": " Boda ",
+      "ofWord": "de",
+      "dateLocation": "23 de Abril, 2026 • Temecula, CA",
+      "names": "Yulissa & Matthew"
+    },
+    "nav": {
+      "home": "Inicio",
+      "ourStory": "Nuestra Historia",
+      "photos": "Fotos",
+      "weddingParty": "Festa de Boda",
+      "qAndA": "Preguntas Frecuentes",
+      "travel": "Viajar",
+      "registry": "Mesa de Regalos"
+    },
+    "countdown": {
+      "days": "Días",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos"
+    }
+  },
+  "common": {
+    "backToHome": "Volver a Inicio",
+    "comingSoon": {
+      "title": "Próximamente",
+      "message": "Estamos terminando de ajustar esta sección. Por favor, vuelva pronto."
+    },
+    "credits": {
+      "madeBy": "Este sitio web fue creado por"
+    }
+  },
+  "pages": {
+    "home": {
+      "heroAlt": "Yulissa y Matthew",
+      "venueName": "Bel Vino Winery",
+      "addressLine1": "33515 Rancho California Road",
+      "addressLine2": "Temecula, CA 92591"
+    },
+    "ourStory": { "title": "Nuestra Historia" },
+    "photos": { "title": "Fotos" },
+    "qAndA": { "title": "Preguntas Frecuentes" },
+    "travel": { "title": "Viajar" },
+    "registry": { "title": "Mesa de Regalos" },
+    "weddingParty": { "title": "Festa de Boda" }
+  }
+}

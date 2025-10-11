@@ -43,11 +43,11 @@ export default function NavBar() {
                           className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
                           href="/"
                         >
-                          <div className="mt-4 mb-2 text-lg font-medium">
-                            Weddings by Mat!
-                          </div>
+                          <span className="mt-4 mb-2 text-lg font-medium leading-tight font-handwritten-font">
+                            Wedding Cake Studio
+                          </span>
                           <p className="text-muted-foreground text-sm leading-tight">
-                            Artisan wedding websites made with love
+                            Delicious wedding websites made served fresh
                           </p>
                         </Link>
                       </NavigationMenuLink>
@@ -86,6 +86,14 @@ export default function NavBar() {
                   className={navigationMenuTriggerStyle()}
                 >
                   <Link href="/documentation">Documentation</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link href="/pricing">Pricing</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <SignedIn>
@@ -150,6 +158,13 @@ export default function NavBar() {
                   onClick={() => setOpen(false)}
                 >
                   Documentation
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="text-lg font-medium hover:text-violet-700 transition"
+                  onClick={() => setOpen(false)}
+                >
+                  Pricing
                 </Link>
                 <SignedIn>
                   <Link

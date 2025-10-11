@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* Abramo Font Imports */
+@font-face {
+  font-family: "Abramo Script";
+  src: url("/fonts/AbramoScript.otf") format("opentype"),
+    url("/fonts/AbramoScript.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Abramo Serif";
+  src: url("/fonts/AbramoSerif.otf") format("opentype"),
+    url("/fonts/AbramoSerif.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --background: #e9e9ea;
+  --foreground: #5d351c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-cormorant-infant);
+}
+
+.background {
+  background: var(--background);
+}
+
+* {
+  font-family: var(--font-cormorant-infant);
+}
+
+.abramo-script {
+  font-family: "Abramo Script";
+}
+
+.abramo-serif {
+  font-family: "Abramo Serif";
+  font-weight: 700;
+}
+
+@mixin btn-primary {
+  @apply inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors font-black;
+}
+
+.btn-primary {
+  @include btn-primary;
+}

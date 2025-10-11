@@ -1,4 +1,5 @@
 import { drizzle } from "drizzle-orm/postgres-js";
+import { eq } from "drizzle-orm";
 import queryClient from "./neon";
 import { invitationGroups, invitations } from "@/drizzle/schema";
 import * as schema from "@/drizzle/schema";
@@ -89,3 +90,23 @@ export const getGuestListWithGroupsCount = async () => {
 };
 
 export default db;
+
+export const insertInvitation = async ({
+  nameOnInvitation,
+  isAttending,
+  hasPlusOne,
+}: {
+  nameOnInvitation: string;
+  isAttending: boolean;
+  hasPlusOne: boolean | null | undefined;
+}): Promise<void> => {
+  const invitation = {
+    nameOnInvitation,
+    isAttending,
+    hasPlusOne: hasPlusOne ?? null,
+  };
+  await db
+    .update(invitations)
+    .set(invitation)
+    .where(eq(invitations.nameOnInvitation, nameOnInvitation));
+};
