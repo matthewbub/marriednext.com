@@ -96,7 +96,7 @@ export default function GuestListDisplay({
   };
 
   const displayList =
-    searchQuery && searchResults ? searchResults : guestListWithGroups;
+    searchQuery && searchResults ? searchResults : guestListWithGroups ?? [];
 
   const getGuestNames = (entry: DbInvitationGroupWithGuests) => {
     const names = [];
@@ -209,6 +209,18 @@ export default function GuestListDisplay({
           </h3>
           <p className="text-gray-600">
             No guests match your search for &quot;{searchQuery}&quot;
+          </p>
+        </div>
+      ) : displayList.length === 0 ? (
+        <div className="text-center py-12 px-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+            <List className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No guests yet
+          </h3>
+          <p className="text-gray-600">
+            Get started by adding your first guest to the list
           </p>
         </div>
       ) : (

@@ -172,7 +172,10 @@ export default function GuestListPage() {
     setAccumulatedGuests([]);
   };
 
-  if (loadingGuestList) {
+  const isInitialLoading =
+    loadingGuestList || (isFetchingGuestList && accumulatedGuests.length === 0);
+
+  if (isInitialLoading) {
     return <LoadingSpinner message="Loading guest list..." />;
   }
 
