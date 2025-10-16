@@ -5,18 +5,18 @@ import { GuestFieldsViewProps } from "@/components/guest-list/guestList.types";
 
 export default function GuestFieldsView({ entry }: GuestFieldsViewProps) {
   const guests = [
-    { name: entry.guestA, invitation: entry.invitation_guestA },
-    { name: entry.guestB, invitation: entry.invitation_guestB },
-    { name: entry.guestC, invitation: entry.invitation_guestC },
-    { name: entry.guestD, invitation: entry.invitation_guestD },
-    { name: entry.guestE, invitation: entry.invitation_guestE },
-    { name: entry.guestF, invitation: entry.invitation_guestF },
-    { name: entry.guestG, invitation: entry.invitation_guestG },
-    { name: entry.guestH, invitation: entry.invitation_guestH },
+    { name: entry.guestA, invitation: entry.guest_guestA },
+    { name: entry.guestB, invitation: entry.guest_guestB },
+    { name: entry.guestC, invitation: entry.guest_guestC },
+    { name: entry.guestD, invitation: entry.guest_guestD },
+    { name: entry.guestE, invitation: entry.guest_guestE },
+    { name: entry.guestF, invitation: entry.guest_guestF },
+    { name: entry.guestG, invitation: entry.guest_guestG },
+    { name: entry.guestH, invitation: entry.guest_guestH },
   ].filter((guest) => guest.name && guest.invitation);
 
-  const guestAHasPlusOne = entry.invitation_guestA?.hasPlusOne;
-  const guestAAttending = entry.invitation_guestA?.isAttending;
+  const guestAHasPlusOne = entry.guest_guestA?.hasPlusOne;
+  const guestAAttending = entry.guest_guestA?.isAttending;
   const hasOnlyOneGuest = guests.length === 1;
 
   return (

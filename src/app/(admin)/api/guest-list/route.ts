@@ -80,8 +80,10 @@ export async function GET(
 
   return NextResponse.json({
     invitations: invitationsWithAttendance,
+    guestListWithGroups: invitationsWithAttendance,
     guestList,
     guestListCount: guestList.length + plusOneCount,
+    guestListWithGroupsCount: totalCount,
     invitationsCount: totalCount,
     displayInvitations,
     plusOneCount,

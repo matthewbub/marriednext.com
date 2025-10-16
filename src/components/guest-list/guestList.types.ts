@@ -1,7 +1,7 @@
 import { DbInvitationGroupWithGuests } from "@/database/drizzle";
 
 export interface UpdateGuestPayload {
-  entryId: number;
+  entryId: string;
   guestA: string;
   guestAAttending: boolean | null;
   guestAHasPlusOne: boolean;
@@ -32,10 +32,10 @@ export interface UpdateGuestPayload {
 export interface GuestListDisplayProps {
   guestListWithGroups: DbInvitationGroupWithGuests[];
   onUpdateGuest: (payload: UpdateGuestPayload) => void;
-  onDeleteGuest: (entryId: number) => void;
+  onDeleteGuest: (entryId: string) => void;
   isUpdating: boolean;
-  editingId: number | null;
-  onEditingIdChange: (id: number | null) => void;
+  editingId: string | null;
+  onEditingIdChange: (id: string | null) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   searchResults: DbInvitationGroupWithGuests[] | null;

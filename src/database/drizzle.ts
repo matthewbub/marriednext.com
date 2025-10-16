@@ -24,6 +24,9 @@ export type DbInvitationWithGuests = DbInvitation & {
   total?: number;
 };
 
+export type DbInvitationGroupWithGuests = DbInvitationWithGuests;
+export type DbInvitationGroup = DbInvitation;
+
 export const getGuestList = async (): Promise<DbGuest[]> => {
   const guestList = await db.select().from(guest);
   return guestList;

@@ -31,14 +31,14 @@ export async function GET(request: Request): Promise<NextResponse> {
         ilike(invitation.inviteGroupName, searchPattern)
       ),
       with: {
-        invitation_guestA: true,
-        invitation_guestB: true,
-        invitation_guestC: true,
-        invitation_guestD: true,
-        invitation_guestE: true,
-        invitation_guestF: true,
-        invitation_guestG: true,
-        invitation_guestH: true,
+        guest_guestA: true,
+        guest_guestB: true,
+        guest_guestC: true,
+        guest_guestD: true,
+        guest_guestE: true,
+        guest_guestF: true,
+        guest_guestG: true,
+        guest_guestH: true,
       },
       orderBy: () => {
         switch (sortBy) {
@@ -70,14 +70,14 @@ export async function GET(request: Request): Promise<NextResponse> {
       let total = 0;
 
       const allGuests = [
-        inv.invitation_guestA,
-        inv.invitation_guestB,
-        inv.invitation_guestC,
-        inv.invitation_guestD,
-        inv.invitation_guestE,
-        inv.invitation_guestF,
-        inv.invitation_guestG,
-        inv.invitation_guestH,
+        inv.guest_guestA,
+        inv.guest_guestB,
+        inv.guest_guestC,
+        inv.guest_guestD,
+        inv.guest_guestE,
+        inv.guest_guestF,
+        inv.guest_guestG,
+        inv.guest_guestH,
       ];
 
       allGuests.forEach((g) => {

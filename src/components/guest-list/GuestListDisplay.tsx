@@ -44,7 +44,7 @@ export default function GuestListDisplay({
     "expanded"
   );
   const [editForm, setEditForm] = useState<EditFormData | null>(null);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     setExpandedId(null);
@@ -54,29 +54,29 @@ export default function GuestListDisplay({
     onEditingIdChange(entry.id);
     setEditForm({
       guestA: entry.guestA,
-      guestAAttending: entry.invitation_guestA?.isAttending ?? null,
-      guestAHasPlusOne: entry.invitation_guestA?.hasPlusOne ?? false,
+      guestAAttending: entry.guest_guestA?.isAttending ?? null,
+      guestAHasPlusOne: entry.guest_guestA?.hasPlusOne ?? false,
       guestB: entry.guestB ?? null,
-      guestBAttending: entry.invitation_guestB?.isAttending ?? null,
-      guestBHasPlusOne: entry.invitation_guestB?.hasPlusOne ?? false,
+      guestBAttending: entry.guest_guestB?.isAttending ?? null,
+      guestBHasPlusOne: entry.guest_guestB?.hasPlusOne ?? false,
       guestC: entry.guestC ?? null,
-      guestCAttending: entry.invitation_guestC?.isAttending ?? null,
-      guestCHasPlusOne: entry.invitation_guestC?.hasPlusOne ?? false,
+      guestCAttending: entry.guest_guestC?.isAttending ?? null,
+      guestCHasPlusOne: entry.guest_guestC?.hasPlusOne ?? false,
       guestD: entry.guestD ?? null,
-      guestDAttending: entry.invitation_guestD?.isAttending ?? null,
-      guestDHasPlusOne: entry.invitation_guestD?.hasPlusOne ?? false,
+      guestDAttending: entry.guest_guestD?.isAttending ?? null,
+      guestDHasPlusOne: entry.guest_guestD?.hasPlusOne ?? false,
       guestE: entry.guestE ?? null,
-      guestEAttending: entry.invitation_guestE?.isAttending ?? null,
-      guestEHasPlusOne: entry.invitation_guestE?.hasPlusOne ?? false,
+      guestEAttending: entry.guest_guestE?.isAttending ?? null,
+      guestEHasPlusOne: entry.guest_guestE?.hasPlusOne ?? false,
       guestF: entry.guestF ?? null,
-      guestFAttending: entry.invitation_guestF?.isAttending ?? null,
-      guestFHasPlusOne: entry.invitation_guestF?.hasPlusOne ?? false,
+      guestFAttending: entry.guest_guestF?.isAttending ?? null,
+      guestFHasPlusOne: entry.guest_guestF?.hasPlusOne ?? false,
       guestG: entry.guestG ?? null,
-      guestGAttending: entry.invitation_guestG?.isAttending ?? null,
-      guestGHasPlusOne: entry.invitation_guestG?.hasPlusOne ?? false,
+      guestGAttending: entry.guest_guestG?.isAttending ?? null,
+      guestGHasPlusOne: entry.guest_guestG?.hasPlusOne ?? false,
       guestH: entry.guestH ?? null,
-      guestHAttending: entry.invitation_guestH?.isAttending ?? null,
-      guestHHasPlusOne: entry.invitation_guestH?.hasPlusOne ?? false,
+      guestHAttending: entry.guest_guestH?.isAttending ?? null,
+      guestHHasPlusOne: entry.guest_guestH?.hasPlusOne ?? false,
       inviteGroupName: entry.inviteGroupName ?? null,
     });
   };
@@ -86,7 +86,7 @@ export default function GuestListDisplay({
     setEditForm(null);
   };
 
-  const handleSubmitEdit = (entryId: number) => {
+  const handleSubmitEdit = (entryId: string) => {
     if (!editForm) return;
 
     onUpdateGuest({

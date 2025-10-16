@@ -7,7 +7,8 @@ import { EditFormData } from "@/components/guest-list/guestList.types";
 const createMockEntry = (
   overrides?: Partial<DbInvitationGroupWithGuests>
 ): DbInvitationGroupWithGuests => ({
-  id: 1,
+  id: "1",
+  weddingId: null,
   guestA: "John Doe",
   guestB: null,
   guestC: null,
@@ -19,48 +20,49 @@ const createMockEntry = (
   createdAt: "2024-01-15T10:00:00.000Z",
   lastUpdatedAt: "2024-01-15T10:00:00.000Z",
   inviteGroupName: null,
-  invitation_guestA: {
-    id: 1,
+  guest_guestA: {
+    id: "1",
+    weddingId: null,
     nameOnInvitation: "John Doe",
     isAttending: true,
     hasPlusOne: false,
     dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
   },
-  invitation_guestB: null,
-  invitation_guestC: null,
-  invitation_guestD: null,
-  invitation_guestE: null,
-  invitation_guestF: null,
-  invitation_guestG: null,
-  invitation_guestH: null,
+  guest_guestB: null,
+  guest_guestC: null,
+  guest_guestD: null,
+  guest_guestE: null,
+  guest_guestF: null,
+  guest_guestG: null,
+  guest_guestH: null,
   ...overrides,
 });
 
 const createEditForm = (entry: DbInvitationGroupWithGuests): EditFormData => ({
   guestA: entry.guestA,
-  guestAAttending: entry.invitation_guestA?.isAttending ?? null,
-  guestAHasPlusOne: entry.invitation_guestA?.hasPlusOne ?? false,
+  guestAAttending: entry.guest_guestA?.isAttending ?? null,
+  guestAHasPlusOne: entry.guest_guestA?.hasPlusOne ?? false,
   guestB: entry.guestB,
-  guestBAttending: entry.invitation_guestB?.isAttending ?? null,
-  guestBHasPlusOne: entry.invitation_guestB?.hasPlusOne ?? false,
+  guestBAttending: entry.guest_guestB?.isAttending ?? null,
+  guestBHasPlusOne: entry.guest_guestB?.hasPlusOne ?? false,
   guestC: entry.guestC,
-  guestCAttending: entry.invitation_guestC?.isAttending ?? null,
-  guestCHasPlusOne: entry.invitation_guestC?.hasPlusOne ?? false,
+  guestCAttending: entry.guest_guestC?.isAttending ?? null,
+  guestCHasPlusOne: entry.guest_guestC?.hasPlusOne ?? false,
   guestD: entry.guestD,
-  guestDAttending: entry.invitation_guestD?.isAttending ?? null,
-  guestDHasPlusOne: entry.invitation_guestD?.hasPlusOne ?? false,
+  guestDAttending: entry.guest_guestD?.isAttending ?? null,
+  guestDHasPlusOne: entry.guest_guestD?.hasPlusOne ?? false,
   guestE: entry.guestE,
-  guestEAttending: entry.invitation_guestE?.isAttending ?? null,
-  guestEHasPlusOne: entry.invitation_guestE?.hasPlusOne ?? false,
+  guestEAttending: entry.guest_guestE?.isAttending ?? null,
+  guestEHasPlusOne: entry.guest_guestE?.hasPlusOne ?? false,
   guestF: entry.guestF,
-  guestFAttending: entry.invitation_guestF?.isAttending ?? null,
-  guestFHasPlusOne: entry.invitation_guestF?.hasPlusOne ?? false,
+  guestFAttending: entry.guest_guestF?.isAttending ?? null,
+  guestFHasPlusOne: entry.guest_guestF?.hasPlusOne ?? false,
   guestG: entry.guestG,
-  guestGAttending: entry.invitation_guestG?.isAttending ?? null,
-  guestGHasPlusOne: entry.invitation_guestG?.hasPlusOne ?? false,
+  guestGAttending: entry.guest_guestG?.isAttending ?? null,
+  guestGHasPlusOne: entry.guest_guestG?.hasPlusOne ?? false,
   guestH: entry.guestH,
-  guestHAttending: entry.invitation_guestH?.isAttending ?? null,
-  guestHHasPlusOne: entry.invitation_guestH?.hasPlusOne ?? false,
+  guestHAttending: entry.guest_guestH?.isAttending ?? null,
+  guestHHasPlusOne: entry.guest_guestH?.hasPlusOne ?? false,
   inviteGroupName: entry.inviteGroupName,
 });
 
@@ -94,8 +96,9 @@ export const TwoGuests: Story = {
   args: {
     entry: createMockEntry({
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -121,29 +124,33 @@ export const LargeGroup: Story = {
       guestC: "Bob Johnson",
       guestD: "Alice Williams",
       guestE: "Charlie Brown",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
-      invitation_guestC: {
-        id: 3,
+      guest_guestC: {
+        id: "3",
+        weddingId: null,
         nameOnInvitation: "Bob Johnson",
         isAttending: null,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
-      invitation_guestD: {
-        id: 4,
+      guest_guestD: {
+        id: "4",
+        weddingId: null,
         nameOnInvitation: "Alice Williams",
         isAttending: false,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
-      invitation_guestE: {
-        id: 5,
+      guest_guestE: {
+        id: "5",
+        weddingId: null,
         nameOnInvitation: "Charlie Brown",
         isAttending: true,
         hasPlusOne: false,
@@ -167,8 +174,9 @@ export const WithGroupName: Story = {
     entry: createMockEntry({
       inviteGroupName: "The Smith Family",
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -191,8 +199,9 @@ export const EditMode: Story = {
   args: {
     entry: createMockEntry({
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -203,8 +212,9 @@ export const EditMode: Story = {
     editForm: createEditForm(
       createMockEntry({
         guestB: "Jane Smith",
-        invitation_guestB: {
-          id: 2,
+        guest_guestB: {
+          id: "2",
+          weddingId: null,
           nameOnInvitation: "Jane Smith",
           isAttending: true,
           hasPlusOne: false,
@@ -227,8 +237,9 @@ export const EditModeWithGroupName: Story = {
     entry: createMockEntry({
       inviteGroupName: "The Smith Family",
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -240,8 +251,9 @@ export const EditModeWithGroupName: Story = {
       createMockEntry({
         inviteGroupName: "The Smith Family",
         guestB: "Jane Smith",
-        invitation_guestB: {
-          id: 2,
+        guest_guestB: {
+          id: "2",
+          weddingId: null,
           nameOnInvitation: "Jane Smith",
           isAttending: true,
           hasPlusOne: false,
@@ -263,8 +275,9 @@ export const SavingState: Story = {
   args: {
     entry: createMockEntry({
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -275,8 +288,9 @@ export const SavingState: Story = {
     editForm: createEditForm(
       createMockEntry({
         guestB: "Jane Smith",
-        invitation_guestB: {
-          id: 2,
+        guest_guestB: {
+          id: "2",
+          weddingId: null,
           nameOnInvitation: "Jane Smith",
           isAttending: true,
           hasPlusOne: false,
@@ -298,8 +312,9 @@ export const WithCollapseButton: Story = {
   args: {
     entry: createMockEntry({
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -323,8 +338,9 @@ export const InteractiveEditFlow: Story = {
   args: {
     entry: createMockEntry({
       guestB: "Jane Smith",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
@@ -371,22 +387,25 @@ export const MixedAttendanceStatus: Story = {
       guestB: "Jane Smith",
       guestC: "Bob Johnson",
       guestD: "Alice Williams",
-      invitation_guestB: {
-        id: 2,
+      guest_guestB: {
+        id: "2",
+        weddingId: null,
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
-      invitation_guestC: {
-        id: 3,
+      guest_guestC: {
+        id: "3",
+        weddingId: null,
         nameOnInvitation: "Bob Johnson",
         isAttending: false,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
-      invitation_guestD: {
-        id: 4,
+      guest_guestD: {
+        id: "4",
+        weddingId: null,
         nameOnInvitation: "Alice Williams",
         isAttending: null,
         hasPlusOne: false,
@@ -408,8 +427,9 @@ export const MixedAttendanceStatus: Story = {
 export const SingleGuestWithPlusOne: Story = {
   args: {
     entry: createMockEntry({
-      invitation_guestA: {
-        id: 1,
+      guest_guestA: {
+        id: "1",
+        weddingId: null,
         nameOnInvitation: "John Doe",
         isAttending: true,
         hasPlusOne: true,

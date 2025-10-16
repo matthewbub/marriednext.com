@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 
 export default function GuestListPage() {
   const queryClient = useQueryClient();
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingGuestList, setLoadingGuestList] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -76,12 +76,13 @@ export default function GuestListPage() {
 
   const updateGuestMutation = useMutation({
     mutationFn: async (payload: UpdateGuestPayload) => {
+      const { entryId, ...rest } = payload;
       const response = await fetch("/api/guest-list", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ invitationId: entryId, ...rest }),
       });
 
       if (!response.ok) {
@@ -131,7 +132,7 @@ export default function GuestListPage() {
   });
 
   const deleteGuestMutation = useMutation({
-    mutationFn: async (entryId: number) => {
+    mutationFn: async (entryId: string) => {
       const response = await fetch("/api/guest-list/delete", {
         method: "DELETE",
         headers: {
