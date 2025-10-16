@@ -34,7 +34,7 @@ export default function RootLayout({
           className={`${rubik.variable} ${shadowsIntoLight.variable} antialiased bg-transparent`}
         >
           <QueryProvider>
-            <div className="max-w-7xl mx-auto z-10">
+            <div className="mx-auto z-10">
               <NavBar />
             </div>
             <div className="max-w-7xl mx-auto">{children}</div>

@@ -3,7 +3,12 @@
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useWebsiteBuilderStore } from "@/lib/stores/websiteBuilderStore";
+import {
+  useWebsiteBuilderStore,
+  type PageId,
+} from "@/lib/stores/websiteBuilderStore";
+import DateCountdownEditor from "@/components/admin/DateCountdownEditor";
+import LocationEditor from "@/components/admin/LocationEditor";
 
 export default function Editor() {
   const selectedPage = useWebsiteBuilderStore((state) => state.selectedPage);
@@ -13,7 +18,13 @@ export default function Editor() {
   );
   const setEditMode = useWebsiteBuilderStore((state) => state.setEditMode);
 
-  const pages = [
+  const pages: {
+    id: PageId;
+    name: string;
+    path?: string;
+    hasPhotos: boolean;
+    hasLabels: boolean;
+  }[] = [
     { id: "home", name: "Home", path: "", hasPhotos: true, hasLabels: true },
     {
       id: "our-story",
@@ -90,6 +101,10 @@ export default function Editor() {
             ))}
           </nav>
         </div>
+
+        <DateCountdownEditor />
+
+        <LocationEditor />
 
         <div className="border-t pt-4">
           <h3 className="text-sm font-medium mb-3 uppercase tracking-wide text-gray-700">
