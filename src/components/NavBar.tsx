@@ -7,11 +7,9 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
@@ -63,7 +61,7 @@ export default function NavBar() {
                     asChild
                     className={navigationMenuTriggerStyle()}
                   >
-                    <Link href="/admin/website-builder">Website Builder</Link>
+                    <Link href="/admin/settings">Settings</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               </SignedIn>
@@ -115,11 +113,11 @@ export default function NavBar() {
                 </Link>
                 <SignedIn>
                   <Link
-                    href="/admin/website-builder"
+                    href="/admin/settings"
                     className="text-lg font-medium hover:text-violet-700 transition"
                     onClick={() => setOpen(false)}
                   >
-                    Website Builder
+                    Settings
                   </Link>
                 </SignedIn>
                 <div className="border-t pt-4 mt-2">

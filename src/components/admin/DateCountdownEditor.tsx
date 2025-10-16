@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useWebsiteBuilderStore } from "@/lib/stores/websiteBuilderStore";
 
 const dateCountdownSchema = z.object({
   dateLocationText: z.string().min(1, "Date and location text is required"),
@@ -21,30 +20,28 @@ const dateCountdownSchema = z.object({
 
 type DateCountdownFormData = z.infer<typeof dateCountdownSchema>;
 
-export default function DateCountdownEditor() {
-  const dateCountdown = useWebsiteBuilderStore((state) => state.dateCountdown);
-  const setDateCountdown = useWebsiteBuilderStore(
-    (state) => state.setDateCountdown
-  );
+const defaultValues: DateCountdownFormData = {
+  dateLocationText: "April 24, 2026 | Temecula, California",
+  countdownTargetUtc: "2026-04-24T00:00:00Z",
+};
 
+export default function DateCountdownEditor() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<DateCountdownFormData>({
     resolver: zodResolver(dateCountdownSchema),
-    defaultValues: dateCountdown,
+    defaultValues,
   });
 
   const onSubmit = (data: DateCountdownFormData) => {
-    setDateCountdown(data);
+    console.log("Date & Countdown updated:", data);
   };
 
   return (
-    <div className="border-t pt-4">
-      <h3 className="text-sm font-medium mb-3 uppercase tracking-wide text-gray-700">
-        Date & Countdown
-      </h3>
+    <div>
+      <h3 className="text-lg font-semibold mb-4">Date & Countdown</h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div>
           <label className="text-xs font-medium text-gray-700 block mb-1">

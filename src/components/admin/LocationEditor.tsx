@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useWebsiteBuilderStore } from "@/lib/stores/websiteBuilderStore";
 
 const locationSchema = z.object({
   venueName: z.string().min(1, "Venue name is required"),
@@ -16,28 +15,30 @@ const locationSchema = z.object({
 
 type LocationFormData = z.infer<typeof locationSchema>;
 
-export default function LocationEditor() {
-  const location = useWebsiteBuilderStore((state) => state.location);
-  const setLocation = useWebsiteBuilderStore((state) => state.setLocation);
+const defaultValues: LocationFormData = {
+  venueName: "Bel Vino Winery",
+  addressLine1: "33515 Rancho California Road",
+  addressLine2: "Temecula, CA 92591",
+  mapLink: "https://maps.app.goo.gl/...",
+};
 
+export default function LocationEditor() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LocationFormData>({
     resolver: zodResolver(locationSchema),
-    defaultValues: location,
+    defaultValues,
   });
 
   const onSubmit = (data: LocationFormData) => {
-    setLocation(data);
+    console.log("Location updated:", data);
   };
 
   return (
-    <div className="border-t pt-4">
-      <h3 className="text-sm font-medium mb-3 uppercase tracking-wide text-gray-700">
-        Location
-      </h3>
+    <div>
+      <h3 className="text-lg font-semibold mb-4">Location</h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div>
           <label className="text-xs font-medium text-gray-700 block mb-1">
