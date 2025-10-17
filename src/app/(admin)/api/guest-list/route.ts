@@ -3,22 +3,60 @@ import { db } from "@/database/drizzle";
 import { guest, invitation } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import {
   getGuestListData,
   type GuestListResponse,
+  DatabaseError,
 } from "@/lib/admin/guestListService";
+
+const getGuestListSchema = z.object({
+  sortBy: z.string().default("alpha-asc"),
+  limit: z.coerce.number().int().positive().max(100).default(25),
+  offset: z.coerce.number().int().nonnegative().default(0),
+});
 
 export async function GET(
   request: Request
-): Promise<NextResponse<GuestListResponse>> {
-  const { searchParams } = new URL(request.url);
-  const sortBy = searchParams.get("sortBy") || "alpha-asc";
-  const limit = parseInt(searchParams.get("limit") || "25");
-  const offset = parseInt(searchParams.get("offset") || "0");
+): Promise<NextResponse<GuestListResponse | { error: string }>> {
+  try {
+    const { searchParams } = new URL(request.url);
+    const validatedParams = getGuestListSchema.parse({
+      sortBy: searchParams.get("sortBy"),
+      limit: searchParams.get("limit"),
+      offset: searchParams.get("offset"),
+    });
 
-  const data = await getGuestListData({ sortBy, limit, offset });
-
-  return NextResponse.json(data);
+    const data = await getGuestListData(validatedParams);
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching guest list:", error);
+    if (error instanceof z.ZodError) {
+      Sentry.captureException(error, {
+        level: "error",
+        tags: { route: "guest-list-get" },
+      });
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+    if (error instanceof DatabaseError) {
+      Sentry.captureException(error, {
+        level: "error",
+        tags: { route: "guest-list-get" },
+      });
+      return NextResponse.json(
+        { error: "Service temporarily unavailable" },
+        { status: 503 }
+      );
+    }
+    Sentry.captureException(error, {
+      level: "error",
+      tags: { route: "guest-list-get" },
+    });
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
+  }
 }
 
 const updateInvitationSchema = z.object({

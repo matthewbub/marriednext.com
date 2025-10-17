@@ -6,6 +6,20 @@ import {
   type DbInvitationWithGuests,
 } from "@/database/drizzle";
 
+export class DatabaseError extends Error {
+  constructor(message: string, public cause?: unknown) {
+    super(message);
+    this.name = "DatabaseError";
+  }
+}
+
+export class InvalidParamsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidParamsError";
+  }
+}
+
 const calculateAttendance = (entry: DbInvitationWithGuests) => {
   let attending = 0;
   let total = 0;
@@ -64,51 +78,55 @@ export type GuestListParams = {
 export async function getGuestListData(
   params: GuestListParams = {}
 ): Promise<GuestListResponse> {
-  const sortBy = params.sortBy || "alpha-asc";
-  const limit = params.limit || 25;
-  const offset = params.offset || 0;
+  try {
+    const sortBy = params.sortBy || "alpha-asc";
+    const limit = params.limit || 25;
+    const offset = params.offset || 0;
 
-  const guestList = await getGuestList();
+    const guestList = await getGuestList();
 
-  const invitationsWithGuests = await getInvitationsWithGuests(
-    sortBy,
-    limit,
-    offset
-  );
+    const invitationsWithGuests = await getInvitationsWithGuests(
+      sortBy,
+      limit,
+      offset
+    );
 
-  const totalCount = await getInvitationsCount();
+    const totalCount = await getInvitationsCount();
 
-  const invitationsWithAttendance = invitationsWithGuests.map((inv) => {
-    const { attending, total } = calculateAttendance(inv);
+    const invitationsWithAttendance = invitationsWithGuests.map((inv) => {
+      const { attending, total } = calculateAttendance(inv);
+      return {
+        ...inv,
+        attending,
+        total,
+      };
+    });
+
+    const displayInvitations = invitationsWithGuests.map((inv) => ({
+      guestA: inv.guestA,
+      guestB: inv.guestB
+        ? "& " + inv.guestB
+        : guestList.find((g) => g.nameOnInvitation === inv.guestA)?.hasPlusOne
+        ? "+ One"
+        : null,
+    }));
+
+    const plusOneCount = guestList.filter((g) => g.hasPlusOne).length;
+
     return {
-      ...inv,
-      attending,
-      total,
+      invitations: invitationsWithAttendance,
+      guestListWithGroups: invitationsWithAttendance,
+      guestList,
+      guestListCount: guestList.length + plusOneCount,
+      guestListWithGroupsCount: totalCount,
+      invitationsCount: totalCount,
+      displayInvitations,
+      plusOneCount,
+      hasMore: offset + limit < totalCount,
+      currentOffset: offset,
+      currentLimit: limit,
     };
-  });
-
-  const displayInvitations = invitationsWithGuests.map((inv) => ({
-    guestA: inv.guestA,
-    guestB: inv.guestB
-      ? "& " + inv.guestB
-      : guestList.find((g) => g.nameOnInvitation === inv.guestA)?.hasPlusOne
-      ? "+ One"
-      : null,
-  }));
-
-  const plusOneCount = guestList.filter((g) => g.hasPlusOne).length;
-
-  return {
-    invitations: invitationsWithAttendance,
-    guestListWithGroups: invitationsWithAttendance,
-    guestList,
-    guestListCount: guestList.length + plusOneCount,
-    guestListWithGroupsCount: totalCount,
-    invitationsCount: totalCount,
-    displayInvitations,
-    plusOneCount,
-    hasMore: offset + limit < totalCount,
-    currentOffset: offset,
-    currentLimit: limit,
-  };
+  } catch (error) {
+    throw new DatabaseError("Failed to fetch guest list data", error);
+  }
 }
