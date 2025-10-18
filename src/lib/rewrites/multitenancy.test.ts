@@ -146,7 +146,7 @@ describe("decideMultiTenantRouting", () => {
       },
       helpers({ subId: 2 })
     );
-    expect(res).toEqual({ action: "rewrite", path: "/site/acme" });
+    expect(res).toEqual({ action: "rewrite", path: "/tenant/acme" });
   });
 
   it("tenant host with valid subdomain rewrites nested path to site", async () => {
@@ -159,7 +159,7 @@ describe("decideMultiTenantRouting", () => {
       },
       helpers({ subId: 2 })
     );
-    expect(res).toEqual({ action: "rewrite", path: "/site/acme/photos" });
+    expect(res).toEqual({ action: "rewrite", path: "/tenant/acme/photos" });
   });
 
   it("tenant host with unknown subdomain rewrites to 404", async () => {

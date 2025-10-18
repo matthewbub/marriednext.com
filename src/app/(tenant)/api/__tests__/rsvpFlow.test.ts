@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { validateGuest, getCompanionName } from "@/lib/tenant/guestList";
-import { transition, submitName, type RsvpState } from "@/lib/tenant/rsvpFlow";
+import {
+  validateGuest,
+  getCompanionName,
+} from "../../../../lib/tenant/guestList";
+import {
+  transition,
+  submitName,
+  type RsvpState,
+} from "../../../../lib/tenant/rsvpFlow";
 
 describe("RSVP Flow", () => {
   it("goes to error when name not found", async () => {

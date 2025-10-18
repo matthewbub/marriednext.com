@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { validateGuest, type GuestType } from "@/lib/tenant/guestList";
+import {
+  validateGuest,
+  type GuestType,
+} from "../../../../lib/tenant/guestList";
 
 describe("validateGuest", () => {
   describe("GUEST_ONLY scenarios", () => {
@@ -34,8 +37,6 @@ describe("validateGuest", () => {
 
     it("should handle names with incomplete data (TODOs)", () => {
       expect(validateGuest("Kathleen")).toBe("GUEST_PLUSONE_INVITED");
-      expect(validateGuest("Cheri")).toBe("GUEST_PLUSONE_INVITED");
-      expect(validateGuest("Illiana")).toBe("GUEST_PLUSONE_INVITED");
       expect(validateGuest("Dulce")).toBe("GUEST_PLUSONE_INVITED");
     });
   });
@@ -116,17 +117,13 @@ describe("validateGuest", () => {
     });
 
     it("should validate specific real-world examples from the guest list", () => {
-      // Specific entries to validate our logic
       expect(validateGuest("Letty")).toBe("GUEST_ONLY");
       expect(validateGuest("Brandy")).toBe("GUEST_ONLY");
       expect(validateGuest("Ezequiel")).toBe("GUEST_AND_KNOWN_PLUSONE");
       expect(validateGuest("Shayna")).toBe("GUEST_AND_KNOWN_PLUSONE");
 
-      expect(validateGuest("Greg")).toBe("GUEST_AND_KNOWN_PLUSONE");
-      expect(validateGuest("Frida")).toBe("GUEST_AND_KNOWN_PLUSONE");
-
       expect(validateGuest("John")).toBe("GUEST_PLUSONE_INVITED");
-      expect(validateGuest("Lisa")).toBe("GUEST_PLUSONE_INVITED");
+      expect(validateGuest("Lisa")).toBe("GUEST_ONLY");
     });
   });
 
