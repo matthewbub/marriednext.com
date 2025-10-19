@@ -18,17 +18,48 @@ const storyItemSchema = z.object({
 
 const weddingSettingsSchema = z
   .object({
-    displayName: z.string().nullable(),
-    locationName: z.string().nullable(),
-    locationAddress: z.string().nullable(),
-    eventDate: z.string().nullable(),
-    eventTime: z.string().nullable(),
-    mapsEmbedUrl: z.string().nullable(),
-    mapsShareUrl: z.string().nullable(),
-    questionsAndAnswers: z.array(qaItemSchema).nullable(),
-    ourStory: z.array(storyItemSchema).nullable(),
+    displayName: z.string().optional(),
+    locationName: z.string().optional(),
+    locationAddress: z.string().optional(),
+    eventDate: z.string().nullable().optional(),
+    eventTime: z.string().optional(),
+    mapsEmbedUrl: z.string().optional(),
+    mapsShareUrl: z.string().optional(),
+    questionsAndAnswers: z.array(qaItemSchema).optional(),
+    ourStory: z.array(storyItemSchema).optional(),
   })
   .strict();
+
+export async function GET() {
+  try {
+    // TODO: Get wedding ID from Clerk user
+    const [weddingData] = await db.select().from(wedding).limit(1);
+    console.log("weddingData", weddingData);
+
+    if (!weddingData) {
+      return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      displayName: weddingData.fieldDisplayName || "",
+      locationName: weddingData.fieldLocationName || "",
+      locationAddress: weddingData.fieldLocationAddress || "",
+      eventDate: weddingData.fieldEventDate || null,
+      eventTime: weddingData.fieldEventTime || "",
+      mapsEmbedUrl: weddingData.fieldMapsEmbedUrl || "",
+      mapsShareUrl: weddingData.fieldMapsShareUrl || "",
+      questionsAndAnswers:
+        (weddingData.fieldQuestionsAndAnswers as unknown[]) || [],
+      ourStory: (weddingData.fieldOurStory as unknown[]) || [],
+    });
+  } catch (error) {
+    console.error("Error fetching wedding settings:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch wedding settings" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -86,7 +117,18 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        data: updatedWedding,
+        data: {
+          displayName: updatedWedding.fieldDisplayName || "",
+          locationName: updatedWedding.fieldLocationName || "",
+          locationAddress: updatedWedding.fieldLocationAddress || "",
+          eventDate: updatedWedding.fieldEventDate || null,
+          eventTime: updatedWedding.fieldEventTime || "",
+          mapsEmbedUrl: updatedWedding.fieldMapsEmbedUrl || "",
+          mapsShareUrl: updatedWedding.fieldMapsShareUrl || "",
+          questionsAndAnswers:
+            (updatedWedding.fieldQuestionsAndAnswers as unknown[]) || [],
+          ourStory: (updatedWedding.fieldOurStory as unknown[]) || [],
+        },
       },
       { status: 200 }
     );
