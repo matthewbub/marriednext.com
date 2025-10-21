@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,10 @@ interface StoryItem {
   photoUrl: string;
 }
 
+interface OurStoryFormData {
+  stories: StoryItem[];
+}
+
 interface OurStoryFormProps {
   defaultStories?: StoryItem[];
   onSubmit: (stories: StoryItem[]) => void;
@@ -22,19 +26,26 @@ export default function OurStoryForm({
   defaultStories = [],
   onSubmit,
 }: OurStoryFormProps) {
-  const [stories, setStories] = useState<StoryItem[]>(defaultStories);
+  const { register, handleSubmit, control } = useForm<OurStoryFormData>({
+    defaultValues: {
+      stories: defaultStories,
+    },
+  });
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: "stories",
+  });
 
   const handleAddStory = () => {
-    const newId = Math.max(...stories.map((s) => Number.parseInt(s.id)), 0) + 1;
-    setStories([
-      ...stories,
-      {
-        id: newId.toString(),
-        heading: "",
-        text: "",
-        photoUrl: "",
-      },
-    ]);
+    const newId =
+      Math.max(...fields.map((field) => Number.parseInt(field.id)), 0) + 1;
+    const newStory = {
+      id: newId.toString(),
+      heading: "",
+      text: "",
+      photoUrl: "",
+    };
+    append(newStory);
   };
 
   const handleUpdateStory = (
@@ -42,23 +53,26 @@ export default function OurStoryForm({
     field: keyof StoryItem,
     value: string
   ) => {
-    setStories(
-      stories.map((story) =>
-        story.id === id ? { ...story, [field]: value } : story
-      )
-    );
+    const storyIndex = fields.findIndex((story) => story.id === id);
+    if (storyIndex !== -1) {
+      const updatedStory = { ...fields[storyIndex], [field]: value };
+      update(storyIndex, updatedStory);
+    }
   };
 
   const handleDeleteStory = (id: string) => {
-    setStories(stories.filter((story) => story.id !== id));
+    const storyIndex = fields.findIndex((story) => story.id === id);
+    if (storyIndex !== -1) {
+      remove(storyIndex);
+    }
   };
 
-  const handleSaveStories = () => {
-    onSubmit(stories);
+  const handleSaveStories = (data: OurStoryFormData) => {
+    onSubmit(data.stories);
   };
 
   return (
-    <div className="space-y-12">
+    <form onSubmit={handleSubmit(handleSaveStories)} className="space-y-12">
       {/* Header Section */}
       <div className="border-b border-gray-300 pb-6">
         <h2 className="text-3xl font-semibold mb-2">Our Story</h2>
@@ -69,7 +83,7 @@ export default function OurStoryForm({
 
       {/* Story Items */}
       <div className="space-y-12">
-        {stories.map((story, index) => (
+        {fields.map((story, index) => (
           <div
             key={story.id}
             className="space-y-6 pb-8 border-b border-gray-300 last:border-b-0 last:pb-0"
@@ -97,12 +111,12 @@ export default function OurStoryForm({
               <Input
                 id={`heading-${story.id}`}
                 type="text"
-                value={story.heading}
+                placeholder="e.g., How we met"
+                className="text-lg py-6"
+                {...register(`stories.${index}.heading`)}
                 onChange={(e) =>
                   handleUpdateStory(story.id, "heading", e.target.value)
                 }
-                placeholder="e.g., How we met"
-                className="text-lg py-6"
               />
             </div>
 
@@ -116,12 +130,12 @@ export default function OurStoryForm({
               </Label>
               <Textarea
                 id={`text-${story.id}`}
-                value={story.text}
+                placeholder="Tell your story..."
+                className="text-base min-h-32 resize-none leading-relaxed"
+                {...register(`stories.${index}.text`)}
                 onChange={(e) =>
                   handleUpdateStory(story.id, "text", e.target.value)
                 }
-                placeholder="Tell your story..."
-                className="text-base min-h-32 resize-none leading-relaxed"
               />
             </div>
 
@@ -136,12 +150,12 @@ export default function OurStoryForm({
               <Input
                 id={`photo-${story.id}`}
                 type="text"
-                value={story.photoUrl}
+                placeholder="https://example.com/photo.jpg"
+                className="text-sm py-6"
+                {...register(`stories.${index}.photoUrl`)}
                 onChange={(e) =>
                   handleUpdateStory(story.id, "photoUrl", e.target.value)
                 }
-                placeholder="https://example.com/photo.jpg"
-                className="text-sm py-6"
               />
               <p className="text-sm text-gray-700">
                 Direct URL to your story photo
@@ -153,7 +167,7 @@ export default function OurStoryForm({
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <Button type="button" onClick={handleSaveStories} variant="primary">
+        <Button type="submit" variant="primary">
           Save Stories
         </Button>
         <Button type="button" onClick={handleAddStory} variant="secondary">
@@ -161,6 +175,6 @@ export default function OurStoryForm({
           Add Story
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

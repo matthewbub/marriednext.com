@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { ChevronDownIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,46 +47,39 @@ export default function ShellForm({
   onSubmitDateTime,
   onSubmitMaps,
 }: ShellFormProps) {
-  const [formData, setFormData] = useState<ShellFormData>({
-    displayName: defaultValues.displayName || "",
-    locationName: defaultValues.locationName || "",
-    locationAddress: defaultValues.locationAddress || "",
-    eventDate: defaultValues.eventDate,
-    eventTime: defaultValues.eventTime || "",
-    mapsEmbedUrl: defaultValues.mapsEmbedUrl || "",
-    mapsShareUrl: defaultValues.mapsShareUrl || "",
+  const { register, handleSubmit, watch, setValue } = useForm<ShellFormData>({
+    defaultValues: {
+      displayName: defaultValues.displayName || "",
+      locationName: defaultValues.locationName || "",
+      locationAddress: defaultValues.locationAddress || "",
+      eventDate: defaultValues.eventDate,
+      eventTime: defaultValues.eventTime || "",
+      mapsEmbedUrl: defaultValues.mapsEmbedUrl || "",
+      mapsShareUrl: defaultValues.mapsShareUrl || "",
+    },
   });
 
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleSaveBasicInfo = (
+    data: Pick<
+      ShellFormData,
+      "displayName" | "locationName" | "locationAddress"
+    >
+  ) => {
+    onSubmitBasicInfo(data);
   };
 
-  const handleSaveBasicInfo = () => {
-    onSubmitBasicInfo({
-      displayName: formData.displayName,
-      locationName: formData.locationName,
-      locationAddress: formData.locationAddress,
-    });
+  const handleSaveDateTime = (
+    data: Pick<ShellFormData, "eventDate" | "eventTime">
+  ) => {
+    onSubmitDateTime(data);
   };
 
-  const handleSaveDateTime = () => {
-    onSubmitDateTime({
-      eventDate: formData.eventDate,
-      eventTime: formData.eventTime,
-    });
-  };
-
-  const handleSaveMaps = () => {
-    onSubmitMaps({
-      mapsEmbedUrl: formData.mapsEmbedUrl,
-      mapsShareUrl: formData.mapsShareUrl,
-    });
+  const handleSaveMaps = (
+    data: Pick<ShellFormData, "mapsEmbedUrl" | "mapsShareUrl">
+  ) => {
+    onSubmitMaps(data);
   };
 
   return (
@@ -107,12 +101,10 @@ export default function ShellForm({
           </Label>
           <Input
             id="displayName"
-            name="displayName"
             type="text"
-            value={formData.displayName}
-            onChange={handleChange}
             placeholder="e.g., Yulissa & Matthew"
             className="text-lg py-6"
+            {...register("displayName")}
           />
           <p className="text-sm text-gray-700">
             This name will appear in your venue header
@@ -126,12 +118,10 @@ export default function ShellForm({
           </Label>
           <Input
             id="locationName"
-            name="locationName"
             type="text"
-            value={formData.locationName}
-            onChange={handleChange}
             placeholder="e.g., Bel Vino Winery"
             className="text-lg py-6"
+            {...register("locationName")}
           />
           <p className="text-sm text-gray-700">
             The name of your venue or business location
@@ -145,12 +135,10 @@ export default function ShellForm({
           </Label>
           <Input
             id="locationAddress"
-            name="locationAddress"
             type="text"
-            value={formData.locationAddress}
-            onChange={handleChange}
             placeholder="e.g., 123 Main St, City, State 12345"
             className="text-lg py-6"
+            {...register("locationAddress")}
           />
           <p className="text-sm text-gray-700">
             The full address that will be displayed to guests
@@ -161,7 +149,7 @@ export default function ShellForm({
         <div className="pt-4">
           <button
             type="button"
-            onClick={handleSaveBasicInfo}
+            onClick={handleSubmit(handleSaveBasicInfo)}
             className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors text-base"
           >
             Save Basic Info
@@ -190,8 +178,8 @@ export default function ShellForm({
                   id="event-date-picker"
                   className="w-40 justify-between font-normal text-base py-3 px-3 border-input rounded-md outline-none h-[52px]"
                 >
-                  {formData.eventDate
-                    ? formData.eventDate.toLocaleDateString()
+                  {watch("eventDate")
+                    ? watch("eventDate")!.toLocaleDateString()
                     : "Select date"}
                   <ChevronDownIcon />
                 </Button>
@@ -202,13 +190,13 @@ export default function ShellForm({
               >
                 <Calendar
                   mode="single"
-                  selected={formData.eventDate}
+                  selected={watch("eventDate")}
                   captionLayout="dropdown"
-                  defaultMonth={formData.eventDate || new Date()}
+                  defaultMonth={watch("eventDate") || new Date()}
                   startMonth={new Date()}
                   endMonth={new Date(new Date().getFullYear() + 10, 11)}
                   onSelect={(date) => {
-                    setFormData((prev) => ({ ...prev, eventDate: date }));
+                    setValue("eventDate", date);
                     setDatePickerOpen(false);
                   }}
                 />
@@ -225,11 +213,9 @@ export default function ShellForm({
             <Input
               type="time"
               id="event-time-picker"
-              name="eventTime"
               step="1"
-              value={formData.eventTime}
-              onChange={handleChange}
               className="text-base py-6 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none h-[52px]"
+              {...register("eventTime")}
             />
           </div>
         </div>
@@ -238,7 +224,7 @@ export default function ShellForm({
         <div className="pt-4">
           <button
             type="button"
-            onClick={handleSaveDateTime}
+            onClick={handleSubmit(handleSaveDateTime)}
             className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors text-base"
           >
             Save Date & Time
@@ -259,12 +245,10 @@ export default function ShellForm({
           </Label>
           <Input
             id="mapsEmbedUrl"
-            name="mapsEmbedUrl"
             type="text"
-            value={formData.mapsEmbedUrl}
-            onChange={handleChange}
             placeholder="https://www.google.com/maps/embed?pb=..."
             className="text-sm py-6"
+            {...register("mapsEmbedUrl")}
           />
           <p className="text-sm text-gray-700">
             Used for embedding the map on your page
@@ -278,12 +262,10 @@ export default function ShellForm({
           </Label>
           <Input
             id="mapsShareUrl"
-            name="mapsShareUrl"
             type="text"
-            value={formData.mapsShareUrl}
-            onChange={handleChange}
             placeholder="https://maps.app.goo.gl/..."
             className="text-base py-6"
+            {...register("mapsShareUrl")}
           />
           <p className="text-sm text-gray-700">
             Shareable link to your location
@@ -294,7 +276,7 @@ export default function ShellForm({
         <div className="pt-4">
           <button
             type="button"
-            onClick={handleSaveMaps}
+            onClick={handleSubmit(handleSaveMaps)}
             className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors text-base"
           >
             Save Google Maps

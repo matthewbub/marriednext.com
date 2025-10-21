@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,28 +11,43 @@ interface QAItem {
   answer: string;
 }
 
+interface QAFormData {
+  qaItems: QAItem[];
+}
+
 interface QAFormProps {
   defaultQAItems?: QAItem[];
   onSubmit: (qaItems: QAItem[]) => void;
 }
 
 export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
-  const [qaItems, setQaItems] = useState<QAItem[]>(defaultQAItems);
+  const { register, handleSubmit, control } = useForm<QAFormData>({
+    defaultValues: {
+      qaItems: defaultQAItems,
+    },
+  });
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: "qaItems",
+  });
 
   const updateItem = (
     id: string,
     field: "question" | "answer",
     value: string
   ) => {
-    setQaItems(
-      qaItems.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
-    );
+    const itemIndex = fields.findIndex((item) => item.id === id);
+    if (itemIndex !== -1) {
+      const updatedItem = { ...fields[itemIndex], [field]: value };
+      update(itemIndex, updatedItem);
+    }
   };
 
   const deleteItem = (id: string) => {
-    setQaItems(qaItems.filter((item) => item.id !== id));
+    const itemIndex = fields.findIndex((item) => item.id === id);
+    if (itemIndex !== -1) {
+      remove(itemIndex);
+    }
   };
 
   const addItem = () => {
@@ -41,15 +56,15 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
       question: "New Question",
       answer: "Answer goes here",
     };
-    setQaItems([...qaItems, newItem]);
+    append(newItem);
   };
 
-  const handleSaveQA = () => {
-    onSubmit(qaItems);
+  const handleSaveQA = (data: QAFormData) => {
+    onSubmit(data.qaItems);
   };
 
   return (
-    <div className="space-y-12">
+    <form onSubmit={handleSubmit(handleSaveQA)} className="space-y-12">
       {/* Header */}
       <div className="border-b border-gray-300 pb-6">
         <h2 className="text-3xl font-semibold mb-2">Q&A</h2>
@@ -60,7 +75,7 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
 
       {/* QA Items */}
       <div className="space-y-8">
-        {qaItems.map((item) => (
+        {fields.map((item, index) => (
           <div
             key={item.id}
             className="pb-8 border-b border-gray-300 last:border-b-0 last:pb-0"
@@ -70,23 +85,23 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
                 <div className="space-y-3">
                   <Label className="text-base font-medium">Question</Label>
                   <Input
-                    value={item.question}
+                    placeholder="Question"
+                    className="text-lg py-6"
+                    {...register(`qaItems.${index}.question`)}
                     onChange={(e) =>
                       updateItem(item.id, "question", e.target.value)
                     }
-                    placeholder="Question"
-                    className="text-lg py-6"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label className="text-base font-medium">Answer</Label>
                   <Textarea
-                    value={item.answer}
+                    placeholder="Answer"
+                    className="text-base min-h-24 leading-relaxed"
+                    {...register(`qaItems.${index}.answer`)}
                     onChange={(e) =>
                       updateItem(item.id, "answer", e.target.value)
                     }
-                    placeholder="Answer"
-                    className="text-base min-h-24 leading-relaxed"
                   />
                 </div>
               </div>
@@ -107,8 +122,7 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
         <button
-          type="button"
-          onClick={handleSaveQA}
+          type="submit"
           className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors text-base"
         >
           Save Q&A
@@ -122,6 +136,6 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
           Add Question
         </button>
       </div>
-    </div>
+    </form>
   );
 }

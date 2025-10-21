@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -19,25 +18,15 @@ export default function DomainForm({
   defaultValues = {},
   onSubmit,
 }: DomainFormProps) {
-  const [formData, setFormData] = useState<DomainFormData>({
-    subdomain: defaultValues.subdomain || "",
-    domain: defaultValues.domain || "",
+  const { register, handleSubmit } = useForm<DomainFormData>({
+    defaultValues: {
+      subdomain: defaultValues.subdomain || "",
+      domain: defaultValues.domain || "",
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = () => {
-    onSubmit(formData);
-  };
-
   return (
-    <div className="space-y-12">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
       <div className="border-b border-gray-300 pb-6">
         <h2 className="text-3xl font-semibold mb-2">Domain Settings</h2>
         <p className="text-lg text-gray-700">
@@ -52,12 +41,10 @@ export default function DomainForm({
           </Label>
           <Input
             id="subdomain"
-            name="subdomain"
             type="text"
-            value={formData.subdomain}
-            onChange={handleChange}
             placeholder="e.g., yourwedding"
             className="text-lg py-6"
+            {...register("subdomain")}
           />
           <p className="text-sm text-gray-700">
             Your unique subdomain identifier
@@ -70,26 +57,23 @@ export default function DomainForm({
           </Label>
           <Input
             id="domain"
-            name="domain"
             type="text"
-            value={formData.domain}
-            onChange={handleChange}
             placeholder="e.g., marriednext.com"
             className="text-lg py-6"
+            {...register("domain")}
           />
           <p className="text-sm text-gray-700">Your custom domain name</p>
         </div>
 
         <div className="pt-4">
           <button
-            type="button"
-            onClick={handleSave}
+            type="submit"
             className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors text-base"
           >
             Save Domain Settings
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
