@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isOnboardingApiRoute = createRouteMatcher(["/api/onboarding/(.*)"]);
-const isPublicRoute = createRouteMatcher(["/welcome"]);
+const isPublicRoute = createRouteMatcher(["/", "/welcome"]);
 
 function isWelcomeRoute(req: NextRequest): boolean {
   return req.nextUrl.pathname.startsWith("/welcome");

@@ -18,8 +18,8 @@ const shadowsIntoLight = Gloria_Hallelujah({
 });
 
 export const metadata: Metadata = {
-  title: "Yulissa and Matthew's Wedding",
-  description: "View your guest list and manage who has RSVP'd to the wedding.",
+  title: "Married Next",
+  description: "Build a beautiful wedding website in minutes.",
 };
 
 export default function RootLayout({

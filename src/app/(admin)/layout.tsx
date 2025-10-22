@@ -19,8 +19,8 @@ const shadowsIntoLight = Gloria_Hallelujah({
 });
 
 export const metadata: Metadata = {
-  title: "Yulissa and Matthew's Wedding",
-  description: "View your guest list and manage who has RSVP'd to the wedding.",
+  title: "Married Next",
+  description: "Build a beautiful wedding website in minutes.",
 };
 
 export default function RootLayout({
@@ -35,10 +35,7 @@ export default function RootLayout({
           className={`${rubik.variable} ${shadowsIntoLight.variable} antialiased bg-transparent`}
         >
           <QueryProvider>
-            <div className="mx-auto z-10">
-              <NavBar />
-            </div>
-            <div className="max-w-7xl mx-auto">{children}</div>
+            <div className="mx-auto">{children}</div>
           </QueryProvider>
           <Toaster />
         </body>
