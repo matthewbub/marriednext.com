@@ -1,39 +1,60 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useRsvpStore } from "@/stores/rsvpStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import clsx from "clsx";
-import { InvitationLookupResponse } from "@/types/rsvp";
+
+type RsvpStep =
+  | "name-input"
+  | "guest-selection"
+  | "email-collection"
+  | "success"
+  | "error";
+
+export interface GuestSelection {
+  name: string;
+  isAttending: boolean;
+}
+
+export interface InvitationData {
+  id: string;
+  guests: GuestSelection[];
+}
 
 interface RsvpFormProps {
   className?: string;
   variant?: "tenant" | "legacy";
+  step: RsvpStep;
+  invitation: InvitationData | null;
+  selectedGuests: GuestSelection[];
+  email: string;
+  nameFormat: "FULL_NAME" | "FIRST_NAME_ONLY";
+  isLoading: boolean;
+  errorMessage: string | null;
+  onNameSubmit: (name: string) => void;
+  onGuestToggle: (guestName: string) => void;
+  onEmailSubmit: (email: string) => void;
+  onStepChange: (step: RsvpStep) => void;
+  onReset: () => void;
 }
 
 export default function RsvpForm({
   className,
   variant = "tenant",
+  step,
+  invitation,
+  selectedGuests,
+  email,
+  nameFormat,
+  isLoading,
+  errorMessage,
+  onNameSubmit,
+  onGuestToggle,
+  onEmailSubmit,
+  onStepChange,
+  onReset,
 }: RsvpFormProps) {
-  const {
-    step,
-    invitation,
-    selectedGuests,
-    email,
-    nameFormat,
-    isLoading,
-    errorMessage,
-    setStep,
-    setInputName,
-    setInvitation,
-    toggleGuest,
-    setEmail,
-    setLoading,
-    setError,
-    reset,
-  } = useRsvpStore();
-
   const {
     register: registerName,
     handleSubmit: handleSubmitName,
@@ -50,69 +71,16 @@ export default function RsvpForm({
 
   const isLegacy = variant === "legacy";
 
-  const handleNameSubmit = async (data: { name: string }) => {
-    setLoading(true);
-    setInputName(data.name);
-
-    try {
-      const response = await fetch("/api/v3/rsvp/lookup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.name }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        setError(error.error || "Could not find your name on the guest list");
-        return;
-      }
-
-      const result: InvitationLookupResponse = await response.json();
-      setInvitation(result.invitation, result.nameFormat);
-      setStep("guest-selection");
-    } catch (error) {
-      console.error("Error looking up name:", error);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleNameSubmit = (data: { name: string }) => {
+    onNameSubmit(data.name);
   };
 
   const handleGuestSelectionNext = () => {
-    setStep("email-collection");
+    onStepChange("email-collection");
   };
 
-  const handleEmailSubmit = async (data: { email: string }) => {
-    if (!invitation) return;
-
-    setLoading(true);
-    setEmail(data.email);
-
-    try {
-      const response = await fetch("/api/v3/rsvp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          invitationId: invitation.id,
-          email: data.email,
-          guests: selectedGuests,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        setError(error.error || "Failed to submit RSVP");
-        return;
-      }
-
-      await response.json();
-      setStep("success");
-    } catch (error) {
-      console.error("Error submitting RSVP:", error);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleEmailSubmit = (data: { email: string }) => {
+    onEmailSubmit(data.email);
   };
 
   const baseStyles = clsx(
@@ -234,7 +202,7 @@ export default function RsvpForm({
                   <Checkbox
                     id={`guest-${index}`}
                     checked={guest.isAttending}
-                    onCheckedChange={() => toggleGuest(guest.name)}
+                    onCheckedChange={() => onGuestToggle(guest.name)}
                     className="h-6 w-6"
                   />
                 </div>
@@ -258,7 +226,7 @@ export default function RsvpForm({
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
               <button
-                onClick={() => setStep("name-input")}
+                onClick={() => onStepChange("name-input")}
                 disabled={isLoading}
                 className="text-gray-600 hover:text-gray-800 underline text-base md:text-lg"
               >
@@ -321,7 +289,7 @@ export default function RsvpForm({
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => setStep("guest-selection")}
+                  onClick={() => onStepChange("guest-selection")}
                   disabled={isLoading}
                   className="text-gray-600 hover:text-gray-800 underline text-base md:text-lg"
                 >
@@ -357,7 +325,7 @@ export default function RsvpForm({
                 <span className="block mt-2">We'll miss you! 💝</span>
               )}
             </div>
-            <button onClick={reset} className={clsx(buttonStyles, "mt-6")}>
+            <button onClick={onReset} className={clsx(buttonStyles, "mt-6")}>
               <span className="text-lg md:text-xl">RSVP Another Guest</span>
             </button>
           </>
@@ -372,7 +340,7 @@ export default function RsvpForm({
               {errorMessage || "Something went wrong. Please try again."}
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
-              <button onClick={reset} className={buttonStyles}>
+              <button onClick={onReset} className={buttonStyles}>
                 <span className="text-lg md:text-xl">Try Again</span>
               </button>
             </div>

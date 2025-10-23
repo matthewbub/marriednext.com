@@ -36,7 +36,7 @@ export default function NavBar() {
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link href="/">Dashboard</Link>
+                  <Link href="/engaged">Dashboard</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -44,7 +44,7 @@ export default function NavBar() {
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link href="/guest-list">Guest List</Link>
+                  <Link href="/engaged/guest-list">Guest List</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -61,7 +61,7 @@ export default function NavBar() {
                     asChild
                     className={navigationMenuTriggerStyle()}
                   >
-                    <Link href="/admin/settings">Settings</Link>
+                    <Link href="/engaged/settings">Settings</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               </SignedIn>
@@ -113,7 +113,7 @@ export default function NavBar() {
                 </Link>
                 <SignedIn>
                   <Link
-                    href="/admin/settings"
+                    href="/engaged/settings"
                     className="text-lg font-medium hover:text-violet-700 transition"
                     onClick={() => setOpen(false)}
                   >

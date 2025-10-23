@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Menu, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 const navigation = [
   { name: "Product", href: "/#product" },
@@ -73,14 +74,26 @@ export default function Hero() {
                       ))}
                     </div>
                     <div className={clsx("py-6")}>
-                      <Link
-                        href="/admin"
-                        className={clsx(
-                          "-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                        )}
-                      >
-                        Log in
-                      </Link>
+                      <SignedIn>
+                        <Link
+                          href="/engaged"
+                          className={clsx(
+                            "-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                          )}
+                        >
+                          Dashboard
+                        </Link>
+                      </SignedIn>
+                      <SignedOut>
+                        <Link
+                          href="/engaged"
+                          className={clsx(
+                            "-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                          )}
+                        >
+                          Log in
+                        </Link>
+                      </SignedOut>
                     </div>
                   </div>
                 </div>
@@ -105,15 +118,27 @@ export default function Hero() {
               "hidden lg:flex lg:flex-1 lg:justify-end items-center gap-2"
             )}
           >
-            <Link
-              href="/admin"
-              className={clsx(
-                "text-sm/6 font-semibold text-gray-900 dark:text-white flex items-center gap-1"
-              )}
-            >
-              Log in{" "}
-              <ArrowRight className={clsx("h-4 w-4")} aria-hidden="true" />
-            </Link>
+            <SignedIn>
+              <Link
+                href="/engaged"
+                className={clsx(
+                  "text-sm/6 font-semibold text-gray-900 dark:text-white flex items-center gap-1"
+                )}
+              >
+                Dashboard
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <Link
+                href="/engaged"
+                className={clsx(
+                  "text-sm/6 font-semibold text-gray-900 dark:text-white flex items-center gap-1"
+                )}
+              >
+                Log in{" "}
+                <ArrowRight className={clsx("h-4 w-4")} aria-hidden="true" />
+              </Link>
+            </SignedOut>
           </div>
         </nav>
       </header>
@@ -194,7 +219,7 @@ export default function Hero() {
                 )}
               >
                 <Button asChild>
-                  <Link href="/admin/onboarding">Start free</Link>
+                  <Link href="/engaged/onboarding">Start free</Link>
                 </Button>
                 <Button
                   asChild
