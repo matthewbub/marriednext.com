@@ -26,43 +26,45 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized", success: false },
+        { status: 401 }
+      );
     }
 
     const body = await req.json();
     const validatedData = onboardingSchema.parse(body);
-
     const { subdomain, partner1Name, partner2Name, weddingDate } =
       validatedData;
 
-    const [existingByUserId] = await db
-      .select({ id: weddingUsers.id })
-      .from(weddingUsers)
-      .where(eq(weddingUsers.clerkUserId, userId))
-      .limit(1);
+    const [existingByUserId, existingBySubdomain] = await Promise.all([
+      db
+        .select({ id: weddingUsers.id })
+        .from(weddingUsers)
+        .where(eq(weddingUsers.clerkUserId, userId))
+        .limit(1),
+      db
+        .select({ id: wedding.id })
+        .from(wedding)
+        .where(eq(wedding.subdomain, subdomain))
+        .limit(1),
+    ]);
 
-    if (existingByUserId) {
+    if (existingByUserId[0]) {
       return NextResponse.json(
-        { error: "You already have a wedding site" },
+        { error: "You already have a wedding site", success: false },
         { status: 409 }
       );
     }
 
-    const [existingBySubdomain] = await db
-      .select({ id: wedding.id })
-      .from(wedding)
-      .where(eq(wedding.subdomain, subdomain))
-      .limit(1);
-
-    if (existingBySubdomain) {
+    if (existingBySubdomain[0]) {
       return NextResponse.json(
-        { error: "This subdomain is already taken" },
+        { error: "This subdomain is already taken", success: false },
         { status: 409 }
       );
     }
 
     const displayName = `${partner1Name} & ${partner2Name}`;
-
     const [newWedding] = await db
       .insert(wedding)
       .values({
@@ -72,10 +74,10 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
-    await db.insert(weddingUsers).values({
+    void (await db.insert(weddingUsers).values({
       weddingId: newWedding.id,
       clerkUserId: userId,
-    });
+    }));
 
     const client = await clerkClient();
     await client.users.updateUserMetadata(userId, {
