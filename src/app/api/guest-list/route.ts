@@ -38,6 +38,8 @@ export async function GET(
       ...validatedParams,
       weddingId: wedding.id,
     });
+
+    // console.log("data", data);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching guest list:", error);

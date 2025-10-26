@@ -1,70 +1,96 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn, within, userEvent, waitFor } from "storybook/test";
 import InvitationCard from "@/components/guest-list/InvitationCard";
-import { DbInvitationGroupWithGuests } from "@/database/drizzle";
+import { DbInvitationGroupWithGuests, DbGuest } from "@/database/drizzle";
 import { EditFormData } from "@/components/guest-list/guestList.types";
 
 const createMockEntry = (
-  overrides?: Partial<DbInvitationGroupWithGuests>
-): DbInvitationGroupWithGuests => ({
-  id: "1",
-  weddingId: null,
-  guestA: "John Doe",
-  guestB: null,
-  guestC: null,
-  guestD: null,
-  guestE: null,
-  guestF: null,
-  guestG: null,
-  guestH: null,
-  createdAt: "2024-01-15T10:00:00.000Z",
-  lastUpdatedAt: "2024-01-15T10:00:00.000Z",
-  inviteGroupName: null,
-  guest_guestA: {
+  overrides?: Partial<DbInvitationGroupWithGuests> & Record<string, unknown>
+): DbInvitationGroupWithGuests => {
+  const base: Partial<DbInvitationGroupWithGuests> & Record<string, unknown> = {
     id: "1",
     weddingId: null,
-    nameOnInvitation: "John Doe",
-    isAttending: true,
-    hasPlusOne: false,
-    dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
-  },
-  guest_guestB: null,
-  guest_guestC: null,
-  guest_guestD: null,
-  guest_guestE: null,
-  guest_guestF: null,
-  guest_guestG: null,
-  guest_guestH: null,
-  ...overrides,
-});
+    createdAt: "2024-01-15T10:00:00.000Z",
+    lastUpdatedAt: "2024-01-15T10:00:00.000Z",
+    inviteGroupName: null,
+    email: null,
+  };
 
-const createEditForm = (entry: DbInvitationGroupWithGuests): EditFormData => ({
-  guestA: entry.guestA,
-  guestAAttending: entry.guest_guestA?.isAttending ?? null,
-  guestAHasPlusOne: entry.guest_guestA?.hasPlusOne ?? false,
-  guestB: entry.guestB,
-  guestBAttending: entry.guest_guestB?.isAttending ?? null,
-  guestBHasPlusOne: entry.guest_guestB?.hasPlusOne ?? false,
-  guestC: entry.guestC,
-  guestCAttending: entry.guest_guestC?.isAttending ?? null,
-  guestCHasPlusOne: entry.guest_guestC?.hasPlusOne ?? false,
-  guestD: entry.guestD,
-  guestDAttending: entry.guest_guestD?.isAttending ?? null,
-  guestDHasPlusOne: entry.guest_guestD?.hasPlusOne ?? false,
-  guestE: entry.guestE,
-  guestEAttending: entry.guest_guestE?.isAttending ?? null,
-  guestEHasPlusOne: entry.guest_guestE?.hasPlusOne ?? false,
-  guestF: entry.guestF,
-  guestFAttending: entry.guest_guestF?.isAttending ?? null,
-  guestFHasPlusOne: entry.guest_guestF?.hasPlusOne ?? false,
-  guestG: entry.guestG,
-  guestGAttending: entry.guest_guestG?.isAttending ?? null,
-  guestGHasPlusOne: entry.guest_guestG?.hasPlusOne ?? false,
-  guestH: entry.guestH,
-  guestHAttending: entry.guest_guestH?.isAttending ?? null,
-  guestHHasPlusOne: entry.guest_guestH?.hasPlusOne ?? false,
-  inviteGroupName: entry.inviteGroupName,
-});
+  // If explicit guests provided, use them
+  if (overrides?.guests)
+    return { ...(base as object), ...overrides } as DbInvitationGroupWithGuests;
+
+  const guests: DbGuest[] = [];
+
+  const addIf = (maybe: unknown) => {
+    if (!maybe) return;
+    if (typeof maybe === "string") {
+      guests.push({
+        id: `${guests.length + 1}`,
+        weddingId: null,
+        invitationId: base.id as string,
+        nameOnInvitation: maybe,
+        isAttending: true,
+        hasPlusOne: false,
+        dateEntrySubmitted: base.createdAt as string,
+      } as DbGuest);
+      return;
+    }
+
+    if (typeof maybe === "object") {
+      const m = maybe as Record<string, unknown>;
+      guests.push({
+        id: (m.id as string) ?? `${guests.length + 1}`,
+        weddingId: (m.weddingId as string) ?? null,
+        invitationId: (m.invitationId as string) ?? (base.id as string),
+        nameOnInvitation: (m.nameOnInvitation as string) ?? String(m),
+        isAttending: (m.isAttending as boolean) ?? null,
+        hasPlusOne: (m.hasPlusOne as boolean) ?? false,
+        dateEntrySubmitted:
+          (m.dateEntrySubmitted as string) ?? (base.createdAt as string),
+      } as DbGuest);
+    }
+  };
+
+  for (const k of [
+    "guest_guestA",
+    "guest_guestB",
+    "guest_guestC",
+    "guest_guestD",
+    "guest_guestE",
+    "guest_guestF",
+    "guest_guestG",
+    "guest_guestH",
+  ]) {
+    addIf((overrides as Record<string, unknown>)?.[k]);
+  }
+
+  for (const letter of ["A", "B", "C", "D", "E", "F", "G", "H"]) {
+    addIf((overrides as Record<string, unknown>)?.[`guest${letter}`]);
+  }
+
+  if (guests.length === 0) addIf("John Doe");
+
+  return {
+    ...(base as object),
+    ...overrides,
+    guests,
+  } as DbInvitationGroupWithGuests;
+};
+
+const createEditForm = (entry: DbInvitationGroupWithGuests): EditFormData => {
+  const guests = (entry.guests || []).map((g) => ({
+    id: g.id,
+    nameOnInvitation: g.nameOnInvitation,
+    isAttending: g.isAttending ?? null,
+    hasPlusOne: g.hasPlusOne ?? false,
+  }));
+
+  return {
+    guests,
+    inviteGroupName: entry.inviteGroupName ?? null,
+  };
+};
 
 const meta = {
   title: "GuestList/InvitationCard",
@@ -99,11 +125,32 @@ export const TwoGuests: Story = {
       guest_guestB: {
         id: "2",
         weddingId: null,
+        invitationId: "1",
         nameOnInvitation: "Jane Smith",
         isAttending: true,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
+      guests: [
+        {
+          id: "1",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "John Doe",
+          isAttending: true,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+        {
+          id: "2",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "Jane Smith",
+          isAttending: true,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+      ],
     }),
     isEditing: false,
     editForm: null,
@@ -135,6 +182,7 @@ export const LargeGroup: Story = {
       guest_guestC: {
         id: "3",
         weddingId: null,
+        invitationId: "1",
         nameOnInvitation: "Bob Johnson",
         isAttending: null,
         hasPlusOne: false,
@@ -143,6 +191,7 @@ export const LargeGroup: Story = {
       guest_guestD: {
         id: "4",
         weddingId: null,
+        invitationId: "1",
         nameOnInvitation: "Alice Williams",
         isAttending: false,
         hasPlusOne: false,
@@ -151,11 +200,59 @@ export const LargeGroup: Story = {
       guest_guestE: {
         id: "5",
         weddingId: null,
+        invitationId: "1",
         nameOnInvitation: "Charlie Brown",
         isAttending: true,
         hasPlusOne: false,
         dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
       },
+      guests: [
+        {
+          id: "1",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "John Doe",
+          isAttending: true,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+        {
+          id: "2",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "Jane Smith",
+          isAttending: true,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+        {
+          id: "3",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "Bob Johnson",
+          isAttending: null,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+        {
+          id: "4",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "Alice Williams",
+          isAttending: false,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+        {
+          id: "5",
+          weddingId: null,
+          invitationId: "1",
+          nameOnInvitation: "Charlie Brown",
+          isAttending: true,
+          hasPlusOne: false,
+          dateEntrySubmitted: "2024-01-15T10:00:00.000Z",
+        },
+      ],
     }),
     isEditing: false,
     editForm: null,

@@ -3,10 +3,23 @@ import { eq, sql } from "drizzle-orm";
 import queryClient from "./neon";
 import { invitation, guest, weddingUsers } from "@/drizzle/schema";
 import * as schema from "@/drizzle/schema";
-import * as relations from "@/drizzle/relations";
+import {
+  guestRelations,
+  weddingRelations,
+  invitationRelations,
+  weddingUsersRelations,
+} from "@/drizzle/relations";
 import type { InferSelectModel } from "drizzle-orm";
 
-export const db = drizzle(queryClient, { schema: { ...schema, ...relations } });
+export const db = drizzle(queryClient, {
+  schema: {
+    ...schema,
+    guestRelations,
+    weddingRelations,
+    invitationRelations,
+    weddingUsersRelations,
+  },
+});
 
 export type DbGuest = InferSelectModel<typeof guest>;
 export type DbInvitation = InferSelectModel<typeof invitation>;
@@ -59,6 +72,7 @@ export const getInvitationsWithGuests = async (
       limit: limit,
       offset: offset,
     });
+
     return result;
   } catch (error) {
     console.error("Error getting invitations with guests", error);

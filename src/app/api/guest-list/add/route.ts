@@ -3,7 +3,8 @@ import { z } from "zod";
 import { db } from "@/database/drizzle";
 import { guest, invitation } from "@/drizzle/schema";
 import { and, eq, inArray } from "drizzle-orm";
-import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
+import { auth } from "@clerk/nextjs/server";
+import { extractWeddingId } from "@/lib/extractWeddingId";
 
 const addGuestSchema = z.object({
   guests: z
@@ -16,10 +17,11 @@ const addGuestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const wedding = await getCurrentWedding();
+    const { userId, sessionClaims } = await auth();
+    const weddingId = extractWeddingId(sessionClaims as CustomJwtSessionClaims);
 
-    if (!wedding) {
-      return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
+    if (!userId || !weddingId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -32,7 +34,7 @@ export async function POST(req: NextRequest) {
       .from(guest)
       .where(
         and(
-          eq(guest.weddingId, wedding.id),
+          eq(guest.weddingId, weddingId),
           inArray(guest.nameOnInvitation, guests)
         )
       );
@@ -50,12 +52,21 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await db.transaction(async (tx) => {
+      const [createdInvitation] = await tx
+        .insert(invitation)
+        .values({
+          weddingId: weddingId,
+          inviteGroupName: inviteGroupName || null,
+        })
+        .returning();
+
       const createdGuests = [];
       for (const guestName of guests) {
         const [createdGuest] = await tx
           .insert(guest)
           .values({
-            weddingId: wedding.id,
+            weddingId: weddingId,
+            invitationId: createdInvitation.id,
             nameOnInvitation: guestName,
             hasPlusOne: guests.length === 1 ? hasPlusOne : false,
             isAttending: null,
@@ -63,52 +74,6 @@ export async function POST(req: NextRequest) {
           .returning();
         createdGuests.push(createdGuest);
       }
-
-      const guestFields: {
-        guestA: string;
-        guestB?: string;
-        guestC?: string;
-        guestD?: string;
-        guestE?: string;
-        guestF?: string;
-        guestG?: string;
-        guestH?: string;
-      } = {
-        guestA: guests[0],
-      };
-
-      const guestKeys: Array<
-        | "guestB"
-        | "guestC"
-        | "guestD"
-        | "guestE"
-        | "guestF"
-        | "guestG"
-        | "guestH"
-      > = [
-        "guestB",
-        "guestC",
-        "guestD",
-        "guestE",
-        "guestF",
-        "guestG",
-        "guestH",
-      ];
-
-      guests.slice(1).forEach((guestName, index) => {
-        if (index < guestKeys.length) {
-          guestFields[guestKeys[index]] = guestName;
-        }
-      });
-
-      const [createdInvitation] = await tx
-        .insert(invitation)
-        .values({
-          weddingId: wedding.id,
-          ...guestFields,
-          inviteGroupName: inviteGroupName || null,
-        })
-        .returning();
 
       return {
         invitation: createdInvitation,

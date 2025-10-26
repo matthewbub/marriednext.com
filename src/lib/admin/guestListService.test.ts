@@ -12,6 +12,7 @@ vi.mock("@/database/drizzle", () => ({
 const createMockGuest = (partial: Partial<DbGuest> = {}): DbGuest => ({
   id: "guest-1",
   weddingId: "wedding-1",
+  invitationId: "invitation-1",
   dateEntrySubmitted: "2024-01-01T00:00:00Z",
   nameOnInvitation: "Ken",
   isAttending: true,
@@ -24,25 +25,14 @@ const createMockInvitation = (
 ): DbInvitationWithGuests => ({
   id: "invitation-1",
   weddingId: "wedding-1",
-  guestA: "Ken",
-  guestB: "Terri",
-  guestC: null,
-  guestD: null,
-  guestE: null,
-  guestF: null,
-  guestG: null,
-  guestH: null,
   createdAt: "2024-01-01T00:00:00Z",
   lastUpdatedAt: "2024-01-01T00:00:00Z",
   inviteGroupName: "Ken & Terri",
-  guest_guestA: createMockGuest({ nameOnInvitation: "Ken" }),
-  guest_guestB: createMockGuest({ nameOnInvitation: "Terri", id: "guest-2" }),
-  guest_guestC: null,
-  guest_guestD: null,
-  guest_guestE: null,
-  guest_guestF: null,
-  guest_guestG: null,
-  guest_guestH: null,
+  email: null,
+  guests: [
+    createMockGuest({ nameOnInvitation: "Ken" }),
+    createMockGuest({ nameOnInvitation: "Terri", id: "guest-2" }),
+  ],
   ...partial,
 });
 
@@ -60,9 +50,8 @@ describe("getGuestListData", () => {
 
       const mockInvitations: DbInvitationWithGuests[] = [
         createMockInvitation({
-          guestA: "Ken",
-          guestB: "Terri",
           inviteGroupName: "Ken & Terri",
+          guests: mockGuests,
         }),
       ];
 
@@ -74,18 +63,13 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(result.invitations).toHaveLength(1);
-      const kenTerriInvite = result.invitations.find(
-        (inv) => inv.guestA === "Ken" && inv.guestB === "Terri"
-      );
+      const kenTerriInvite = result.invitations[0];
       expect(kenTerriInvite).toBeDefined();
-      expect(kenTerriInvite).toMatchObject({
-        guestA: "Ken",
-        guestB: "Terri",
-        inviteGroupName: "Ken & Terri",
-      });
+      expect(kenTerriInvite.inviteGroupName).toBe("Ken & Terri");
+      expect(kenTerriInvite.guests).toHaveLength(2);
     });
 
     it("should include exact fields in invitation object", async () => {
@@ -96,9 +80,8 @@ describe("getGuestListData", () => {
 
       const mockInvitations: DbInvitationWithGuests[] = [
         createMockInvitation({
-          guestA: "Ken",
-          guestB: "Terri",
           inviteGroupName: "Ken & Terri",
+          guests: mockGuests,
         }),
       ];
 
@@ -110,18 +93,12 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
-      const invitation = result.invitations.find(
-        (inv) => inv.guestA === "Ken" && inv.guestB === "Terri"
-      );
+      const invitation = result.invitations[0];
       expect(invitation).toBeDefined();
-      expect(invitation).toHaveProperty("guestA");
-      expect(invitation).toHaveProperty("guestB");
       expect(invitation).toHaveProperty("inviteGroupName");
-      expect(invitation!.guestA).toBe("Ken");
-      expect(invitation!.guestB).toBe("Terri");
-      expect(invitation!.inviteGroupName).toBe("Ken & Terri");
+      expect(invitation.inviteGroupName).toBe("Ken & Terri");
     });
 
     it("should handle invitation with null guestB", async () => {
@@ -131,9 +108,8 @@ describe("getGuestListData", () => {
 
       const mockInvitations: DbInvitationWithGuests[] = [
         createMockInvitation({
-          guestA: "Ken",
-          guestB: null,
           inviteGroupName: "Ken",
+          guests: mockGuests,
         }),
       ];
 
@@ -145,17 +121,12 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
-      const kenInvite = result.invitations.find(
-        (inv) => inv.guestA === "Ken" && inv.guestB === null
-      );
+      const kenInvite = result.invitations[0];
       expect(kenInvite).toBeDefined();
-      expect(kenInvite).toMatchObject({
-        guestA: "Ken",
-        guestB: null,
-        inviteGroupName: "Ken",
-      });
+      expect(kenInvite.inviteGroupName).toBe("Ken");
+      expect(kenInvite.guests).toHaveLength(1);
     });
 
     it("should handle multiple invitations with correct field structure", async () => {
@@ -169,23 +140,13 @@ describe("getGuestListData", () => {
       const mockInvitations: DbInvitationWithGuests[] = [
         createMockInvitation({
           id: "invitation-1",
-          guestA: "Ken",
-          guestB: "Terri",
           inviteGroupName: "Ken & Terri",
+          guests: [mockGuests[0], mockGuests[1]],
         }),
         createMockInvitation({
           id: "invitation-2",
-          guestA: "John",
-          guestB: "Jane",
           inviteGroupName: "John & Jane",
-          guest_guestA: createMockGuest({
-            nameOnInvitation: "John",
-            id: "guest-3",
-          }),
-          guest_guestB: createMockGuest({
-            nameOnInvitation: "Jane",
-            id: "guest-4",
-          }),
+          guests: [mockGuests[2], mockGuests[3]],
         }),
       ];
 
@@ -197,29 +158,11 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(2);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(result.invitations).toHaveLength(2);
-
-      const kenTerriInvite = result.invitations.find(
-        (inv) => inv.guestA === "Ken" && inv.guestB === "Terri"
-      );
-      expect(kenTerriInvite).toBeDefined();
-      expect(kenTerriInvite).toMatchObject({
-        guestA: "Ken",
-        guestB: "Terri",
-        inviteGroupName: "Ken & Terri",
-      });
-
-      const johnJaneInvite = result.invitations.find(
-        (inv) => inv.guestA === "John" && inv.guestB === "Jane"
-      );
-      expect(johnJaneInvite).toBeDefined();
-      expect(johnJaneInvite).toMatchObject({
-        guestA: "John",
-        guestB: "Jane",
-        inviteGroupName: "John & Jane",
-      });
+      expect(result.invitations[0].inviteGroupName).toBe("Ken & Terri");
+      expect(result.invitations[1].inviteGroupName).toBe("John & Jane");
     });
 
     it("should include attending and total fields alongside guest fields", async () => {
@@ -234,11 +177,8 @@ describe("getGuestListData", () => {
 
       const mockInvitations: DbInvitationWithGuests[] = [
         createMockInvitation({
-          guestA: "Ken",
-          guestB: "Terri",
           inviteGroupName: "Ken & Terri",
-          guest_guestA: mockGuests[0],
-          guest_guestB: mockGuests[1],
+          guests: mockGuests,
         }),
       ];
 
@@ -250,15 +190,11 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
-      const kenTerriInvite = result.invitations.find(
-        (inv) => inv.guestA === "Ken" && inv.guestB === "Terri"
-      );
+      const kenTerriInvite = result.invitations[0];
       expect(kenTerriInvite).toBeDefined();
       expect(kenTerriInvite).toMatchObject({
-        guestA: "Ken",
-        guestB: "Terri",
         inviteGroupName: "Ken & Terri",
         attending: 2,
         total: 2,
@@ -283,7 +219,7 @@ describe("getGuestListData", () => {
       ];
 
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -294,7 +230,7 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(typeof result.guestListCount).toBe("number");
       expect(result.guestListCount).toBe(4);
@@ -303,7 +239,7 @@ describe("getGuestListData", () => {
     it("should return invitationsCount as a number", async () => {
       const mockGuests: DbGuest[] = [createMockGuest()];
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -314,7 +250,7 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(42);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(typeof result.invitationsCount).toBe("number");
       expect(result.invitationsCount).toBe(42);
@@ -341,7 +277,7 @@ describe("getGuestListData", () => {
       ];
 
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -352,7 +288,7 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(typeof result.plusOneCount).toBe("number");
       expect(result.plusOneCount).toBe(3);
@@ -363,7 +299,7 @@ describe("getGuestListData", () => {
       vi.mocked(drizzle.getInvitationsWithGuests).mockResolvedValue([]);
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(0);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(typeof result.guestListCount).toBe("number");
       expect(typeof result.invitationsCount).toBe("number");
@@ -380,7 +316,7 @@ describe("getGuestListData", () => {
       vi.mocked(drizzle.getInvitationsWithGuests).mockResolvedValue([]);
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(0);
 
-      const result = await getGuestListData();
+      const result = await getGuestListData({ weddingId: "wedding-1" });
 
       expect(result.invitations).toEqual([]);
       expect(result.guestList).toEqual([]);
@@ -390,7 +326,7 @@ describe("getGuestListData", () => {
     it("should apply default pagination parameters", async () => {
       const mockGuests: DbGuest[] = [createMockGuest()];
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -401,9 +337,10 @@ describe("getGuestListData", () => {
       );
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(1);
 
-      await getGuestListData();
+      await getGuestListData({ weddingId: "wedding-1" });
 
       expect(drizzle.getInvitationsWithGuests).toHaveBeenCalledWith(
+        "wedding-1",
         "alpha-asc",
         25,
         0
@@ -413,7 +350,7 @@ describe("getGuestListData", () => {
     it("should use custom pagination parameters", async () => {
       const mockGuests: DbGuest[] = [createMockGuest()];
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -425,12 +362,14 @@ describe("getGuestListData", () => {
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(100);
 
       await getGuestListData({
+        weddingId: "wedding-1",
         sortBy: "date-newest",
         limit: 50,
         offset: 25,
       });
 
       expect(drizzle.getInvitationsWithGuests).toHaveBeenCalledWith(
+        "wedding-1",
         "date-newest",
         50,
         25
@@ -440,7 +379,7 @@ describe("getGuestListData", () => {
     it("should calculate hasMore correctly", async () => {
       const mockGuests: DbGuest[] = [createMockGuest()];
       const mockInvitations: DbInvitationWithGuests[] = [
-        createMockInvitation(),
+        createMockInvitation({ guests: mockGuests }),
       ];
 
       vi.mocked(drizzle.getGuestList).mockResolvedValue(mockGuests);
@@ -452,6 +391,7 @@ describe("getGuestListData", () => {
       vi.mocked(drizzle.getInvitationsCount).mockResolvedValue(100);
 
       const result = await getGuestListData({
+        weddingId: "wedding-1",
         limit: 25,
         offset: 0,
       });

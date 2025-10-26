@@ -37,10 +37,14 @@ export default function InvitationCard({
   onCollapse,
   root,
 }: InvitationCardProps) {
+  console.log("entry", entry);
   const Root = root || "li";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const guestNames = entry.guests.map((g) => g.nameOnInvitation);
+  const safeGuests = Array.isArray(entry.guests) ? entry.guests : [];
+  const guestNames = safeGuests
+    .map((g) => g?.nameOnInvitation)
+    .filter(Boolean) as string[];
   const guestCount = guestNames.length;
 
   const getDefaultDisplayName = () => {
@@ -83,7 +87,6 @@ export default function InvitationCard({
         {isEditing ? (
           <div className="flex gap-2">
             <Button
-              size="sm"
               variant="outline"
               onClick={onCancel}
               className="h-8"
@@ -92,12 +95,7 @@ export default function InvitationCard({
               <X className="w-4 h-4 mr-1" />
               Cancel
             </Button>
-            <Button
-              size="sm"
-              onClick={onSave}
-              className="h-8"
-              disabled={isSaving}
-            >
+            <Button onClick={onSave} className="h-8" disabled={isSaving}>
               <Check className="w-4 h-4 mr-1" />
               {isSaving ? "Saving..." : "Save"}
             </Button>

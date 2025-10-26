@@ -42,3 +42,25 @@ export function getDisplayName(
 
   return getDefaultDisplayName(entry);
 }
+
+export function mapGuestFieldsToObject(guests: (string | null | undefined)[]): {
+  guestA: string | null;
+  guestB: string | null;
+  guestC: string | null;
+  guestD: string | null;
+  guestE: string | null;
+  guestF: string | null;
+  guestG: string | null;
+  guestH: string | null;
+} {
+  return {
+    guestA: guests[0] ?? null,
+    guestB: guests[1] ?? null,
+    guestC: guests[2] ?? null,
+    guestD: guests[3] ?? null,
+    guestE: guests[4] ?? null,
+    guestF: guests[5] ?? null,
+    guestG: guests[6] ?? null,
+    guestH: guests[7] ?? null,
+  };
+}

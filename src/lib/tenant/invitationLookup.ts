@@ -1,5 +1,5 @@
 import { db, DbInvitationWithGuests } from "@/database/drizzle";
-import { invitation } from "@/drizzle/schema";
+import { invitation } from "../../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { matchGuestName } from "./nameMatching";
 import { RsvpNameFormat } from "@/types/rsvp";

@@ -74,7 +74,9 @@ export async function getGuestListData(
     const limit = params.limit || 25;
     const offset = params.offset || 0;
 
+    // WORKS AS EXPECTED
     const guestList = await getGuestList(weddingId);
+    // console.log("guestList", guestList);
 
     const invitationsWithGuests = await getInvitationsWithGuests(
       weddingId,
@@ -82,6 +84,7 @@ export async function getGuestListData(
       limit,
       offset
     );
+    console.log("invitationsWithGuests", invitationsWithGuests);
 
     const totalCount = await getInvitationsCount(weddingId);
 
