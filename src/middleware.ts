@@ -1,9 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { decideMultiTenantRouting } from "./lib/rewrites/multitenancy";
-import { edgeDb } from "./database/edge";
-import { wedding } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { getHostType } from "./lib/rewrites/multitenancy";
 
 const isOnboardingRoute = createRouteMatcher(["/engaged/onboarding"]);
 const isOnboardingApiRoute = createRouteMatcher(["/api/onboarding(.*)"]);
@@ -15,99 +12,49 @@ const isPublicRoute = createRouteMatcher([
   "/documentation/(.*)",
 ]);
 
-function isWelcomeRoute(req: NextRequest): boolean {
-  return req.nextUrl.pathname.startsWith("/welcome");
+function rewriteThatShit(req: NextRequest, url: string) {
+  return NextResponse.rewrite(new URL(url, req.url));
 }
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { isAuthenticated, sessionClaims, redirectToSignIn } = await auth();
+  const hostHeader = req.headers.get("host") || "";
+  const { isTenantHost, firstLabel } = getHostType(hostHeader);
 
-  // if its a public route, don't force the onboarding flow
-  if (isPublicRoute(req)) {
-    return NextResponse.next();
-  }
+  if (!isTenantHost) {
+    // if its a public route, don't force the onboarding flow
+    if (isPublicRoute(req)) {
+      return NextResponse.next();
+    }
 
-  if (
-    isAuthenticated &&
-    (isOnboardingRoute(req) || isOnboardingApiRoute(req))
-  ) {
-    return NextResponse.next();
-  }
+    // don't worry about the onboarding routes
+    if (
+      isAuthenticated &&
+      (isOnboardingRoute(req) || isOnboardingApiRoute(req))
+    ) {
+      return NextResponse.next();
+    }
 
-  if (!isAuthenticated && !isPublicRoute(req)) {
-    return redirectToSignIn({ returnBackUrl: req.url });
-  }
+    // if its a private route and user is not authenticated, redirect to sign in
+    if (!isAuthenticated && !isPublicRoute(req)) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
 
-  if (isAuthenticated && !sessionClaims?.metadata?.onboardingComplete) {
-    const onboardingUrl = new URL("/engaged/onboarding", req.url);
-    return NextResponse.redirect(onboardingUrl);
-  }
-
-  // TODO move this up the chain but see if we can make it faster
-  const multiTenantResponse = await applyMultiTenantRewrite(req);
-
-  if (multiTenantResponse) {
-    return multiTenantResponse;
+    // if the user is authenticated and the onboarding is not complete, redirect to the onboarding flow
+    if (isAuthenticated && !sessionClaims?.metadata?.onboardingComplete) {
+      const onboardingUrl = new URL("/engaged/onboarding", req.url);
+      return NextResponse.redirect(onboardingUrl);
+    }
+  } else {
+    // check for a tenant rewrite first, otherwise just send the base site
+    if (firstLabel === "yulissaandmatthew") {
+      // preserve legacy app for now
+      return rewriteThatShit(req, "/legacy/yulissaandmatthew.com");
+    } else if (isTenantHost) {
+      return rewriteThatShit(req, `/tenant/${firstLabel}`);
+    }
   }
 });
-
-async function applyMultiTenantRewrite(req: NextRequest) {
-  const requestUrl = req.nextUrl;
-  const pathname = requestUrl.pathname;
-  const hostHeader = req.headers.get("host") || "";
-
-  const decision = await decideMultiTenantRouting(
-    {
-      hostHeader,
-      pathname,
-      isApiRoute: requestUrl.pathname.startsWith("/api"),
-      isWelcomeRoute: isWelcomeRoute(req as NextRequest),
-    },
-    {
-      findWeddingIdByApexDomain: async (apexDomain) => {
-        try {
-          const rows = await edgeDb
-            .select({ id: wedding.id })
-            .from(wedding)
-            .where(eq(wedding.customDomain, apexDomain))
-            .limit(1);
-          const matchedWeddingId = rows?.[0]?.id as string | undefined;
-          return matchedWeddingId ? matchedWeddingId : undefined;
-        } catch (error) {
-          console.log("custom domain lookup error", error);
-          return undefined;
-        }
-      },
-      findWeddingIdBySubdomain: async (subdomain) => {
-        try {
-          const rows = await edgeDb
-            .select({ id: wedding.id })
-            .from(wedding)
-            .where(eq(wedding.subdomain, subdomain))
-            .limit(1);
-
-          const matchedWeddingId = rows?.[0]?.id as string | undefined;
-
-          return matchedWeddingId ? matchedWeddingId : undefined;
-        } catch (error) {
-          console.log("subdomain lookup error", error);
-          return undefined;
-        }
-      },
-    }
-  );
-
-  if (decision.action === "none") {
-    return undefined;
-  }
-  if (decision.action === "rewrite") {
-    return NextResponse.rewrite(new URL(decision.path, requestUrl));
-  }
-  if (decision.action === "redirect") {
-    return NextResponse.redirect(new URL(decision.path, requestUrl));
-  }
-  return undefined;
-}
 
 export const config = {
   matcher: [
