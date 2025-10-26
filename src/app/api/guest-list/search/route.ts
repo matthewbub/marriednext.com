@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
-import { invitation } from "@/drizzle/schema";
-import { and, or, eq, ilike, asc, desc, sql } from "drizzle-orm";
+import { invitation, guest } from "@/drizzle/schema";
+import { and, or, eq, ilike, asc, desc, sql, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
 
@@ -31,33 +31,42 @@ export async function GET(request: Request): Promise<NextResponse> {
     const validatedData = searchSchema.parse({ query });
     const searchPattern = `%${validatedData.query}%`;
 
-    const results = await db.query.invitation.findMany({
+    const matchingGuests = await db.query.guest.findMany({
       where: and(
-        eq(invitation.weddingId, wedding.id),
-        or(
-          ilike(invitation.guestA, searchPattern),
-          ilike(invitation.guestB, searchPattern),
-          ilike(invitation.inviteGroupName, searchPattern)
-        )
+        eq(guest.weddingId, wedding.id),
+        ilike(guest.nameOnInvitation, searchPattern)
       ),
+      columns: {
+        invitationId: true,
+      },
+    });
+
+    const matchingInvitationIds = [
+      ...new Set(matchingGuests.map((g) => g.invitationId).filter(Boolean)),
+    ];
+
+    const whereConditions = [eq(invitation.weddingId, wedding.id)];
+
+    if (matchingInvitationIds.length > 0) {
+      whereConditions.push(
+        or(
+          ilike(invitation.inviteGroupName, searchPattern),
+          inArray(invitation.id, matchingInvitationIds as string[])
+        )!
+      );
+    } else {
+      whereConditions.push(ilike(invitation.inviteGroupName, searchPattern));
+    }
+
+    const results = await db.query.invitation.findMany({
+      where: and(...whereConditions),
       with: {
-        guest_guestA: true,
-        guest_guestB: true,
-        guest_guestC: true,
-        guest_guestD: true,
-        guest_guestE: true,
-        guest_guestF: true,
-        guest_guestG: true,
-        guest_guestH: true,
+        guests: true,
       },
       orderBy: () => {
         switch (sortBy) {
           case "alpha-desc":
-            return [
-              desc(
-                sql`COALESCE(${invitation.inviteGroupName}, ${invitation.guestA})`
-              ),
-            ];
+            return [desc(invitation.inviteGroupName)];
           case "date-newest":
             return [desc(invitation.createdAt)];
           case "date-oldest":
@@ -66,11 +75,7 @@ export async function GET(request: Request): Promise<NextResponse> {
             return [desc(invitation.lastUpdatedAt)];
           case "alpha-asc":
           default:
-            return [
-              asc(
-                sql`COALESCE(${invitation.inviteGroupName}, ${invitation.guestA})`
-              ),
-            ];
+            return [asc(invitation.inviteGroupName)];
         }
       },
     });
@@ -79,25 +84,12 @@ export async function GET(request: Request): Promise<NextResponse> {
       let attending = 0;
       let total = 0;
 
-      const allGuests = [
-        inv.guest_guestA,
-        inv.guest_guestB,
-        inv.guest_guestC,
-        inv.guest_guestD,
-        inv.guest_guestE,
-        inv.guest_guestF,
-        inv.guest_guestG,
-        inv.guest_guestH,
-      ];
-
-      allGuests.forEach((g) => {
-        if (g) {
+      inv.guests.forEach((g) => {
+        total++;
+        if (g.isAttending) attending++;
+        if (g.hasPlusOne) {
           total++;
           if (g.isAttending) attending++;
-          if (g.hasPlusOne) {
-            total++;
-            if (g.isAttending) attending++;
-          }
         }
       });
 
