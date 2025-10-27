@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/react";
 import Header from "@/components/tenant/Header";
 import Footer from "@/components/tenant/Footer";
 import "./globals.css";
-import { enUS } from "@/lib/tenant/locales/en-US";
 import Swipeable from "@/components/tenant/Swipeable";
 import { NextIntlClientProvider } from "next-intl";
 
@@ -15,10 +14,11 @@ const cormorantInfant = Cormorant_Infant({
 
 export const metadata: Metadata = {
   title: {
-    default: enUS.meta.title.default,
-    template: enUS.meta.title.template,
+    default: "Yulissa and Matthew's Wedding — April 23, 2026 — Temecula, CA",
+    template: "%s | Yulissa and Matthew's Wedding",
   },
-  description: enUS.meta.description,
+  description:
+    "Join us in Temecula, CA on April 23, 2026 to celebrate the wedding of Yulissa and Matthew. Find our story, photos, directions to the venue, FAQs, and registry information.",
 };
 
 export default function RootLayout({

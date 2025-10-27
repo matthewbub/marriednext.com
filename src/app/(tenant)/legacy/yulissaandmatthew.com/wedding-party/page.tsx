@@ -1,15 +1,11 @@
-// import Image from "next/image";
-
 import ComingSoon from "@/components/tenant/ComingSoon";
-import { getLocale } from "@/lib/tenant/locales/en-US";
 
 export default function WeddingParty() {
-  const t = getLocale();
   return (
     <div className="w-full flex flex-col items-center justify-center px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-5xl md:text-6xl mb-16 uppercase text-center mt-20">
-          {t.pages.weddingParty.title}
+          Wedding Party
         </h1>
 
         <ComingSoon />

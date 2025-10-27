@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { getLocale } from "@/lib/tenant/locales/en-US";
 import { ComingSoonProps } from "@/lib/tenant/types";
 
 export default function ComingSoon({
@@ -8,9 +7,10 @@ export default function ComingSoon({
   backHref = "/",
   className = "",
 }: ComingSoonProps) {
-  const t = getLocale();
-  const resolvedTitle = title ?? t.common.comingSoon.title;
-  const resolvedMessage = message ?? t.common.comingSoon.message;
+  const resolvedTitle = title ?? "Coming Soon";
+  const resolvedMessage =
+    message ??
+    "We're putting the finishing touches on this section. Please check back soon.";
   return (
     <div className={`text-center ${className} mt-20 mb-36`}>
       <div className="mb-14">
@@ -22,7 +22,7 @@ export default function ComingSoon({
         </p>
       </div>
       <Link href={backHref} className="btn-primary">
-        {t.common.backToHome}
+        Back to Home
       </Link>
     </div>
   );

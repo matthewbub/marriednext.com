@@ -1,25 +1,22 @@
 import Link from "next/link";
-import { getLocale } from "@/lib/tenant/locales/en-US";
 
 export default function Travel() {
-  const t = getLocale();
-
   return (
     <div className="w-full flex flex-col items-center justify-center px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-5xl md:text-6xl mb-16 uppercase text-center mt-20">
-          {t.pages.travel.title}
+          Travel
         </h1>
 
         <div className="text-center mb-16">
           <p className="text-xl leading-relaxed max-w-3xl mx-auto">
-            {t.pages.travel.intro}
+            We're so excited to celebrate with you in beautiful Temecula,
+            California! Here's everything you need to know about getting here
+            and where to stay.
           </p>
         </div>
 
         <div className="mb-20">
-          {/* <h2 className="text-4xl mb-8 text-center ">Map & Location</h2> */}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <div className="flex items-center justify-center h-full w-full">
               <div className="rounded-lg overflow-hidden border border-gray-300 h-full w-fit">
@@ -36,26 +33,20 @@ export default function Travel() {
             </div>
             <div className="flex items-center justify-center h-full">
               <div className="text-center md:text-left">
-                <h3 className="text-2xl font-semibold mb-2">
-                  {t.pages.travel.venueLocation}
-                </h3>
+                <h3 className="text-2xl font-semibold mb-2">Venue Location</h3>
                 <div className="space-y-1">
-                  {t.pages.travel.mapInfo.addressLines.map((line, idx) => (
-                    <p key={idx} className="text-gray-700">
-                      {line}
-                    </p>
-                  ))}
+                  <p className="text-gray-700">
+                    33515 Rancho California Rd, Temecula, CA 92591
+                  </p>
                 </div>
                 <div className="mt-4">
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      t.pages.travel.mapInfo.mapQuery
-                    )}`}
+                    href="https://www.google.com/maps/search/?api=1&query=33515%20Rancho%20California%20Rd%2C%20Temecula%2C%20CA%2092591"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block border-2 border-black px-6 py-2 uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
                   >
-                    {t.pages.travel.openInGoogleMaps}
+                    Open in Google Maps
                   </a>
                 </div>
               </div>
@@ -68,7 +59,7 @@ export default function Travel() {
             href="/"
             className="inline-block border-2 border-black px-8 py-3 uppercase tracking-wider hover:bg-black hover:text-white transition-colors font-black"
           >
-            {t.common.backToHome}
+            Back to Home
           </Link>
         </div>
       </div>
