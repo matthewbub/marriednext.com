@@ -31,7 +31,7 @@ export default function OurStoryForm({
       stories: defaultStories,
     },
   });
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "stories",
   });
@@ -46,18 +46,6 @@ export default function OurStoryForm({
       photoUrl: "",
     };
     append(newStory);
-  };
-
-  const handleUpdateStory = (
-    id: string,
-    field: keyof StoryItem,
-    value: string
-  ) => {
-    const storyIndex = fields.findIndex((story) => story.id === id);
-    if (storyIndex !== -1) {
-      const updatedStory = { ...fields[storyIndex], [field]: value };
-      update(storyIndex, updatedStory);
-    }
   };
 
   const handleDeleteStory = (id: string) => {
@@ -114,9 +102,6 @@ export default function OurStoryForm({
                 placeholder="e.g., How we met"
                 className="text-lg py-6"
                 {...register(`stories.${index}.heading`)}
-                onChange={(e) =>
-                  handleUpdateStory(story.id, "heading", e.target.value)
-                }
               />
             </div>
 
@@ -133,9 +118,6 @@ export default function OurStoryForm({
                 placeholder="Tell your story..."
                 className="text-base min-h-32 resize-none leading-relaxed"
                 {...register(`stories.${index}.text`)}
-                onChange={(e) =>
-                  handleUpdateStory(story.id, "text", e.target.value)
-                }
               />
             </div>
 
@@ -153,9 +135,6 @@ export default function OurStoryForm({
                 placeholder="https://example.com/photo.jpg"
                 className="text-sm py-6"
                 {...register(`stories.${index}.photoUrl`)}
-                onChange={(e) =>
-                  handleUpdateStory(story.id, "photoUrl", e.target.value)
-                }
               />
               <p className="text-sm text-gray-700">
                 Direct URL to your story photo

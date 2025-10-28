@@ -26,22 +26,10 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
       qaItems: defaultQAItems,
     },
   });
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "qaItems",
   });
-
-  const updateItem = (
-    id: string,
-    field: "question" | "answer",
-    value: string
-  ) => {
-    const itemIndex = fields.findIndex((item) => item.id === id);
-    if (itemIndex !== -1) {
-      const updatedItem = { ...fields[itemIndex], [field]: value };
-      update(itemIndex, updatedItem);
-    }
-  };
 
   const deleteItem = (id: string) => {
     const itemIndex = fields.findIndex((item) => item.id === id);
@@ -88,9 +76,6 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
                     placeholder="Question"
                     className="text-lg py-6"
                     {...register(`qaItems.${index}.question`)}
-                    onChange={(e) =>
-                      updateItem(item.id, "question", e.target.value)
-                    }
                   />
                 </div>
                 <div className="space-y-3">
@@ -99,9 +84,6 @@ export default function QAForm({ defaultQAItems = [], onSubmit }: QAFormProps) {
                     placeholder="Answer"
                     className="text-base min-h-24 leading-relaxed"
                     {...register(`qaItems.${index}.answer`)}
-                    onChange={(e) =>
-                      updateItem(item.id, "answer", e.target.value)
-                    }
                   />
                 </div>
               </div>
