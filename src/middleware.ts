@@ -46,12 +46,11 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       return NextResponse.redirect(onboardingUrl);
     }
   } else {
-    // check for a tenant rewrite first, otherwise just send the base site
+    const pathname = req.nextUrl.pathname;
     if (firstLabel === "yulissaandmatthew") {
-      // preserve legacy app for now
-      return rewriteThatShit(req, "/legacy/yulissaandmatthew.com");
+      return rewriteThatShit(req, `/legacy/yulissaandmatthew.com${pathname}`);
     } else if (isTenantHost) {
-      return rewriteThatShit(req, `/tenant/${hostHeader}`);
+      return rewriteThatShit(req, `/tenant/${hostHeader}${pathname}`);
     }
   }
 });
