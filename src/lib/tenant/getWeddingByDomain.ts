@@ -2,26 +2,7 @@ import { db } from "@/database/drizzle";
 import { redis } from "@/database/redis";
 import { wedding } from "@/drizzle/schema";
 import { eq, or } from "drizzle-orm";
-
-type WeddingData = {
-  id: string;
-  subdomain: string | null;
-  customDomain: string | null;
-  createdAt: string;
-  updatedAt: string;
-  fieldDisplayName: string | null;
-  fieldLocationName: string | null;
-  fieldLocationAddress: string | null;
-  fieldEventDate: string | null;
-  fieldEventTime: string | null;
-  fieldMapsEmbedUrl: string | null;
-  fieldMapsShareUrl: string | null;
-  fieldQuestionsAndAnswers: unknown;
-  fieldOurStory: unknown;
-  fieldNameA: string | null;
-  fieldNameB: string | null;
-  controlRsvpNameFormat: string | null;
-};
+import type { WeddingData } from "@/lib/tenant/weddingData.types";
 
 async function getWeddingFromDatabase(
   domain: string

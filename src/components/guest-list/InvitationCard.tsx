@@ -37,7 +37,6 @@ export default function InvitationCard({
   onCollapse,
   root,
 }: InvitationCardProps) {
-  console.log("entry", entry);
   const Root = root || "li";
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 

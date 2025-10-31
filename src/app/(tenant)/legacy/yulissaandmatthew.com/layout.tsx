@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Infant } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import Header from "@/components/legacy/Header";
-import Footer from "@/components/tenant/Footer";
 import "./globals.css";
-import Swipeable from "@/components/tenant/Swipeable";
+import { LegacyLayoutContent } from "./LegacyLayoutContent";
 import { getWeddingByDomain } from "@/lib/tenant/getWeddingByDomain";
 
 const cormorantInfant = Cormorant_Infant({
@@ -29,17 +27,23 @@ export default async function RootLayout({
   const weddingData = await getWeddingByDomain("yulissaandmatthew");
 
   if (!weddingData) {
-    return null;
+    return (
+      <html lang="en">
+        <body className={`${cormorantInfant.variable} antialiased`}>
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-xl text-red-600">Wedding not found</div>
+          </div>
+        </body>
+      </html>
+    );
   }
 
   return (
     <html lang="en">
       <body className={`${cormorantInfant.variable} antialiased`}>
-        <Swipeable>
-          <Header weddingData={weddingData} />
-          <div className="px-4 md:px-0 mx-auto">{children}</div>
-          <Footer />
-        </Swipeable>
+        <LegacyLayoutContent initialData={weddingData}>
+          {children}
+        </LegacyLayoutContent>
         <Analytics />
       </body>
     </html>

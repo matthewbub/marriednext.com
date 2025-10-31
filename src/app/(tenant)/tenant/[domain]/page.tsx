@@ -1,19 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import RsvpFormContainer from "@/components/RsvpFormContainer";
-import { getWeddingByDomain } from "@/lib/tenant/getWeddingByDomain";
-import { notFound } from "next/navigation";
+import { useWeddingData } from "@/contexts/WeddingDataContext";
 
-type PageProps = {
-  params: Promise<{ domain: string }>;
-};
-
-export default async function Home({ params }: PageProps) {
-  const { domain } = await params;
-  const weddingData = await getWeddingByDomain(domain);
-
-  if (!weddingData) {
-    notFound();
-  }
+export default function Home() {
+  const weddingData = useWeddingData();
 
   return (
     <div className="w-full flex flex-col items-center justify-center">

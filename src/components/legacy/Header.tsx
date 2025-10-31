@@ -28,7 +28,7 @@ export default function Header({ weddingData }: HeaderProps) {
     { href: "/wedding-party", label: "Wedding Party" },
     { href: "/q-and-a", label: "Q + A" },
     { href: "/travel", label: "Travel" },
-    { href: "/registry", label: "Registry" },
+    // { href: "/registry", label: "Registry" },
   ];
 
   return (
@@ -61,7 +61,15 @@ export default function Header({ weddingData }: HeaderProps) {
 
       {weddingData.fieldDisplayName && (
         <h2 className="text-2xl inline-block mt-10 uppercase text-center">
-          {weddingData.fieldDisplayName}
+          {weddingData.fieldEventDate &&
+            new Date(weddingData.fieldEventDate).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          {/* TODO: This should be the city name, but is pending EVR-78 */}
+          {weddingData.fieldLocationName &&
+            ` · ${weddingData.fieldLocationName}`}
         </h2>
       )}
 

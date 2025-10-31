@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Infant } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import Header from "@/components/tenant/Header";
-import Footer from "@/components/tenant/Footer";
 import "./globals.css";
-import Swipeable from "@/components/tenant/Swipeable";
+import { TenantLayoutContent } from "./TenantLayoutContent";
 import { getWeddingByDomain } from "@/lib/tenant/getWeddingByDomain";
 import { notFound } from "next/navigation";
 
@@ -39,11 +37,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${cormorantInfant.variable} antialiased`}>
-        <Swipeable>
-          <Header weddingData={weddingData} />
-          <div className="px-4 md:px-0 mx-auto">{children}</div>
-          <Footer />
-        </Swipeable>
+        <TenantLayoutContent initialData={weddingData}>
+          {children}
+        </TenantLayoutContent>
         <Analytics />
       </body>
     </html>
