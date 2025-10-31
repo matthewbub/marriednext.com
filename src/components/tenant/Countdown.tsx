@@ -24,17 +24,9 @@ export default function Countdown({
     return { days, hours, minutes, seconds };
   };
 
-  // Initialize with stable values so SSR and initial client render match
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calculateTimeLeft());
 
   useEffect(() => {
-    // Sync immediately on mount, then update every second
-    setTimeLeft(calculateTimeLeft());
     const intervalId = setInterval(
       () => setTimeLeft(calculateTimeLeft()),
       1000
@@ -42,29 +34,18 @@ export default function Countdown({
     return () => clearInterval(intervalId);
   }, [targetTimeMs]);
 
-  const isExpired =
-    timeLeft.days === 0 &&
-    timeLeft.hours === 0 &&
-    timeLeft.minutes === 0 &&
-    timeLeft.seconds === 0;
-
-  const formatValue = (value: number) => {
-    if (isExpired) return "∞";
-    return String(value).padStart(2, "0");
-  };
+  const formatValue = (value: number) => String(value).padStart(2, "0");
 
   return (
-    <div
-      className="mt-1 mb-6 w-full flex items-center justify-center px-4"
-      suppressHydrationWarning
-    >
+    <div className="mt-1 mb-6 w-full flex items-center justify-center px-4">
       <div className="flex items-end gap-3 md:gap-8">
         <div className="text-center">
           <div
             className="text-4xl md:text-6xl font-semibold leading-none"
             style={{ fontVariantNumeric: "tabular-nums" }}
+            suppressHydrationWarning
           >
-            {isExpired ? "∞" : timeLeft.days}
+            {timeLeft.days}
           </div>
           <div className="mt-2 text-[10px] md:text-xs uppercase tracking-[0.25em] text-gray-700">
             {labels.days}
@@ -75,6 +56,7 @@ export default function Countdown({
           <div
             className="text-4xl md:text-6xl font-semibold leading-none"
             style={{ fontVariantNumeric: "tabular-nums" }}
+            suppressHydrationWarning
           >
             {formatValue(timeLeft.hours)}
           </div>
@@ -87,6 +69,7 @@ export default function Countdown({
           <div
             className="text-4xl md:text-6xl font-semibold leading-none"
             style={{ fontVariantNumeric: "tabular-nums" }}
+            suppressHydrationWarning
           >
             {formatValue(timeLeft.minutes)}
           </div>
@@ -99,6 +82,7 @@ export default function Countdown({
           <div
             className="text-4xl md:text-6xl font-semibold leading-none"
             style={{ fontVariantNumeric: "tabular-nums" }}
+            suppressHydrationWarning
           >
             {formatValue(timeLeft.seconds)}
           </div>
