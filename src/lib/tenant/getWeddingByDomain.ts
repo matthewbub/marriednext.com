@@ -3,6 +3,7 @@ import { redis } from "@/database/redis";
 import { wedding } from "@/drizzle/schema";
 import { eq, or } from "drizzle-orm";
 import type { WeddingData } from "@/lib/tenant/weddingData.types";
+import { WEDDING_CACHE_TTL } from "@/lib/cache/constants";
 
 async function getWeddingFromDatabase(
   domain: string
@@ -47,8 +48,7 @@ export async function getWeddingByDomain(
   const weddingData = await getWeddingFromDatabase(domain);
 
   if (weddingData) {
-    // expires in 1 day
-    await redis.set(cacheKey, weddingData, { ex: 60 * 60 * 24 });
+    await redis.set(cacheKey, weddingData, { ex: WEDDING_CACHE_TTL });
   }
 
   return weddingData;

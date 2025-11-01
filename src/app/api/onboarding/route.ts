@@ -4,6 +4,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
 import { wedding, weddingUsers } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";
 
 const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -78,6 +79,26 @@ export async function POST(req: NextRequest) {
       weddingId: newWedding.id,
       clerkUserId: userId,
     }));
+
+    await updateWeddingCache({
+      id: newWedding.id,
+      subdomain: newWedding.subdomain,
+      customDomain: newWedding.customDomain,
+      createdAt: newWedding.createdAt,
+      updatedAt: newWedding.updatedAt,
+      fieldDisplayName: newWedding.fieldDisplayName,
+      fieldLocationName: newWedding.fieldLocationName,
+      fieldLocationAddress: newWedding.fieldLocationAddress,
+      fieldEventDate: newWedding.fieldEventDate,
+      fieldEventTime: newWedding.fieldEventTime,
+      fieldMapsEmbedUrl: newWedding.fieldMapsEmbedUrl,
+      fieldMapsShareUrl: newWedding.fieldMapsShareUrl,
+      fieldQuestionsAndAnswers: newWedding.fieldQuestionsAndAnswers,
+      fieldOurStory: newWedding.fieldOurStory,
+      fieldNameA: newWedding.fieldNameA,
+      fieldNameB: newWedding.fieldNameB,
+      controlRsvpNameFormat: newWedding.controlRsvpNameFormat,
+    });
 
     const client = await clerkClient();
     await client.users.updateUserMetadata(userId, {

@@ -4,6 +4,7 @@ import { db } from "@/database/drizzle";
 import { wedding } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
+import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";
 import * as Sentry from "@sentry/nextjs";
 
 const updateSchema = z.object({
@@ -53,13 +54,36 @@ export async function PUT(request: Request) {
 
     const { nameFormat } = parse.data;
 
-    await db
+    const [updatedWedding] = await db
       .update(wedding)
       .set({
         controlRsvpNameFormat: nameFormat,
         updatedAt: new Date().toISOString(),
       })
-      .where(eq(wedding.id, currentWedding.id));
+      .where(eq(wedding.id, currentWedding.id))
+      .returning();
+
+    if (updatedWedding) {
+      await updateWeddingCache({
+        id: updatedWedding.id,
+        subdomain: updatedWedding.subdomain,
+        customDomain: updatedWedding.customDomain,
+        createdAt: updatedWedding.createdAt,
+        updatedAt: updatedWedding.updatedAt,
+        fieldDisplayName: updatedWedding.fieldDisplayName,
+        fieldLocationName: updatedWedding.fieldLocationName,
+        fieldLocationAddress: updatedWedding.fieldLocationAddress,
+        fieldEventDate: updatedWedding.fieldEventDate,
+        fieldEventTime: updatedWedding.fieldEventTime,
+        fieldMapsEmbedUrl: updatedWedding.fieldMapsEmbedUrl,
+        fieldMapsShareUrl: updatedWedding.fieldMapsShareUrl,
+        fieldQuestionsAndAnswers: updatedWedding.fieldQuestionsAndAnswers,
+        fieldOurStory: updatedWedding.fieldOurStory,
+        fieldNameA: updatedWedding.fieldNameA,
+        fieldNameB: updatedWedding.fieldNameB,
+        controlRsvpNameFormat: updatedWedding.controlRsvpNameFormat,
+      });
+    }
 
     Sentry.captureMessage("RSVP name format updated", {
       extra: {
