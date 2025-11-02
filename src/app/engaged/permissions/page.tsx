@@ -11,82 +11,83 @@ import {
   UserRole,
 } from "@/components/permissions/permissions.types";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-const mockCollaboratorInvitations: CollaboratorInvitation[] = [
-  {
-    id: "1",
-    email: "partner@example.com",
-    role: "spouse",
-    status: "accepted",
-    message: "Can't wait to plan together!",
-    sentAt: "2024-10-15T10:00:00Z",
-    acceptedAt: "2024-10-15T14:30:00Z",
-  },
-  {
-    id: "2",
-    email: "mom@example.com",
-    role: "family",
-    status: "accepted",
-    sentAt: "2024-10-18T09:15:00Z",
-    acceptedAt: "2024-10-18T11:45:00Z",
-  },
-  {
-    id: "3",
-    email: "planner@weddings.com",
-    role: "planner",
-    status: "pending",
-    message: "Looking forward to working with you",
-    sentAt: "2024-10-25T16:20:00Z",
-  },
-  {
-    id: "4",
-    email: "sibling@example.com",
-    role: "family",
-    status: "declined",
-    sentAt: "2024-10-20T13:00:00Z",
-    declinedAt: "2024-10-21T08:15:00Z",
-  },
-];
+interface PermissionsData {
+  currentUser: {
+    email: string;
+    role: UserRole;
+  };
+  invitations: CollaboratorInvitation[];
+}
 
 export default function PermissionsPage() {
-  const [invitations, setInvitations] = useState<CollaboratorInvitation[]>(
-    mockCollaboratorInvitations
-  );
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>("spouse");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleInviteUser = (data: InviteUserFormData) => {
+  const { data, isLoading } = useQuery<PermissionsData>({
+    queryKey: ["permissions"],
+    queryFn: async () => {
+      const res = await fetch("/api/permissions");
+      return res.json();
+    },
+  });
+
+  const updatePermissionsMutation = useMutation({
+    mutationFn: async (updatedData: Partial<PermissionsData>) => {
+      const res = await fetch("/api/permissions", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["permissions"] });
+    },
+  });
+
+  const handleInviteUser = (formData: InviteUserFormData) => {
     const newInvitation: CollaboratorInvitation = {
       id: Date.now().toString(),
-      email: data.email,
-      role: data.role,
+      email: formData.email,
+      role: formData.role,
       status: "pending",
-      message: data.message || undefined,
+      message: formData.message || undefined,
       sentAt: new Date().toISOString(),
     };
 
-    setInvitations([newInvitation, ...invitations]);
+    if (data) {
+      updatePermissionsMutation.mutate({
+        invitations: [newInvitation, ...data.invitations],
+      });
+    }
     setIsDialogOpen(false);
-    toast.success(`Invitation sent to ${data.email}`);
+    toast.success(`Invitation sent to ${formData.email}`);
   };
 
   const handleRemoveInvitation = (id: string) => {
-    const invitation = invitations.find((inv) => inv.id === id);
-    setInvitations(invitations.filter((inv) => inv.id !== id));
+    if (!data) return;
+    const invitation = data.invitations.find((inv) => inv.id === id);
+    updatePermissionsMutation.mutate({
+      invitations: data.invitations.filter((inv) => inv.id !== id),
+    });
     if (invitation) {
       toast.success(`Removed invitation for ${invitation.email}`);
     }
   };
 
   const handleResendInvitation = (id: string) => {
-    const invitation = invitations.find((inv) => inv.id === id);
+    if (!data) return;
+    const invitation = data.invitations.find((inv) => inv.id === id);
     if (invitation) {
       toast.success(`Resent invitation to ${invitation.email}`);
     }
   };
 
   const handleCopyInviteUrl = (id: string) => {
-    const invitation = invitations.find((inv) => inv.id === id);
+    if (!data) return;
+    const invitation = data.invitations.find((inv) => inv.id === id);
     if (invitation) {
       const mockUrl = `https://marriednext.com/invite/${id}`;
       navigator.clipboard.writeText(mockUrl);
@@ -95,12 +96,13 @@ export default function PermissionsPage() {
   };
 
   const handleChangeInvitationRole = (id: string, newRole: UserRole) => {
-    setInvitations(
-      invitations.map((inv) =>
+    if (!data) return;
+    updatePermissionsMutation.mutate({
+      invitations: data.invitations.map((inv) =>
         inv.id === id ? { ...inv, role: newRole } : inv
-      )
-    );
-    const invitation = invitations.find((inv) => inv.id === id);
+      ),
+    });
+    const invitation = data.invitations.find((inv) => inv.id === id);
     if (invitation) {
       const roleLabel =
         newRole === "spouse"
@@ -113,7 +115,10 @@ export default function PermissionsPage() {
   };
 
   const handleRoleChange = (newRole: UserRole) => {
-    setCurrentUserRole(newRole);
+    if (!data) return;
+    updatePermissionsMutation.mutate({
+      currentUser: { ...data.currentUser, role: newRole },
+    });
     toast.success(
       `Role updated to ${
         newRole === "spouse"
@@ -124,6 +129,16 @@ export default function PermissionsPage() {
       }`
     );
   };
+
+  if (isLoading || !data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  const { currentUser, invitations } = data;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
@@ -154,8 +169,8 @@ export default function PermissionsPage() {
               Your Role
             </h2>
             <CurrentUserCard
-              email="you@example.com"
-              role={currentUserRole}
+              email={currentUser.email}
+              role={currentUser.role}
               onRoleChange={handleRoleChange}
             />
           </div>
@@ -195,7 +210,7 @@ export default function PermissionsPage() {
                 <CollaboratorInvitationCard
                   key={invitation.id}
                   invitation={invitation}
-                  currentUserRole={currentUserRole}
+                  currentUserRole={currentUser.role}
                   onRemove={handleRemoveInvitation}
                   onResend={handleResendInvitation}
                   onCopyInviteUrl={handleCopyInviteUrl}
