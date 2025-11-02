@@ -12,3 +12,5 @@ alwaysApply: true
 - always use react-query
 - use Zod to validate api data
 - never pass sensitive info to/from the client.
+
+When making changes to the tenant application, clarify if the same change should be mirrored over to the legacy application as well.

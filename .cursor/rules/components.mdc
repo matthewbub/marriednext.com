@@ -1,0 +1,9 @@
+---
+alwaysApply: false
+---
+
+Always use the schadcn/ui library
+
+Components should always be as dumb as possible, all the data they get comes from the backend via props. Use the least amount of reactivity as possible.
+
+When creating new components create a storybook page (.tsx) as well as a default state for the component in Storybook. We need to ensure A11Y compliance.
