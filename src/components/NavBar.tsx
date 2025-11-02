@@ -47,24 +47,24 @@ export default function NavBar() {
                   <Link href="/engaged/guest-list">Guest List</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
+
               <NavigationMenuItem>
                 <NavigationMenuLink
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link href="/registry">Registry</Link>
+                  <Link href="/engaged/settings">Settings</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
-              <SignedIn>
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    asChild
-                    className={navigationMenuTriggerStyle()}
-                  >
-                    <Link href="/engaged/settings">Settings</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </SignedIn>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link href="/engaged/permissions">Permissions</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
