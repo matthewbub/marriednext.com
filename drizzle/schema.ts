@@ -86,6 +86,7 @@ export const wedding = pgTable(
     id: uuid().defaultRandom().primaryKey().notNull(),
     subdomain: text().unique(),
     customDomain: text("custom_domain").unique(),
+    createdByClerkUserId: text("created_by_clerk_user_id").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .defaultNow()
       .notNull(),
@@ -113,12 +114,14 @@ export const wedding = pgTable(
   ]
 );
 
+// this should be renamed to weddingCollaborators .. but not right now
 export const weddingUsers = pgTable(
   "wedding_users",
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
     weddingId: uuid("wedding_id").notNull(),
     clerkUserId: text("clerk_user_id").notNull(),
+    role: userRole("role").notNull().default("spouse"),
     createdAt: timestamp("created_at", { mode: "string" })
       .defaultNow()
       .notNull(),
