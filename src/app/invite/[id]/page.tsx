@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { InviteAcceptance } from "@/components/invite/InviteAcceptance";
 import { useQuery, useMutation } from "@tanstack/react-query";
-
+import { useParams, useSearchParams } from "next/navigation";
 interface InvitePageProps {
   params: {
     id: string;
@@ -14,17 +14,19 @@ interface InviteData {
   id: string;
   senderEmail: string;
   role: string;
-  weddingCouple: string;
+  invitedEmail: string;
   message?: string;
 }
 
 export default function InvitePage({ params }: InvitePageProps) {
   const router = useRouter();
+  const searchParams = useParams();
+  const id = searchParams?.id as string;
 
   const { data, isLoading } = useQuery<InviteData>({
-    queryKey: ["collaborators-invitation", params.id],
+    queryKey: ["collaborators-invitation", id],
     queryFn: async () => {
-      const res = await fetch(`/api/collaborators-invitation?id=${params.id}`);
+      const res = await fetch(`/api/collaborators-invitation?id=${id}`);
       return res.json();
     },
   });
@@ -79,10 +81,10 @@ export default function InvitePage({ params }: InvitePageProps) {
 
   return (
     <InviteAcceptance
-      inviteId={params.id}
+      inviteId={data.id}
       senderEmail={data.senderEmail}
       role={data.role}
-      weddingCouple={data.weddingCouple}
+      invitedEmail={data.invitedEmail}
       message={data.message}
       onAccept={handleAccept}
       onReject={handleReject}

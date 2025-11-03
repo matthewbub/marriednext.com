@@ -23,7 +23,7 @@ export const FamilyMember: Story = {
     inviteId: "abc123",
     senderEmail: "bride@example.com",
     role: "family",
-    weddingCouple: "Sarah & John",
+    invitedEmail: "Sarah & John",
     message: "Would love for you to help us plan our special day!",
   },
 };
@@ -33,7 +33,7 @@ export const Spouse: Story = {
     inviteId: "xyz789",
     senderEmail: "groom@example.com",
     role: "spouse",
-    weddingCouple: "Emily & Michael",
+    invitedEmail: "Emily & Michael",
     message: "Looking forward to planning this together!",
   },
 };
@@ -43,7 +43,7 @@ export const WeddingPlanner: Story = {
     inviteId: "planner456",
     senderEmail: "bride@example.com",
     role: "planner",
-    weddingCouple: "Jessica & David",
+    invitedEmail: "Jessica & David",
   },
 };
 
@@ -52,7 +52,6 @@ export const WithoutMessage: Story = {
     inviteId: "nomsg789",
     senderEmail: "couple@example.com",
     role: "family",
-    weddingCouple: "Alex & Jordan",
+    invitedEmail: "Alex & Jordan",
   },
 };
-

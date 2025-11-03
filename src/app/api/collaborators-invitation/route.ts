@@ -1,18 +1,30 @@
+import { db } from "@/database/drizzle";
+import { collaboratorInvitations } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 
-  const mockInvite = {
-    id: id || "mock-id",
-    senderEmail: "bride@example.com",
-    role: "family",
-    weddingCouple: "Sarah & John",
-    message: "Would love for you to help us plan our special day!",
-  };
+  const invitation = await db.query.collaboratorInvitations.findFirst({
+    where: eq(collaboratorInvitations.id, (id as string) ?? ""),
+  });
 
-  return NextResponse.json(mockInvite);
+  if (!invitation || invitation.status !== "pending") {
+    return NextResponse.json(
+      { error: "Invitation no longer valid" },
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json({
+    id: invitation.id,
+    senderEmail: invitation.invitedByName,
+    role: invitation.role,
+    invitedEmail: invitation.invitedEmail,
+    message: invitation.message,
+  });
 }
 
 export async function PUT(request: Request) {

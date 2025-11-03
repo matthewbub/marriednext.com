@@ -9,7 +9,7 @@ interface InviteAcceptanceProps {
   inviteId: string;
   senderEmail: string;
   role: string;
-  weddingCouple: string;
+  invitedEmail: string;
   message?: string;
   onAccept: () => Promise<void>;
   onReject: () => Promise<void>;
@@ -19,7 +19,7 @@ export function InviteAcceptance({
   inviteId,
   senderEmail,
   role,
-  weddingCouple,
+  invitedEmail,
   message,
   onAccept,
   onReject,
@@ -62,25 +62,10 @@ export function InviteAcceptance({
     <div className="min-h-screen flex items-center justify-center px-6">
       <Card className="w-full max-w-md p-8 bg-white/80 backdrop-blur-md border border-white/20 shadow-xl">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
-            <svg
-              className="w-8 h-8 text-blue-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"
-              />
-            </svg>
-          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             You're Invited!
           </h1>
-          <p className="text-gray-600 text-lg">{weddingCouple}</p>
+          <p className="text-gray-600 text-lg">{invitedEmail}</p>
         </div>
 
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -105,7 +90,7 @@ export function InviteAcceptance({
             <Button
               onClick={handleAccept}
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full"
             >
               {isLoading ? "Processing..." : "Accept Invitation"}
             </Button>

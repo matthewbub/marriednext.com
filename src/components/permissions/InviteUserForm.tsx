@@ -98,5 +98,3 @@ export function InviteUserForm({
     </div>
   );
 }
-
-
