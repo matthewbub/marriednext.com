@@ -1,12 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
-import { wedding, weddingUsers } from "@/drizzle/schema";
+import {
+  wedding,
+  weddingUsers,
+  collaboratorInvitations,
+} from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";
+import { RESERVED_SUBDOMAINS } from "@/lib/rewrites/multitenancy";
+import { UserRole } from "@/components/permissions/permissions.types";
 
 const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export async function GET() {
+  const user = await currentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userEmail = user.emailAddresses[0]?.emailAddress;
+  if (!userEmail) {
+    return NextResponse.json(
+      { error: "User email not found" },
+      { status: 400 }
+    );
+  }
+
+  const pendingInvitation = await db.query.collaboratorInvitations.findFirst({
+    where: eq(collaboratorInvitations.invitedEmail, userEmail),
+    columns: {
+      id: true,
+      weddingId: true,
+      role: true,
+      invitedByName: true,
+      sentAt: true,
+    },
+  });
+
+  return NextResponse.json({
+    hasInvitation: !!pendingInvitation,
+    invitation: pendingInvitation || null,
+  });
+}
 
 const onboardingSchema = z.object({
   subdomain: z
@@ -16,6 +53,10 @@ const onboardingSchema = z.object({
     .regex(
       SUBDOMAIN_REGEX,
       "Subdomain can only contain lowercase letters, numbers, and hyphens"
+    )
+    .refine(
+      (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain),
+      "This subdomain is reserved and cannot be used"
     ),
   partner1Name: z.string().min(1, "Partner 1 name is required"),
   partner2Name: z.string().min(1, "Partner 2 name is required"),
@@ -72,6 +113,7 @@ export async function POST(req: NextRequest) {
         subdomain,
         fieldDisplayName: displayName,
         fieldEventDate: weddingDate,
+        createdByClerkUserId: userId,
       })
       .returning();
 
@@ -105,6 +147,7 @@ export async function POST(req: NextRequest) {
       publicMetadata: {
         onboardingComplete: true,
         weddingId: newWedding.id,
+        role: "spouse" as UserRole,
       },
     });
 
@@ -129,6 +172,69 @@ export async function POST(req: NextRequest) {
     console.error("Error completing onboarding:", error);
     return NextResponse.json(
       { error: "Failed to complete onboarding" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT() {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    if (!userEmail) {
+      return NextResponse.json(
+        { error: "User email not found" },
+        { status: 400 }
+      );
+    }
+
+    const pendingInvitation = await db.query.collaboratorInvitations.findFirst({
+      where: eq(collaboratorInvitations.invitedEmail, userEmail),
+    });
+
+    if (!pendingInvitation) {
+      return NextResponse.json(
+        { error: "No pending invitation found" },
+        { status: 404 }
+      );
+    }
+
+    await db.insert(weddingUsers).values({
+      weddingId: pendingInvitation.weddingId,
+      clerkUserId: user.id,
+      role: pendingInvitation.role,
+    });
+
+    await db
+      .update(collaboratorInvitations)
+      .set({
+        status: "accepted",
+        respondedAt: new Date().toISOString(),
+      })
+      .where(eq(collaboratorInvitations.id, pendingInvitation.id));
+
+    const client = await clerkClient();
+    await client.users.updateUserMetadata(user.id, {
+      publicMetadata: {
+        onboardingComplete: true,
+        weddingId: pendingInvitation.weddingId,
+        role: pendingInvitation.role,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      weddingId: pendingInvitation.weddingId,
+      role: pendingInvitation.role,
+    });
+  } catch (error) {
+    console.error("Error accepting invitation:", error);
+    return NextResponse.json(
+      { error: "Failed to accept invitation" },
       { status: 500 }
     );
   }

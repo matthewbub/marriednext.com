@@ -146,11 +146,11 @@ export const collaboratorInvitations = pgTable(
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
     weddingId: uuid("wedding_id").notNull(),
+    invitationId: text("invitation_id").notNull(),
     invitedEmail: text("invited_email").notNull(),
     invitedByName: text("invited_by_name").notNull(),
     role: userRole("role").notNull(),
     status: invitationStatus("status").default("pending").notNull(),
-    message: text("message"),
     sentAt: timestamp("sent_at", { mode: "string" }).defaultNow().notNull(),
     respondedAt: timestamp("responded_at", { mode: "string" }),
   },

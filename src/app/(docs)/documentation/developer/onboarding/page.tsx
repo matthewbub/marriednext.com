@@ -23,6 +23,11 @@ const tableOfContents: TableOfContentsItem[] = [
   { id: "tech-stack", title: "Tech Stack", level: 2 },
   { id: "tldr", title: "TLDR", level: 2 },
   { id: "what-is-it-doing", title: "What is it doing?", level: 2 },
+  {
+    id: "onboarding-complete-metadata",
+    title: "onboardingComplete Metadata",
+    level: 2,
+  },
 ];
 
 export default function DeveloperOnboardingPage() {
@@ -50,16 +55,17 @@ export default function DeveloperOnboardingPage() {
       <DocsSection title="Tech Stack" id="tech-stack">
         <p className="text-muted-foreground leading-relaxed mb-6">
           This feature is unfortunately, heavily reliant on Clerk and Next.js
-          Middleware. (It would be a total rewrite if we were to attempt to
-          switch away from either of these core features.) In addition, the
-          backend uses Next.js App router API routes, Drizzle as the ORM and
-          data is stored in a Postgres database.
+          <span className="line-through pl-1">Middleware</span> Proxy. (It would
+          be a total rewrite if we were to attempt to switch away from either of
+          these core features.) In addition, the backend uses Next.js App router
+          API routes, Drizzle as the ORM and data is stored in a Postgres
+          database.
         </p>
         <p className="text-muted-foreground leading-relaxed mb-6">
-          All incoming data is validated through Zod. That's pretty much all that's happening on
-          the server. As an "obviously" but worth disclosing, we only pull user
-          info from the server. Every request to the onboarding routes should be
-          an authenticated one. (
+          All incoming data is validated through Zod. That's pretty much all
+          that's happening on the server. As an "obviously" but worth
+          disclosing, we only pull user info from the server. Every request to
+          the onboarding routes should be an authenticated one. (
           <InlineCode>src/app/api/onboarding/route.ts</InlineCode>)
         </p>
         <p className="text-muted-foreground leading-relaxed">
@@ -183,6 +189,82 @@ export default function DeveloperOnboardingPage() {
           changing what fields are collected here or how we go about it. e.g.
           auto-generate subdomains based on names + availability.
         </p>
+      </DocsSection>
+
+      <DocsSection
+        title="onboardingComplete Metadata"
+        id="onboarding-complete-metadata"
+      >
+        <p className="text-muted-foreground leading-relaxed mb-6">
+          The <InlineCode>onboardingComplete</InlineCode> field is stored in
+          Clerk's <InlineCode>publicMetadata</InlineCode> and is the key
+          mechanism that controls whether a user needs to complete onboarding.
+          It's defined as an optional boolean in{" "}
+          <InlineCode>types/globals.d.ts</InlineCode>.
+        </p>
+
+        <DocsCallout variant="info" title="Never Set to False" icon={Info}>
+          The <InlineCode>onboardingComplete</InlineCode> field is never
+          explicitly set to <InlineCode>false</InlineCode> anywhere in the
+          codebase. It only ever gets set to <InlineCode>true</InlineCode>. New
+          users start with this field as <InlineCode>undefined</InlineCode>,
+          which is falsy and triggers the onboarding redirect.
+        </DocsCallout>
+
+        <div className="space-y-6 mt-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-3">
+              Where It Gets Set to True
+            </h3>
+            <p className="text-muted-foreground leading-relaxed mb-3">
+              There are only two places where{" "}
+              <InlineCode>onboardingComplete</InlineCode> is set to{" "}
+              <InlineCode>true</InlineCode>:
+            </p>
+            <ul className="space-y-3 text-muted-foreground ml-6">
+              <li className="flex gap-2">
+                <span className="text-primary font-bold">1.</span>
+                <div>
+                  <strong>When a user completes onboarding</strong> -{" "}
+                  <InlineCode>src/app/api/onboarding/route.ts</InlineCode> sets
+                  it after successfully creating the wedding record and
+                  associating the user with it.
+                </div>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-primary font-bold">2.</span>
+                <div>
+                  <strong>When inviting a collaborator</strong> -{" "}
+                  <InlineCode>src/app/api/permissions/route.ts</InlineCode>{" "}
+                  pre-sets it to <InlineCode>true</InlineCode> in the invitation
+                  metadata so collaborators skip onboarding and are directly
+                  associated with an existing wedding.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-3">
+              Where It Gets Checked
+            </h3>
+            <p className="text-muted-foreground leading-relaxed mb-3">
+              The primary check happens in <InlineCode>src/proxy.ts</InlineCode>{" "}
+              . For authenticated users on non-tenant hosts, if{" "}
+              <InlineCode>
+                sessionClaims?.metadata?.onboardingComplete
+              </InlineCode>{" "}
+              is falsy (undefined, null, or false), the user gets redirected to{" "}
+              <InlineCode>/engaged/onboarding</InlineCode>.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              This check is bypassed for public routes and for the onboarding
+              routes themselves (to prevent redirect loops). Once the field is
+              set to <InlineCode>true</InlineCode>, users can access the rest of
+              the authenticated application.
+            </p>
+          </div>
+        </div>
       </DocsSection>
     </DocsLayout>
   );

@@ -3,6 +3,12 @@ import { getHostType } from "./multitenancy";
 
 const domains = {
   "www.marriednext.com": { isTenantHost: false, firstLabel: "www" },
+  "admin.marriednext.com": { isTenantHost: false, firstLabel: "admin" },
+  "api.marriednext.com": { isTenantHost: false, firstLabel: "api" },
+  "app.marriednext.com": { isTenantHost: false, firstLabel: "app" },
+  "dashboard.marriednext.com": { isTenantHost: false, firstLabel: "dashboard" },
+  "blog.marriednext.com": { isTenantHost: false, firstLabel: "blog" },
+  "docs.marriednext.com": { isTenantHost: false, firstLabel: "docs" },
   "marriednext.com": { isTenantHost: false, firstLabel: "marriednext" },
   "yulissaandmatthew.com": {
     isTenantHost: false,

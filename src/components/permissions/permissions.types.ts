@@ -7,7 +7,6 @@ export interface CollaboratorInvitation {
   email: string;
   role: UserRole;
   status: InvitationStatus;
-  message?: string;
   sentAt: string;
   acceptedAt?: string;
   declinedAt?: string;
@@ -16,6 +15,5 @@ export interface CollaboratorInvitation {
 export interface InviteUserFormData {
   email: string;
   role: UserRole;
-  message: string;
 }
 

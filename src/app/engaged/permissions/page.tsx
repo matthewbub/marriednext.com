@@ -12,12 +12,34 @@ import {
 } from "@/components/permissions/permissions.types";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MoreVertical } from "lucide-react";
+
+interface Collaborator {
+  id: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+}
 
 interface PermissionsData {
   currentUser: {
     email: string;
     role: UserRole;
   };
+  collaborators: Collaborator[];
   invitations: CollaboratorInvitation[];
 }
 
@@ -70,19 +92,35 @@ export default function PermissionsPage() {
     },
   });
 
+  const deleteInvitationMutation = useMutation({
+    mutationFn: async (invitationId: string) => {
+      console.log("deleteInvitationMutation", invitationId);
+      const res = await fetch("/api/permissions", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invitationId }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Failed to revoke invitation");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["permissions"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleInviteUser = (formData: InviteUserFormData) => {
     inviteUserMutation.mutate(formData);
   };
 
   const handleRemoveInvitation = (id: string) => {
     if (!data) return;
-    const invitation = data.invitations.find((inv) => inv.id === id);
-    updatePermissionsMutation.mutate({
-      invitations: data.invitations.filter((inv) => inv.id !== id),
-    });
-    if (invitation) {
-      toast.success(`Removed invitation for ${invitation.email}`);
-    }
+    deleteInvitationMutation.mutate(id);
   };
 
   const handleResendInvitation = (id: string) => {
@@ -138,6 +176,57 @@ export default function PermissionsPage() {
     );
   };
 
+  const handleCollaboratorRoleChange = (
+    collaboratorId: string,
+    newRole: UserRole
+  ) => {
+    if (!data) return;
+    updatePermissionsMutation.mutate({
+      collaborators: data.collaborators.map((collab) =>
+        collab.id === collaboratorId ? { ...collab, role: newRole } : collab
+      ),
+    });
+    const collaborator = data.collaborators.find(
+      (c) => c.id === collaboratorId
+    );
+    if (collaborator) {
+      const roleLabel =
+        newRole === "spouse"
+          ? "Spouse"
+          : newRole === "family"
+          ? "Family Member"
+          : "Wedding Planner";
+      toast.success(`Changed ${collaborator.email}'s role to ${roleLabel}`);
+    }
+  };
+
+  const deleteCollaboratorMutation = useMutation({
+    mutationFn: async (collaboratorId: string) => {
+      const res = await fetch("/api/permissions", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ collaboratorId }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Failed to remove collaborator");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["permissions"] });
+      toast.success("Collaborator removed");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleRemoveCollaborator = (collaboratorId: string) => {
+    if (!data) return;
+    deleteCollaboratorMutation.mutate(collaboratorId);
+  };
+
   if (isLoading || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -146,7 +235,13 @@ export default function PermissionsPage() {
     );
   }
 
-  const { currentUser, invitations } = data;
+  const { currentUser, collaborators, invitations } = data;
+
+  const roleLabels = {
+    spouse: "Spouse",
+    family: "Family Member",
+    planner: "Wedding Planner",
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
@@ -184,49 +279,105 @@ export default function PermissionsPage() {
             />
           </div>
 
-          <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
-            Invitations
-          </h2>
-
-          {invitations.length === 0 ? (
-            <div className="text-center py-12 px-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <svg
-                  className="w-8 h-8 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No collaborators yet
-              </h3>
-              <p className="text-gray-600">
-                Get started by inviting someone to help manage your wedding
-                website
-              </p>
+          {collaborators.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
+                Collaborators
+              </h2>
+              <ul className="space-y-3">
+                {collaborators.map((collaborator) => (
+                  <li
+                    key={collaborator.id}
+                    className="rounded-xl bg-white border border-gray-200 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold truncate text-gray-900">
+                          {collaborator.email}
+                        </h3>
+                        <div className="flex gap-3 mt-2 flex-wrap items-center">
+                          <span className="text-sm text-gray-600">
+                            {roleLabels[collaborator.role]}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Select
+                          value={collaborator.role}
+                          onValueChange={(value: UserRole) =>
+                            handleCollaboratorRoleChange(collaborator.id, value)
+                          }
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="spouse">Spouse</SelectItem>
+                            <SelectItem value="family">
+                              Family Member
+                            </SelectItem>
+                            <SelectItem value="planner">
+                              Wedding Planner
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="px-2">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              className="text-red-600"
+                              onClick={() =>
+                                handleRemoveCollaborator(collaborator.id)
+                              }
+                            >
+                              Remove Collaborator
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-600 font-medium">
+                      <p>
+                        Joined:{" "}
+                        {new Date(collaborator.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-          ) : (
-            <ul className="space-y-3">
-              {invitations.map((invitation) => (
-                <CollaboratorInvitationCard
-                  key={invitation.id}
-                  invitation={invitation}
-                  currentUserRole={currentUser.role}
-                  onRemove={handleRemoveInvitation}
-                  onResend={handleResendInvitation}
-                  onCopyInviteUrl={handleCopyInviteUrl}
-                  onChangeRole={handleChangeInvitationRole}
-                />
-              ))}
-            </ul>
+          )}
+
+          {invitations.length > 0 && (
+            <div>
+              <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
+                Invitations
+              </h2>
+              <ul className="space-y-3">
+                {invitations.map((invitation) => (
+                  <CollaboratorInvitationCard
+                    key={invitation.id}
+                    invitation={invitation}
+                    currentUserRole={currentUser.role}
+                    onRemove={handleRemoveInvitation}
+                    onResend={handleResendInvitation}
+                    onCopyInviteUrl={handleCopyInviteUrl}
+                    onChangeRole={handleChangeInvitationRole}
+                  />
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </div>

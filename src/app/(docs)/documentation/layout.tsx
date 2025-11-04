@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import NavBar from "@/components/NavBar";
-import "../../engaged/admin-global.css";
 
 export const metadata: Metadata = {
   title: "Married Next",

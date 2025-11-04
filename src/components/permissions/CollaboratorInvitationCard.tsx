@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreVertical, Mail, Trash2, RefreshCw, Edit } from "lucide-react";
+import { MoreVertical, Trash2, RefreshCw, Edit, Mail } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CollaboratorInvitation } from "./permissions.types";
-import clsx from "clsx";
 
 interface CollaboratorInvitationCardProps {
   invitation: CollaboratorInvitation;
@@ -41,18 +40,6 @@ const roleLabels = {
   spouse: "Spouse",
   family: "Family Member",
   planner: "Wedding Planner",
-};
-
-const statusColors = {
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  accepted: "bg-green-100 text-green-800 border-green-200",
-  declined: "bg-gray-100 text-gray-500 border-gray-200",
-};
-
-const statusLabels = {
-  pending: "Pending",
-  accepted: "Accepted",
-  declined: "Declined",
 };
 
 export function CollaboratorInvitationCard({
@@ -100,7 +87,7 @@ export function CollaboratorInvitationCard({
     currentUserRole === "spouse" && invitation.status === "accepted";
   const showResendAndCopy =
     invitation.status === "pending" || invitation.status === "declined";
-  const canRemove = invitation.role === "spouse";
+  const canRemove = invitation.status === "pending";
 
   return (
     <li className="rounded-xl bg-white border border-gray-200 p-4 hover:border-gray-300 hover:shadow-sm transition-all">
@@ -112,14 +99,6 @@ export function CollaboratorInvitationCard({
           <div className="flex gap-3 mt-2 flex-wrap items-center">
             <span className="text-sm text-gray-600">
               {roleLabels[invitation.role]}
-            </span>
-            <span
-              className={clsx(
-                "text-xs font-medium px-2 py-1 rounded border",
-                statusColors[invitation.status]
-              )}
-            >
-              {statusLabels[invitation.status]}
             </span>
           </div>
         </div>
@@ -170,15 +149,6 @@ export function CollaboratorInvitationCard({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      {invitation.message && (
-        <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-start gap-2">
-            <Mail className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-            <p className="text-sm text-gray-700 italic">{invitation.message}</p>
-          </div>
-        </div>
-      )}
 
       <div className="flex justify-between text-xs text-gray-600 font-medium">
         <p>

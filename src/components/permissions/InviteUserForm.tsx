@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -24,13 +23,12 @@ export function InviteUserForm({
 }: InviteUserFormProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole>("family");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = () => {
     if (!email.trim()) {
       return;
     }
-    onSubmit({ email: email.trim(), role, message: message.trim() });
+    onSubmit({ email: email.trim(), role });
   };
 
   const canSubmit = email.trim() !== "";
@@ -69,20 +67,6 @@ export function InviteUserForm({
             <SelectItem value="planner">Wedding Planner</SelectItem>
           </SelectContent>
         </Select>
-      </div>
-
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium mb-1">
-          Custom Message (Optional)
-        </label>
-        <Textarea
-          id="message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Add a personal message to the invitation..."
-          rows={3}
-          disabled={isSubmitting}
-        />
       </div>
 
       <div className="flex gap-2 pt-2">

@@ -47,12 +47,22 @@ const documentationSections = [
     color: "text-blue-600 dark:text-blue-400",
     bgColor: "bg-blue-50 dark:bg-blue-950/30",
   },
+  {
+    title: "Multitenant Tricks Next.js",
+    href: "/documentation/developer/multitenant-tricks-nextjs",
+    description:
+      "How we achieve fast tenant app performance using Redis caching and React Server Components",
+    icon: Zap,
+    category: "Developer",
+    color: "text-orange-600 dark:text-orange-400",
+    bgColor: "bg-orange-50 dark:bg-orange-950/30",
+  },
 ];
 
 export default function DocumentationPage() {
   return (
     <div className="min-h-screen py-12 px-6">
-      <div>
+      <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
