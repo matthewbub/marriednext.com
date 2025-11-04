@@ -1,5 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Header from "@/components/tenant/Header";
+import { WeddingData } from "@/lib/tenant/weddingData.types";
+
+const mockWeddingData: WeddingData = {
+  id: "1",
+  subdomain: "example",
+  customDomain: null,
+  createdAt: "2024-01-01T00:00:00Z",
+  updatedAt: "2024-01-01T00:00:00Z",
+  fieldDisplayName: "Our Wedding",
+  fieldLocationName: "The Grand Ballroom",
+  fieldLocationAddress: "123 Main St, Anytown, USA",
+  fieldEventDate: "2025-06-15T00:00:00Z",
+  fieldEventTime: "4:00 PM",
+  fieldMapsEmbedUrl: null,
+  fieldMapsShareUrl: null,
+  fieldQuestionsAndAnswers: null,
+  fieldOurStory: null,
+  fieldNameA: "Alex",
+  fieldNameB: "Jordan",
+  controlRsvpNameFormat: "FULL_NAME",
+};
 
 const meta = {
   title: "Tenant/Header",
@@ -20,6 +41,9 @@ const meta = {
       </div>
     ),
   ],
+  args: {
+    weddingData: mockWeddingData,
+  },
 } satisfies Meta<typeof Header>;
 
 export default meta;

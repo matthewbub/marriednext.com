@@ -1,4 +1,11 @@
-import { paymentLinks } from "@/lib/tenant/constants";
+const paymentLinks = {
+  "25": "#",
+  "50": "#",
+  "100": "#",
+  "250": "#",
+  "500": "#",
+  custom: "#",
+};
 
 export default function Registry() {
   return (

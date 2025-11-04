@@ -37,7 +37,6 @@ export const PendingInvitation: Story = {
       email: "partner@example.com",
       role: "spouse",
       status: "pending",
-      message: "Can't wait to plan together!",
       sentAt: "2024-10-25T16:20:00Z",
     },
   },
@@ -76,7 +75,6 @@ export const PlannerPending: Story = {
       email: "planner@weddings.com",
       role: "planner",
       status: "pending",
-      message: "Looking forward to working with you on your special day!",
       sentAt: "2024-10-25T16:20:00Z",
     },
   },
@@ -103,10 +101,8 @@ export const AsNonSpouse: Story = {
       email: "partner@example.com",
       role: "spouse",
       status: "accepted",
-      message: "Can't wait to plan together!",
       sentAt: "2024-10-15T10:00:00Z",
       acceptedAt: "2024-10-15T14:30:00Z",
     },
   },
 };
-

@@ -171,15 +171,6 @@ export function CollaboratorInvitationCard({
         </DropdownMenu>
       </div>
 
-      {invitation.message && (
-        <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-start gap-2">
-            <Mail className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-            <p className="text-sm text-gray-700 italic">{invitation.message}</p>
-          </div>
-        </div>
-      )}
-
       <div className="flex justify-between text-xs text-gray-600 font-medium">
         <p>
           Sent:{" "}

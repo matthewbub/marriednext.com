@@ -57,7 +57,7 @@ export default function GuestListDisplay({
         id: g.id,
         nameOnInvitation: g.nameOnInvitation,
         isAttending: g.isAttending,
-        hasPlusOne: g.hasPlusOne,
+        hasPlusOne: g.hasPlusOne ?? false,
       })),
       inviteGroupName: entry.inviteGroupName ?? null,
     });

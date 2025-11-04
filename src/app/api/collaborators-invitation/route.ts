@@ -23,7 +23,6 @@ export async function GET(request: Request) {
     senderEmail: invitation.invitedByName,
     role: invitation.role,
     invitedEmail: invitation.invitedEmail,
-    message: invitation.message,
   });
 }
 
