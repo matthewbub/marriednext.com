@@ -3,7 +3,6 @@ import { db } from "@/database/drizzle";
 import { guest, invitation } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import * as Sentry from "@sentry/nextjs";
 import {
   getGuestListData,
   type GuestListResponse,
@@ -44,26 +43,14 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching guest list:", error);
     if (error instanceof z.ZodError) {
-      Sentry.captureException(error, {
-        level: "error",
-        tags: { route: "guest-list-get" },
-      });
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
     if (error instanceof DatabaseError) {
-      Sentry.captureException(error, {
-        level: "error",
-        tags: { route: "guest-list-get" },
-      });
       return NextResponse.json(
         { error: "Service temporarily unavailable" },
         { status: 503 }
       );
     }
-    Sentry.captureException(error, {
-      level: "error",
-      tags: { route: "guest-list-get" },
-    });
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }
@@ -154,10 +141,6 @@ export async function PUT(request: Request): Promise<NextResponse> {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      Sentry.captureException(error, {
-        level: "error",
-        tags: { route: "guest-list-put" },
-      });
       return NextResponse.json(
         { error: "Invalid request data", details: error.issues },
         { status: 400 }
@@ -165,10 +148,6 @@ export async function PUT(request: Request): Promise<NextResponse> {
     }
 
     console.error("Error updating invitation:", error);
-    Sentry.captureException(error, {
-      level: "error",
-      tags: { route: "guest-list-put" },
-    });
     return NextResponse.json(
       { error: "Failed to update invitation" },
       { status: 500 }

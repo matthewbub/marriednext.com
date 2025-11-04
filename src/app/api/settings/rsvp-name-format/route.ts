@@ -5,7 +5,6 @@ import { wedding } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
 import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";
-import * as Sentry from "@sentry/nextjs";
 
 const updateSchema = z.object({
   nameFormat: z.enum(["FIRST_NAME_ONLY", "FULL_NAME"]),
@@ -24,9 +23,6 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching name format setting:", error);
-    Sentry.captureException(error, {
-      tags: { route: "rsvp-name-format-get" },
-    });
     return NextResponse.json(
       { error: "Failed to fetch setting" },
       { status: 500 }
@@ -85,22 +81,12 @@ export async function PUT(request: Request) {
       });
     }
 
-    Sentry.captureMessage("RSVP name format updated", {
-      extra: {
-        weddingId: currentWedding.id,
-        newFormat: nameFormat,
-      },
-    });
-
     return NextResponse.json({
       success: true,
       nameFormat,
     });
   } catch (error) {
     console.error("Error updating name format setting:", error);
-    Sentry.captureException(error, {
-      tags: { route: "rsvp-name-format-put" },
-    });
     return NextResponse.json(
       { error: "Failed to update setting" },
       { status: 500 }

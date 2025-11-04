@@ -4,7 +4,6 @@ import { invitation, guest } from "@/drizzle/schema";
 import { and, or, eq, ilike, asc, desc, sql, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
-import * as Sentry from "@sentry/nextjs";
 
 const searchSchema = z.object({
   query: z.string().min(1),
@@ -107,10 +106,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      Sentry.captureException(error, {
-        level: "error",
-        tags: { route: "guest-list-search" },
-      });
       return NextResponse.json(
         { error: "Invalid request data", details: error.issues },
         { status: 400 }
@@ -118,10 +113,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     console.error("Error searching invitations:", error);
-    Sentry.captureException(error, {
-      level: "error",
-      tags: { route: "guest-list-search" },
-    });
     return NextResponse.json(
       { error: "Failed to search invitations" },
       { status: 500 }

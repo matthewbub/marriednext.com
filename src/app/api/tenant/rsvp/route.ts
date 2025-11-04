@@ -4,7 +4,6 @@ import { db } from "@/database/drizzle";
 import { guest, invitation } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { getWeddingFromRequest } from "@/lib/tenant/getWeddingFromRequest";
-import * as Sentry from "@sentry/nextjs";
 
 const guestSelectionSchema = z.object({
   name: z.string(),
@@ -97,24 +96,12 @@ export async function POST(request: Request) {
       }
     });
 
-    Sentry.captureMessage("RSVP submitted (v3)", {
-      extra: {
-        invitationId,
-        email,
-        guestCount: guestSelections.length,
-        attendingCount: guestSelections.filter((g) => g.isAttending).length,
-      },
-    });
-
     return NextResponse.json({
       success: true,
       message: "RSVP submitted successfully",
     });
   } catch (error) {
     console.error("Error submitting RSVP:", error);
-    Sentry.captureException(error, {
-      tags: { route: "rsvp-submit" },
-    });
     return NextResponse.json(
       { error: "Failed to submit RSVP" },
       { status: 500 }

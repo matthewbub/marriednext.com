@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { findInvitationByGuestName } from "@/lib/tenant/invitationLookup";
 import { getWeddingFromRequest } from "@/lib/tenant/getWeddingFromRequest";
-import * as Sentry from "@sentry/nextjs";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -46,9 +45,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error looking up invitation:", error);
-    Sentry.captureException(error, {
-      tags: { route: "rsvp-lookup" },
-    });
     return NextResponse.json(
       { error: "Failed to lookup invitation" },
       { status: 500 }

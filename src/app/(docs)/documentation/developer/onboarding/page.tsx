@@ -56,8 +56,7 @@ export default function DeveloperOnboardingPage() {
           data is stored in a Postgres database.
         </p>
         <p className="text-muted-foreground leading-relaxed mb-6">
-          All incoming data is validated through Zod, errors and other telemetry
-          are collected via Sentry. That's pretty much all that's happening on
+          All incoming data is validated through Zod. That's pretty much all that's happening on
           the server. As an "obviously" but worth disclosing, we only pull user
           info from the server. Every request to the onboarding routes should be
           an authenticated one. (
@@ -138,10 +137,6 @@ export default function DeveloperOnboardingPage() {
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>
                   <span>Zod</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>Sentry</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">•</span>

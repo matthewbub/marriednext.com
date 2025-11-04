@@ -5,7 +5,6 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";
 import { extractWeddingId } from "@/lib/extractWeddingId";
-import * as Sentry from "@sentry/nextjs";
 
 const deleteInvitationSchema = z.object({
   entryId: z.string().uuid(),
@@ -41,10 +40,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      Sentry.captureException(error, {
-        level: "error",
-        tags: { route: "guest-list-delete" },
-      });
       return NextResponse.json(
         { error: "Invalid request data", details: error.issues },
         { status: 400 }
@@ -52,10 +47,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
     }
 
     console.error("Error deleting invitation:", error);
-    Sentry.captureException(error, {
-      level: "error",
-      tags: { route: "guest-list-delete" },
-    });
     return NextResponse.json(
       { error: "Failed to delete invitation" },
       { status: 500 }
