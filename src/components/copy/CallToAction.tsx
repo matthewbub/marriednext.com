@@ -8,12 +8,15 @@ export default function CallToAction() {
       <div className="bg-orange-800 text-white w-full rounded-lg">
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
           <h2 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl">
-            Ready to create your wedding’s digital home?
+            Start planning smarter today
           </h2>
+          <p className="mt-6 max-w-xl text-lg/8 text-orange-100">
+            Join couples who are managing their guest lists without the stress. Free to start, no credit card required, and built with transparency you can trust.
+          </p>
           <div className="mt-10 flex items-center gap-x-6">
             <Button asChild>
               <Link href="/sign-up">
-                Start building for free{" "}
+                Get started free{" "}
                 <ArrowRightIcon className="size-4 ml-2" />
               </Link>
             </Button>

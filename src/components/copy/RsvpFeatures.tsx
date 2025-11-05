@@ -1,24 +1,24 @@
-import { ClipboardList, Mail, Users } from "lucide-react";
+import { ClipboardList, Mail, Users, Shield } from "lucide-react";
 import Image from "next/image";
 
 const features = [
   {
-    name: "Invitation-based guest list",
+    name: "Guest lists that actually work",
     description:
-      "Create your guest list and send personalized invitations. Each guest gets their own unique link to manage their response.",
+      "Stop chasing down RSVPs. Your guests just type their name and we find them automatically. Track who's coming, who needs a reminder, and who's bringing a plus-one, all in one place.",
     icon: ClipboardList,
   },
   {
-    name: "RSVP for your whole party",
+    name: "Plan together without the headaches",
     description:
-      "Guests can respond for themselves or on behalf of their entire party. No need to coordinate multiple responses.",
+      "You and your partner can both update the guest list at the same time. No more texting screenshots or merging spreadsheets. Changes sync instantly so you're always on the same page.",
     icon: Users,
   },
   {
-    name: "Stay connected with your guests",
+    name: "Built on trust, not lock-in",
     description:
-      "Collect email addresses as an emergency contact point. Receive instant notifications when guests respond, with bulk management available in your dashboard.",
-    icon: Mail,
+      "We're open source, which means our code is public and reviewed by the community. Your guest data stays secure, and you're never locked into a platform you can't trust.",
+    icon: Shield,
   },
 ];
 
@@ -30,15 +30,13 @@ export default function RsvpFeatures() {
           <div className="lg:ml-auto lg:pt-4 lg:pl-4">
             <div className="lg:max-w-lg">
               <h2 className="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">
-                Effortless planning
+                Planning made simple
               </h2>
               <p className="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl dark:text-white">
-                Your digital home for wedding RSVPs
+                Everything you need to manage wedding RSVPs
               </p>
               <p className="mt-6 text-lg/8 text-gray-600 dark:text-gray-300">
-                Create a seamless experience for your guests to share in your
-                celebration. Make it easy for them to respond, and give yourself
-                peace of mind with organized, real-time tracking.
+                Wedding planning is stressful enough without fighting with spreadsheets or wondering who replied. We handle the complexity so you can focus on what matters: celebrating with the people you love.
               </p>
               <dl className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none dark:text-gray-400">
                 {features.map((feature) => (

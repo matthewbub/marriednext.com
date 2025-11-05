@@ -182,7 +182,7 @@ export default function Hero() {
                   "relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:text-gray-400 dark:ring-white/10 dark:hover:ring-white/20"
                 )}
               >
-                New: RSVP tracking and guest list tools
+                Open source and built for couples who want control
                 <Link
                   href="/documentation/invitations"
                   className={clsx(
@@ -193,7 +193,7 @@ export default function Hero() {
                     aria-hidden="true"
                     className={clsx("absolute inset-0")}
                   />
-                  Read more <span aria-hidden="true">&rarr;</span>
+                  Learn more <span aria-hidden="true">&rarr;</span>
                 </Link>
               </div>
             </div>
@@ -203,15 +203,14 @@ export default function Hero() {
                   "text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl dark:text-white"
                 )}
               >
-                Build a beautiful wedding website in minutes
+                Your wedding website that actually makes planning easier
               </h1>
               <p
                 className={clsx(
                   "mt-8 text-lg font-medium text-pretty text-gray-600 sm:text-xl/8 dark:text-gray-400"
                 )}
               >
-                Married Next helps you share your story, collect RSVPs, manage
-                guest lists, and keep everyone in the loop.
+                Smart RSVP tracking that handles the chaos. Collaborate with your partner without the confusion. Share your story on your own domain. And because we're open source, you can trust us with your big day.
               </p>
               <div
                 className={clsx(
