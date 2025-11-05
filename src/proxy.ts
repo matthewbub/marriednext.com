@@ -12,7 +12,7 @@ const isPublicRoute = createRouteMatcher([
   "/documentation/(.*)",
 ]);
 
-function rewriteThatShit(req: NextRequest, url: string) {
+function nextResponseRewrite(req: NextRequest, url: string) {
   return NextResponse.rewrite(new URL(url, req.url));
 }
 
@@ -47,10 +47,18 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
   } else {
     const pathname = req.nextUrl.pathname;
+
+    if (pathname.startsWith("/api/tenant/")) {
+      return NextResponse.next();
+    }
+
     if (firstLabel === "yulissaandmatthew") {
-      return rewriteThatShit(req, `/legacy/yulissaandmatthew.com${pathname}`);
+      return nextResponseRewrite(
+        req,
+        `/legacy/yulissaandmatthew.com${pathname}`
+      );
     } else if (isTenantHost) {
-      return rewriteThatShit(req, `/tenant/${hostHeader}${pathname}`);
+      return nextResponseRewrite(req, `/tenant/${hostHeader}${pathname}`);
     }
   }
 });
