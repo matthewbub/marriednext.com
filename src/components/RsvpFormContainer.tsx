@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRsvpStore } from "@/stores/rsvpStore";
 import type { InvitationLookupResponse, RsvpApiResponse } from "@/types/rsvp";
@@ -16,7 +15,6 @@ export default function RsvpFormContainer({
   variant,
 }: RsvpFormContainerProps) {
   const {
-    inputName,
     email,
     selectedGuests,
     invitation,
@@ -25,9 +23,6 @@ export default function RsvpFormContainer({
     setLoading,
     setError,
   } = useRsvpStore();
-
-  const prevInputNameRef = useRef<string>("");
-  const prevEmailRef = useRef<string>("");
 
   const lookupMutation = useMutation({
     mutationFn: async (name: string) => {
@@ -92,28 +87,12 @@ export default function RsvpFormContainer({
     },
   });
 
-  useEffect(() => {
-    if (
-      inputName &&
-      inputName !== prevInputNameRef.current &&
-      !lookupMutation.isPending
-    ) {
-      prevInputNameRef.current = inputName;
-      lookupMutation.mutate(inputName);
-    }
-  }, [inputName, lookupMutation]);
-
-  useEffect(() => {
-    if (
-      email &&
-      email !== prevEmailRef.current &&
-      invitation &&
-      !submitMutation.isPending
-    ) {
-      prevEmailRef.current = email;
-      submitMutation.mutate();
-    }
-  }, [email, invitation, submitMutation]);
-
-  return <RsvpForm className={className} variant={variant} />;
+  return (
+    <RsvpForm
+      className={className}
+      variant={variant}
+      onLookup={(name) => lookupMutation.mutate(name)}
+      onSubmit={() => submitMutation.mutate()}
+    />
+  );
 }

@@ -49,7 +49,6 @@ export const useRsvpStore = create<RsvpStore>((set) => ({
       invitation,
       selectedGuests: guests,
       nameFormat,
-      email: invitation.email || "",
     });
   },
 

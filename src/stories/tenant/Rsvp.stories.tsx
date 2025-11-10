@@ -30,7 +30,7 @@ export const NameInput: Story = {
       useEffect(() => {
         useRsvpStore.getState().reset();
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },
@@ -83,7 +83,7 @@ export const GuestSelection: Story = {
         );
         store.setStep("guest-selection");
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },
@@ -127,7 +127,7 @@ export const EmailCollection: Story = {
         );
         store.setStep("email-collection");
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },
@@ -148,7 +148,7 @@ export const LoadingState: Story = {
         store.reset();
         store.setLoading(true);
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },
@@ -171,7 +171,7 @@ export const ErrorState: Story = {
           "We couldn't find your invitation. Please check your name and try again."
         );
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },
@@ -214,7 +214,7 @@ export const SuccessState: Story = {
         );
         store.setStep("success");
       }, []);
-      return <RsvpForm />;
+      return <RsvpForm onLookup={() => {}} onSubmit={() => {}} />;
     };
     return <StoryComponent />;
   },

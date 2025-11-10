@@ -10,11 +10,15 @@ import { useRsvpStore } from "@/stores/rsvpStore";
 interface RsvpFormProps {
   className?: string;
   variant?: "tenant" | "legacy";
+  onLookup: (name: string) => void;
+  onSubmit: () => void;
 }
 
 export default function RsvpForm({
   className,
   variant = "tenant",
+  onLookup,
+  onSubmit,
 }: RsvpFormProps) {
   const {
     step,
@@ -24,7 +28,6 @@ export default function RsvpForm({
     nameFormat,
     isLoading,
     errorMessage,
-    setInputName,
     setStep,
     toggleGuest,
     setEmail,
@@ -55,7 +58,7 @@ export default function RsvpForm({
   const isLegacy = variant === "legacy";
 
   const handleNameSubmit = (data: { name: string }) => {
-    setInputName(data.name);
+    onLookup(data.name);
   };
 
   const handleGuestSelectionNext = () => {
@@ -64,6 +67,7 @@ export default function RsvpForm({
 
   const handleEmailSubmit = (data: { email: string }) => {
     setEmail(data.email);
+    onSubmit();
   };
 
   const baseStyles = clsx(
