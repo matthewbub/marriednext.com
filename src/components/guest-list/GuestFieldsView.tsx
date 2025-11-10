@@ -21,11 +21,14 @@ export default function GuestFieldsView({ entry }: GuestFieldsViewProps) {
           <span
             className={clsx(
               "text-sm font-bold",
-              guest.isAttending && "text-green-700",
-              !guest.isAttending && "text-gray-600"
+              guest.isAttending === true && "text-green-700",
+              guest.isAttending === false && "text-red-700",
+              guest.isAttending === null && "text-gray-600"
             )}
           >
-            {guest.isAttending ? "✓ Attending" : "Pending"}
+            {guest.isAttending === true && "✓ Attending"}
+            {guest.isAttending === false && "✗ Not Attending"}
+            {guest.isAttending === null && "Pending"}
           </span>
         </div>
       ))}
@@ -38,11 +41,14 @@ export default function GuestFieldsView({ entry }: GuestFieldsViewProps) {
           <span
             className={clsx(
               "text-sm font-bold",
-              firstGuest.isAttending && "text-green-700",
-              !firstGuest.isAttending && "text-gray-600"
+              firstGuest.isAttending === true && "text-green-700",
+              firstGuest.isAttending === false && "text-red-700",
+              firstGuest.isAttending === null && "text-gray-600"
             )}
           >
-            {firstGuest.isAttending ? "✓ Attending" : "Pending"}
+            {firstGuest.isAttending === true && "✓ Attending"}
+            {firstGuest.isAttending === false && "✗ Not Attending"}
+            {firstGuest.isAttending === null && "Pending"}
           </span>
         </div>
       )}

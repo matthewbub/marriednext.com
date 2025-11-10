@@ -42,7 +42,7 @@ export const useRsvpStore = create<RsvpStore>((set) => ({
   setInvitation: (invitation, nameFormat) => {
     const guests: GuestSelection[] = invitation.guests.map((guest) => ({
       name: guest.nameOnInvitation,
-      isAttending: guest.isAttending ?? true,
+      isAttending: guest.isAttending ?? false,
     }));
 
     set({
