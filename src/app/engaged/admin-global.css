@@ -4,8 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-black: #2c2c2c;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font1: var(--font-vullkorn-sans);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -80,6 +82,8 @@
   --sidebar-ring: oklch(0.708 0 0);
   /* adding custom orangish-red color for wedding buttons */
   --wedding-accent: oklch(0.55 0.22 45);
+  --bar-canvas: #e8e3cf;
+  --font1: "Vullkorn";
 }
 
 .dark {
@@ -136,4 +140,25 @@
 
 * {
   font-family: var(--font-rubik);
+}
+
+.font-title {
+  font-family: var(--font-vullkorn);
+  font-weight: 600;
+}
+
+.secondaryButton {
+  font-family: var(--font-vullkorn);
+  font-style: italic;
+  color: var(--color-white);
+  background: var(--color-black);
+  border-radius: var(--radius-4xl);
+  padding-top: calc(var(--spacing) * 4);
+  padding-right: calc(var(--spacing) * 32);
+  padding-bottom: calc(var(--spacing) * 4);
+  padding-left: calc(var(--spacing) * 32);
+}
+
+.bar-canvas {
+  background: var(--bar-canvas);
 }

@@ -96,6 +96,20 @@ export const wedding = pgTable(
     fieldDisplayName: text("field_display_name"),
     fieldLocationName: text("field_location_name"),
     fieldLocationAddress: text("field_location_address"),
+
+    // fieldLocationAddress is what we collect on the sign up,
+    // the PreferredLocation is the version of that address we can beautify
+    // idk i could connect the fieldLocationAddress to google location api and automate this step but hmmm..
+    fieldPreferredLocationAddressLine1: text(
+      "field_preferred_location_address_line_1"
+    ),
+    fieldPreferredLocationAddressLine2: text(
+      "field_preferred_location_address_line_2"
+    ),
+    fieldPreferredLocationCity: text("field_preferred_location_city"),
+    fieldPreferredLocationState: text("field_preferred_location_state"),
+    fieldPreferredLocationZipCode: text("field_preferred_location_zip_code"),
+    fieldPreferredLocationCountry: text("field_preferred_location_country"),
     fieldEventDate: timestamp("field_event_date", { mode: "string" }),
     fieldEventTime: text("field_event_time"),
     fieldMapsEmbedUrl: text("field_maps_embed_url"),

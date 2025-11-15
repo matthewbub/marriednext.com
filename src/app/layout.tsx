@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./engaged/admin-global.css";
-import { Rubik, Gloria_Hallelujah } from "next/font/google";
+import { Rubik, Gloria_Hallelujah, Vollkorn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 const rubik = Rubik({
   variable: "--font-rubik",
+  subsets: ["latin"],
+});
+
+const vullkorn = Vollkorn({
+  variable: "--font-vullkorn",
   subsets: ["latin"],
 });
 
@@ -31,7 +36,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${rubik.variable} ${shadowsIntoLight.variable} antialiased bg-transparent`}
+          className={`${rubik.variable} ${vullkorn.variable} ${shadowsIntoLight.variable} antialiased bg-transparent`}
         >
           <QueryProvider>
             <div className="mx-auto">{children}</div>
