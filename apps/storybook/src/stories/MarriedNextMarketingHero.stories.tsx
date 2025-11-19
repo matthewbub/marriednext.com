@@ -27,8 +27,12 @@ export const Hero = () => {
         </div>
 
         <div className="mn-hero-rightside">
-          <div className="mn-hero-imagebg">
-            <RoseSvg />
+          <div className="mn-hero-imageshell">
+            <img
+              className="mn-hero-image"
+              src="https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/rose.png"
+              alt="Hero Image"
+            />
           </div>
           <div className="mn-hero-fancytextgroup">
             <span className="mn-hero-fancytext1">
