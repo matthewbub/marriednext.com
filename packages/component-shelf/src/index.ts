@@ -20,4 +20,3 @@ export type { MarriedNextMarketingUploadMemoriesTypes } from "./stories/MarriedN
 export type { MarriedNextMarketingFooterTypes } from "./stories/MarriedNextMarketingFooter.types";
 
 export { default as WheelSvg } from "./stories/WheelSvg";
-

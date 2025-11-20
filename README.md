@@ -41,7 +41,7 @@ Once the _webapp_ is running locally, there's alot of technical documentation in
 ### Running Storybook Locally
 
 ```bash
-pnpm turbo dev --filter=storybook
+pnpm turbo dev --filter=component-shelf
 ```
 
 Enviroment variable required for a good time (no errors)
