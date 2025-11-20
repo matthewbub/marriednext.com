@@ -2,6 +2,12 @@
   box-sizing: border-box;
 }
 
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --primary-font-family: "Vollkorn", cursive, serif;
   --secondary-font-family: Geist, cursive, Oxygen, Ubuntu, Cantarell,
@@ -703,7 +709,8 @@
   font-weight: bold;
 }
 
-* Container for the entire square component */ .mn-table-square {
+/* Container for the entire square component */
+.mn-table-square {
   position: relative; /* All children with absolute positioning will be placed relative to this container. */
   width: 250px; /* Use the same width and height as the 'containerSize' variable in the component. */
   height: 250px;
