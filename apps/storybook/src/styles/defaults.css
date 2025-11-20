@@ -3,11 +3,10 @@
 }
 
 :root {
-  --primary-font-family: "Times New Roman", Times, serif;
-  --secondary-font-family: system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-    sans-serif;
-  --marketing-font-family: "Times New Roman", Times, serif;
+  --primary-font-family: "Vollkorn", cursive, serif;
+  --secondary-font-family: Geist, cursive, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --marketing-font-family: "Vollkorn", cursive, serif;
   --canvas-color: #e8e3cf;
   --text-color: #2c2c2c;
   --primary-color: #745656;
@@ -150,6 +149,7 @@
     font-size: 36px;
     margin-top: 0;
     margin-bottom: 0;
+    font-family: var(--primary-font-family);
   }
 
   .mn-hero-subtext {
@@ -679,4 +679,47 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.mn-table-circle {
+  height: 250px;
+  width: 250px;
+  border: 1px solid #2c2c2c;
+  border-radius: 9000px;
+  position: relative; /* Crucial for absolute positioning of children */
+  margin: 20px auto; /* Center the circle on the page */
+}
+
+.circle-item {
+  width: 40px;
+  height: 40px;
+  background-color: #aed581; /* Example color */
+  border-radius: 50%;
+  position: absolute; /* Position relative to the parent .mn-table-circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: bold;
+}
+
+* Container for the entire square component */ .mn-table-square {
+  position: relative; /* All children with absolute positioning will be placed relative to this container. */
+  width: 250px; /* Use the same width and height as the 'containerSize' variable in the component. */
+  height: 250px;
+  border: 1px solid black; /* A border helps visualize the container, as in the component's inline styles. */
+}
+
+/* Individual item within the square */
+.square-item {
+  position: absolute; /* Allows manual positioning with 'top' and 'left'. */
+  width: 40px; /* Use the same size as the 'itemSize' variable in the component. */
+  height: 40px;
+  background-color: #007bff; /* Example styling from the component. */
+  border-radius: 50%; /* Make items round, as specified in the component. */
+  display: flex; /* These Flexbox properties center the item's content. */
+  justify-content: center;
+  align-items: center;
+  color: white; /* Example styling from the component. */
+  /* The `top` and `left` properties are set dynamically by the component. */
 }
