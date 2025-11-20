@@ -16,8 +16,8 @@
     "db:seed": "tsx drizzle/seed.ts"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
-    "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-autoscroll": "^2.0.1",
+    "@atlaskit/pragmatic-drag-and-drop": "1.7.7",
+    "@atlaskit/pragmatic-drag-and-drop-react-beautiful-dnd-autoscroll": "2.0.1",
     "@clerk/nextjs": "6.31.3",
     "@clerk/types": "4.95.1",
     "@hookform/resolvers": "5.2.2",
@@ -55,6 +55,7 @@
     "sonner": "2.0.7",
     "component-shelf": "workspace:*",
     "stripe": "19.0.0",
+    "style-shelf": "workspace:*",
     "tailwind-merge": "3.3.1",
     "three": "0.180.0",
     "zod": "4.1.12",

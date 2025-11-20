@@ -1,0 +1,9 @@
+{
+  "name": "style-shelf",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./styles": "./src/defaults.css",
+    ".": "./src/defaults.css"
+  }
+}

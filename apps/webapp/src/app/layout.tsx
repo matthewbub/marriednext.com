@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 // import "./engaged/admin-global.css";
-import "component-shelf/styles";
+import "style-shelf/styles";
 import { Rubik, Gloria_Hallelujah, Vollkorn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { QueryProvider } from "@/providers/QueryProvider";
