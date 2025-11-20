@@ -8,6 +8,8 @@ import {
   boolean,
   jsonb,
   pgEnum,
+  integer,
+  real,
 } from "drizzle-orm/pg-core";
 
 export const rsvpNameFormat = pgEnum("rsvp_name_format", [
@@ -21,6 +23,12 @@ export const invitationStatus = pgEnum("invitation_status", [
   "pending",
   "accepted",
   "declined",
+]);
+
+export const tableType = pgEnum("table_type", [
+  "square",
+  "rectangle",
+  "circle",
 ]);
 
 export const invitation = pgTable(
@@ -176,5 +184,62 @@ export const collaboratorInvitations = pgTable(
     })
       .onUpdate("cascade")
       .onDelete("cascade"),
+  ]
+);
+
+export const seatingTable = pgTable(
+  "seating_table",
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    weddingId: uuid("wedding_id").notNull(),
+    type: tableType("type").notNull(),
+    x: real("x").notNull(),
+    y: real("y").notNull(),
+    tableName: text("table_name"),
+    createdAt: timestamp("created_at", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.weddingId],
+      foreignColumns: [wedding.id],
+      name: "fk_seating_table_wedding",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+  ]
+);
+
+export const seatAssignment = pgTable(
+  "seat_assignment",
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    tableId: uuid("table_id").notNull(),
+    guestId: uuid("guest_id").notNull(),
+    seatPosition: integer("seat_position").notNull(),
+    createdAt: timestamp("created_at", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.tableId],
+      foreignColumns: [seatingTable.id],
+      name: "fk_seat_assignment_table",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    foreignKey({
+      columns: [table.guestId],
+      foreignColumns: [guest.id],
+      name: "fk_seat_assignment_guest",
+    })
+      .onUpdate("cascade")
+      .onDelete("cascade"),
+    unique("uq_seat_assignment_table_guest").on(table.tableId, table.guestId),
   ]
 );
