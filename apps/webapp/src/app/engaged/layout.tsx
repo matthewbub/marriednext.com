@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import NavBar from "@/components/NavBar";
 import "./admin-global.css";
+import "style-shelf/admin-hybrid";
 
 export const metadata: Metadata = {
   title: "Married Next",

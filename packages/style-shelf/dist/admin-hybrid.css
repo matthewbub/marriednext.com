@@ -1,0 +1,17 @@
+/* 
+  main app was styled in tailwind
+  but will be using style-shelf moving forward
+  im not gonna rewrite the whole  thing so itll br progressive
+*/
+
+.mn-primary-font {
+  font-family: var(--primary-font-family);
+}
+
+.mn-secondary-font {
+  font-family: var(--secondary-font-family);
+}
+
+.mn-marketing-font {
+  font-family: var(--marketing-font-family);
+}

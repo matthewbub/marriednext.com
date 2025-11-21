@@ -93,7 +93,9 @@ export default function Home() {
         <div className={cn("text-sm tracking-widest uppercase text-gray-600")}>
           Engaged Home
         </div>
-        <h1 className={cn("text-4xl md:text-5xl font-semibold")}>
+        <h1
+          className={cn("mn-primary-font text-4xl md:text-5xl font-semibold")}
+        >
           {data.displayName || `${data.nameA} & ${data.nameB}`}
         </h1>
         <div className={cn("text-base md:text-lg text-gray-700")}>

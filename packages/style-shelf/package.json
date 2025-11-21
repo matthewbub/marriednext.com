@@ -3,15 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "postcss src/defaults.css -o dist/defaults.css",
-    "dev": "postcss src/defaults.css -o dist/defaults.css --watch"
+    "build": "postcss src/defaults.css src/admin-hybrid.css --dir dist && cp -r src/fonts dist/fonts",
+    "dev": "postcss src/defaults.css src/admin-hybrid.css --dir dist --watch"
   },
   "exports": {
     "./styles": "./dist/defaults.css",
+    "./admin-hybrid": "./dist/admin-hybrid.css",
     ".": "./dist/defaults.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/fonts"
   ],
   "dependencies": {
     "autoprefixer": "10.4.20",
