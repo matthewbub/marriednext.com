@@ -172,7 +172,7 @@ function DraggableGuestItem({
           {getRsvpStatusText(guest.isAttending)}
         </p>
       </div>
-      <Button size="sm" variant="ghost" onClick={onRemove}>
+      <Button size="sm" variant="outline" onClick={onRemove}>
         <Minus className="h-4 w-4" />
       </Button>
     </div>
@@ -523,7 +523,7 @@ export function TableAssignmentModal({
                                 </div>
                                 <Button
                                   size="sm"
-                                  variant="ghost"
+                                  variant="outline"
                                   onClick={() => handleAddGuest(guest.id)}
                                 >
                                   <Plus className="h-4 w-4" />
@@ -598,7 +598,7 @@ export function TableAssignmentModal({
                                   </div>
                                   <Button
                                     size="sm"
-                                    variant="ghost"
+                                    variant="outline"
                                     onClick={() =>
                                       handleMoveGuestFromAnotherTable(guest.id)
                                     }

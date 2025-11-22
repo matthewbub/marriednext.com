@@ -31,7 +31,7 @@ export default function Hero() {
             <Sheet>
               <SheetTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   className={clsx(
                     "-m-2.5 p-2.5 text-gray-500 dark:text-gray-400"
                   )}
@@ -222,7 +222,7 @@ export default function Hero() {
                 </Button>
                 <Button
                   asChild
-                  variant="link"
+                  variant="outline"
                   className={clsx("text-gray-900 dark:text-white")}
                 >
                   <Link

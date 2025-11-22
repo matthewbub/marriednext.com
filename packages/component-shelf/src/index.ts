@@ -5,6 +5,7 @@ export { MarriedNextMarketingSeatingPlanner } from "./stories/MarriedNextMarketi
 export { MarriedNextMarketingUploadMemories } from "./stories/MarriedNextMarketingUploadMemories";
 export { MarriedNextMarketingFooter } from "./stories/MarriedNextMarketingFooter";
 export { GoogleMaps } from "./stories/GoogleMaps";
+export { TenantHomePage } from "./stories/TenantHomePage";
 
 export { marriedNextMarketingNavigationDefaults } from "./stories/MarriedNextMarketingNavigation.constants";
 export { marriedNextMarketingHeroDefaults } from "./stories/MarriedNextMarketingHero.constants";
@@ -13,6 +14,7 @@ export { marriedNextMarketingSeatingPlannerDefaults } from "./stories/MarriedNex
 export { marriedNextMarketingUploadMemoriesDefaults } from "./stories/MarriedNextMarketingUploadMemories.constants";
 export { marriedNextMarketingFooterDefaults } from "./stories/MarriedNextMarketingFooter.constants";
 export { googleMapsDefaults } from "./stories/GoogleMaps.constants";
+export { tenantHomePageDefaults } from "./stories/TenantHomePage.constants";
 
 export type { MarriedNextMarketingNavigationPropTypes } from "./stories/MarriedNextMarketingNavigation.types";
 export type { MarriedNextMarketingHeroTypes } from "./stories/MarriedNextMarketingHero.types";
@@ -21,5 +23,6 @@ export type { MarriedNextMarketingSeatingPlannerTypes } from "./stories/MarriedN
 export type { MarriedNextMarketingUploadMemoriesTypes } from "./stories/MarriedNextMarketingUploadMemories.types";
 export type { MarriedNextMarketingFooterTypes } from "./stories/MarriedNextMarketingFooter.types";
 export type { GoogleMapsTypes } from "./stories/GoogleMaps.types";
+export type { TenantHomePageTypes } from "./stories/TenantHomePage.types";
 
 export { default as WheelSvg } from "./stories/WheelSvg";

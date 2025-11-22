@@ -79,7 +79,7 @@ export function AddGuestForm({ onSubmit, isSubmitting }: AddGuestFormProps) {
               {index > 0 && (
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
                   onClick={() => handleRemoveGuest(index)}
                   disabled={isSubmitting}

@@ -9,7 +9,7 @@ export const howItWorksDefaults: HowItWorksTypes = {
     },
     {
       heading: "Build Your Website",
-      text: "All you need is some photos of the engaged couple and a story to share.",
+      text: "All you need is some photos of the engaged couple and a story to share. ",
     },
     {
       heading: "Create Your Guest List",

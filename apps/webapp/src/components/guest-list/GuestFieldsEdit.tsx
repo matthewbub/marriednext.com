@@ -84,7 +84,7 @@ export default function GuestFieldsEdit({
             {index > 0 && (
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => removeGuest(index)}
                 disabled={disabled}

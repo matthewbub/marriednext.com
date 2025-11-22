@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
-import { invitation, guest, weddingUsers } from "@/drizzle/schema";
+import { invitation, guest, weddingUsers, seatingTable, seatAssignment } from "@/drizzle/schema";
 import * as schema from "@/drizzle/schema";
 import {
   guestRelations,
@@ -31,6 +31,8 @@ export const db = drizzle(queryClient, {
 export type DbGuest = InferSelectModel<typeof guest>;
 export type DbInvitation = InferSelectModel<typeof invitation>;
 export type DbWeddingUser = InferSelectModel<typeof weddingUsers>;
+export type DbSeatingTable = InferSelectModel<typeof seatingTable>;
+export type DbSeatAssignment = InferSelectModel<typeof seatAssignment>;
 
 export type DbInvitationWithGuests = DbInvitation & {
   guests: DbGuest[];

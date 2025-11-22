@@ -71,97 +71,81 @@
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-Regular.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-Italic.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-Italic.ttf') format('truetype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-Medium.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-MediumItalic.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-MediumItalic.ttf') format('truetype');
   font-weight: 500;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-SemiBold.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-SemiBoldItalic.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-SemiBoldItalic.ttf') format('truetype');
   font-weight: 600;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-Bold.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-BoldItalic.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-BoldItalic.ttf') format('truetype');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-ExtraBold.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-ExtraBoldItalic.ttf') format('truetype');
+  font-family: 'EB Garamond';
+  src: url('./fonts/EB_Garamond/static/EBGaramond-ExtraBoldItalic.ttf') format('truetype');
   font-weight: 800;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-Black.ttf') format('truetype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vollkorn';
-  src: url('./fonts/Vollkorn/static/Vollkorn-BlackItalic.ttf') format('truetype');
-  font-weight: 900;
   font-style: italic;
   font-display: swap;
 }

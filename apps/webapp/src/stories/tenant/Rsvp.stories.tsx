@@ -25,6 +25,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const NameInput: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {
@@ -45,6 +49,10 @@ export const NameInput: Story = {
 };
 
 export const GuestSelection: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {
@@ -98,6 +106,10 @@ export const GuestSelection: Story = {
 };
 
 export const EmailCollection: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {
@@ -141,6 +153,10 @@ export const EmailCollection: Story = {
 };
 
 export const LoadingState: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {
@@ -162,6 +178,10 @@ export const LoadingState: Story = {
 };
 
 export const ErrorState: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {
@@ -185,6 +205,10 @@ export const ErrorState: Story = {
 };
 
 export const SuccessState: Story = {
+  args: {
+    onLookup: () => {},
+    onSubmit: () => {},
+  },
   render: () => {
     const StoryComponent = () => {
       useEffect(() => {

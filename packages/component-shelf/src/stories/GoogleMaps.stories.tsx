@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { GoogleMaps } from "./GoogleMaps";
 
 const meta = {
@@ -28,4 +28,3 @@ export const CustomSize: Story = {
     height: 450,
   },
 };
-

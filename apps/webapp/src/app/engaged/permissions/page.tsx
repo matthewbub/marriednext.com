@@ -323,7 +323,11 @@ export default function PermissionsPage() {
                         </Select>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="px-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="px-2"
+                            >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>

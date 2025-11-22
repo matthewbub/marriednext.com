@@ -40,12 +40,14 @@ export const MarriedNextMarketingFooter = ({
           <div className="mn-footer-branding-content">
             <a className="mn-outline-button">{ctaButtonLabel}</a>
 
-            <span className="mn-footer-branding-copyright">
-              {copyrightLine1}
-            </span>
-            <span className="mn-footer-branding-copyright">
-              {copyrightLine2}
-            </span>
+            <div className="mn-footer-branding-copyright-group">
+              <span className="mn-footer-branding-copyright">
+                {copyrightLine1}
+              </span>
+              <span className="mn-footer-branding-copyright">
+                {copyrightLine2}
+              </span>
+            </div>
           </div>
         </div>
       </div>

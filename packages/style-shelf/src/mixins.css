@@ -23,3 +23,7 @@
     transform: translateY(0);
   }
 }
+
+@define-mixin ResetLink {
+  text-decoration: none;
+}
