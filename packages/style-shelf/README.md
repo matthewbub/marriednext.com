@@ -1,5 +1,32 @@
 # Style Shelf
 
+This is the root style system. There are two main stylesheets in this package.
+
+- defaults.css
+- tailwind-hybrid.css
+
+The defaults is complete CSS (PostCSS) that is intended to work as the only stylesheet. It's very component specific and not designed to be reusable, but rather to be themeable. The Tailwind Hybrid stylesheet, as you can imagine, is built _on top of_ TailwindCSS. Ideally, those selectors would be converted to full CSS (PostCSS) but that is highly unlikely.
+
+There's a lot of TailwindCSS in this administrative portion of this project because it's a common resource online, and theming isn't critical there like it is for other areas of the site. **Template designs should absolutely not use Tailwind CSS.**
+
+## Development
+
+> You need to `build` this package before you can run the dev server.
+
+This package is auto-compiled alongside everything else when running `pnpm run dev` from the root directory. However, you could run the same command here if you wanted to run this package only.
+
+```shell
+pnpm run dev
+```
+
+## Build
+
+Build the PostCSS and carry the fonts over to _/packages/style-shelf/dist_ making the stylesheets & fonts accessible to other apps
+
+```shell
+pnpm run build
+```
+
 ## Code Conventions
 
 ### container queries over media queries where appropriate.
