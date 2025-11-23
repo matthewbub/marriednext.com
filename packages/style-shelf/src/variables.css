@@ -1,0 +1,16 @@
+:root {
+  --primary-font-family: "EB Garamond", cursive, serif;
+  --secondary-font-family: Geist, cursive, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --marketing-font-family: "EB Garamond", cursive, serif;
+  --canvas-color: #e8e3cf;
+  --text-color: #2c2c2c;
+  --primary-color: #745656;
+  --secondary-color: #2c2c2c;
+  --primary-hover-color: #8e8c80;
+  --secondary-hover-color: #000;
+  --textondark-color: #fff;
+  --button-border-radius: 9999px;
+  --max-width-marketing-desktop: 960px;
+  --max-width-marketing-tablet: 700px;
+}

@@ -1,0 +1,29 @@
+{
+  "name": "style-shelf",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "NODE_ENV=production postcss src/defaults.css src/tailwind-hybrid.css --dir dist && rm -rf dist/fonts && cp -r src/fonts dist/fonts",
+    "prepack": "pnpm build",
+    "dev": "NODE_ENV=development postcss src/defaults.css src/tailwind-hybrid.css --dir dist --watch"
+  },
+  "exports": {
+    "./styles": "./dist/defaults.css",
+    "./tailwind-hybrid": "./src/tailwind-hybrid.css",
+    ".": "./dist/defaults.css"
+  },
+  "files": [
+    "dist",
+    "dist/fonts"
+  ],
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.5.6",
+    "postcss-cli": "11.0.1",
+    "postcss-import": "16.1.1",
+    "postcss-mixins": "12.1.2",
+    "postcss-nested": "7.0.2",
+    "tailwindcss": "^4.1.17"
+  }
+}

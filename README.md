@@ -15,22 +15,33 @@ pnpm run test-storybook # storybook interaction & a11y tests
 
 ## Development
 
+**Prerequisites**
+
+We're using https://turborepo.com/, you should install turbo globally if you haven't already.
+
+```bash
+pnpm add turbo --global
+```
+
 To run the application locally, you'll need the environment variables below properly configured. After that it's a simple matter of running the dev server via pnpm.
 
 ```bash
-# run dev server
+# run all dev servers (Webapp, Storybook)
 pnpm run dev
 ```
 
-Once the app is running locally, there's alot of technical documentation in the /documentation route. e.g. http://localhost:3000/documentation or https://marriednext.com/documentation (sorry its not in markdown, there isn't really a need for these to be living documents so i just had AI convert them into markup that looks nice instead of going through the hassle of configuring a markdown parser)
+Alternatively you can filter out specific apps with the `--filter` flag
+
+```bash
+pnpm turbo dev --filter=webapp
+```
+
+Once the _webapp_ is running locally, there's alot of technical documentation in the /documentation route. e.g. http://localhost:3000/documentation or https://marriednext.com/documentation (sorry its not in markdown, there isn't really a need for these to be living documents so i just had AI convert them into markup that looks nice instead of going through the hassle of configuring a markdown parser)
 
 ### Running Storybook Locally
 
-if you are looking to run Storybook (/stories) then you'll want to run the storybook command. This will launch a separate server with the interactive Storybook UI.
-
 ```bash
-# run storybook
-pnpm run storybook
+pnpm turbo dev --filter=component-shelf
 ```
 
 Enviroment variable required for a good time (no errors)
@@ -46,3 +57,31 @@ Enviroment variable required for a good time (no errors)
 - BLOB_READ_WRITE_TOKEN (Vercel Blog Storage)
 - UPSTASH_REDIS_REST_URL (Used as a cache layer for the tenant app)
 - UPSTASH_REDIS_REST_TOKEN
+
+## Troubleshooting
+
+If you need a sanity check, run the following command to clear all auto-generated assets.
+
+```shell
+pnpm run clean
+```
+
+_Don't forget to reinstall the project dependencies before running the dev server or production build_
+
+### Font issues
+
+If you're running into errors related to the local fonts i.e.
+
+```
+Module not found: Can't resolve './fonts/EB_Garamond/static/EBGaramond-Bold.ttf'
+```
+
+its because you don't have the font assets in the style-shelf/dist directory. To resolve run
+
+```shell
+pnpm run build
+```
+
+then you should be good to restart the development server.
+
+> Heads up: this error will fail silently in the Vite app, (component-shelf) you'll just see fall-back fonts.

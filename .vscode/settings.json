@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["adminyulissaandmatthew", "multitenancy", "Swipeable"]
+  "cSpell.words": [
+    "adminyulissaandmatthew",
+    "multitenancy",
+    "seatingplanner",
+    "Swipeable"
+  ],
+  "css.validate": false
 }

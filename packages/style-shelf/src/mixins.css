@@ -1,0 +1,61 @@
+@define-mixin CommonButtonDefaults {
+  text-decoration: none;
+  border: none;
+  padding-top: 12px;
+  padding-right: 32px;
+  padding-bottom: 12px;
+  padding-left: 32px;
+  width: fit-content;
+  text-wrap: nowrap;
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.18s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@define-mixin ResetLink {
+  text-decoration: none;
+}
+
+@define-mixin ResetMarginAndPadding {
+  margin: 0;
+  padding: 0;
+}
+
+@define-mixin MarketingContainer {
+  /* parent must be `container-type: inline-size;` */
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+
+  @container (width > 700px) {
+    max-width: var(--max-width-marketing-tablet);
+  }
+
+  @container (width > 960px) {
+    max-width: var(--max-width-marketing-desktop);
+  }
+}
+
+@define-mixin GridColumn $default: 1 / -1, $tablet: initial, $desktop: initial {
+  grid-column: $default;
+
+  @container (width > 700px) {
+    grid-column: $tablet;
+  }
+
+  @container (width > 960px) {
+    grid-column: $desktop;
+  }
+}

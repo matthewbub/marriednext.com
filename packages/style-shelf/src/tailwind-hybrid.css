@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@import "./variables.css";
+@import "./mixins.css";
+
+/* 
+  main app was styled in tailwind
+  but will be using style-shelf moving forward
+  im not gonna rewrite the whole  thing so itll br progressive
+*/
+
+.mn-primary-font {
+  font-family: var(--primary-font-family);
+}
+
+.mn-secondary-font {
+  font-family: var(--secondary-font-family);
+}
+
+.mn-marketing-font {
+  font-family: var(--marketing-font-family);
+}
+
+.mn-engaged-nav-title {
+  font-family: var(--secondary-font-family);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.mn-engaged-nav {
+  background-color: var(--canvas-color);
+  color: var(--text-color);
+}
+
+.mn-engaged-nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+
+  &[aria-current="page"] {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.mn-engaged-nav-notification-button {
+  color: var(--text-color);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.mn-engaged-nav-mobile-button {
+  color: var(--text-color);
+}
+
+.mn-engaged-nav-mobile-link {
+  color: var(--text-color);
+
+  &[aria-current="page"] {
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.mn-engaged-nav-mobile-user-name,
+.mn-engaged-nav-mobile-user-email,
+.mn-engaged-nav-mobile-user-link {
+  color: var(--text-color);
+}
+
+.mn-engaged-header-title {
+  font-family: var(--primary-font-family);
+}
