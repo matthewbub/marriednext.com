@@ -1,12 +1,14 @@
-# Code Conventions
+# Style Shelf
 
-## container queries over media queries where appropriate.
+## Code Conventions
+
+### container queries over media queries where appropriate.
 
 Consider templates are scaffolded out in code, but bits and pieces are customizable for the end-user via the webapp. The templates rely on the usage of container queries to provide website builder-like experience.
 
 examples / read more: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries
 
-## psuedo states use `&:`
+### psuedo states use `&:`
 
 if it can be avoided (it should be avoidable), do not use the full class name to target a psuedo state, but rather use nested css for consistent groupings
 
@@ -22,11 +24,11 @@ example:
 }
 ```
 
-## no using `important!` ever
+### no using `important!` ever
 
 It's just creating a problem later. It can be easily avoided. Use order-of-specificity instead https://www.w3schools.com/css/css_specificity.asp.
 
-## no shorthands for margins and paddings
+### no shorthands for margins and paddings
 
 i would say no shorthands at all but there are some like `animation` where it does make sense. its mostly for less of a mental overhead, easier refactors and qol
 
@@ -41,7 +43,7 @@ margin-bottom: 40px;
 margin-left: 25px;
 ```
 
-## Container Query Mixin Convention
+### Container Query Mixin Convention
 
 This should be the new default paradigm moving forward. We'll need to create a shit ton of mixins at first but eventually all of our mixins should be using this paradigm
 

@@ -6,5 +6,6 @@ export default {
     "postcss-mixins": {},
     ...(isDev ? {} : { "postcss-nested": {} }),
     autoprefixer: {},
+    "@tailwindcss/postcss": {},
   },
 };

@@ -67,3 +67,21 @@ pnpm run clean
 ```
 
 _Don't forget to reinstall the project dependencies before running the dev server or production build_
+
+### Font issues
+
+If you're running into errors related to the local fonts i.e.
+
+```
+Module not found: Can't resolve './fonts/EB_Garamond/static/EBGaramond-Bold.ttf'
+```
+
+its because you don't have the font assets in the style-shelf/dist directory. To resolve run
+
+```shell
+pnpm run build
+```
+
+then you should be good to restart the development server.
+
+> Heads up: this error will fail silently in the Vite app, (component-shelf) you'll just see fall-back fonts.
