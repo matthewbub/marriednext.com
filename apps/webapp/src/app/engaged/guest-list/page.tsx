@@ -21,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EngagedShell } from "component-shelf";
+import { UserButton } from "@clerk/nextjs";
 
 export default function GuestListPage() {
   const queryClient = useQueryClient();
@@ -250,153 +252,161 @@ export default function GuestListPage() {
     (isFetchingGuestList && accumulatedGuests.length === 0);
 
   if (isInitialLoading) {
-    return <LoadingSpinner message="Loading guest list..." />;
+    return (
+      <EngagedShell userButton={<UserButton />}>
+        <LoadingSpinner message="Loading guest list..." />
+      </EngagedShell>
+    );
   }
 
   if (isErrorGuestList) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="w-full mb-4 mt-20">
-          <div className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg text-gray-900">
-            <div className="text-center py-12 px-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-                <svg
-                  className="w-8 h-8 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+      <EngagedShell userButton={<UserButton />}>
+        <div className="min-h-screen flex flex-col items-center justify-center px-6">
+          <div className="w-full mb-4 mt-20">
+            <div className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg text-gray-900">
+              <div className="text-center py-12 px-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                  <svg
+                    className="w-8 h-8 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Something went wrong
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Try again or check back later
+                </p>
+                <Button
+                  onClick={() => {
+                    setOffset(0);
+                    setAccumulatedGuests([]);
+                    queryClient.invalidateQueries({ queryKey: ["guest-list"] });
+                  }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
+                  Try Again
+                </Button>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Something went wrong
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Try again or check back later
-              </p>
-              <Button
-                onClick={() => {
-                  setOffset(0);
-                  setAccumulatedGuests([]);
-                  queryClient.invalidateQueries({ queryKey: ["guest-list"] });
-                }}
-              >
-                Try Again
-              </Button>
             </div>
           </div>
         </div>
-      </div>
+      </EngagedShell>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="w-full mb-4 mt-20">
-        <div className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg text-gray-900">
-          <SignedIn>
-            <div className="mb-6">
-              <h1 className="mn-primary-font text-5xl font-bold mb-1">
-                Guest List
-              </h1>
-              <p className="text-stone-700 text-sm mb-3">
-                Guests may RSVP by entering the name entered on their
-                invitation.
-              </p>
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="name-format"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  RSVP Name Format:
-                </label>
-                <Select
-                  value={nameFormat}
-                  onValueChange={handleNameFormatChange}
-                  disabled={updateNameFormatMutation.isPending}
-                >
-                  <SelectTrigger id="name-format" className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FULL_NAME">Full Name</SelectItem>
-                    <SelectItem value="FIRST_NAME_ONLY">
-                      First Name Only
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 mb-8">
-              <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
-                <p className="text-2xl font-semibold font-handwritten-font">
-                  {guestListWithGroupsCount}
+    <EngagedShell userButton={<UserButton />}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6">
+        <div className="w-full mb-4">
+          <div className="p-6 bg-white/50 border border-white/20 text-gray-900">
+            <SignedIn>
+              <div className="mb-6">
+                <h1 className="mn-primary-font text-5xl font-bold mb-1">
+                  Guest List
+                </h1>
+                <p className="text-stone-700 text-lg mb-3">
+                  Guests may RSVP by entering the name entered on their
+                  invitation.
                 </p>
-                <p className="text-stone-700 text-sm">Invitations</p>
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="name-format"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    RSVP Name Format:
+                  </label>
+                  <Select
+                    value={nameFormat}
+                    onValueChange={handleNameFormatChange}
+                    disabled={updateNameFormatMutation.isPending}
+                  >
+                    <SelectTrigger id="name-format" className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="FULL_NAME">Full Name</SelectItem>
+                      <SelectItem value="FIRST_NAME_ONLY">
+                        First Name Only
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
-                <p className="text-2xl font-semibold font-handwritten-font">
-                  {guestListCount}
+
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
+                  <p className="text-2xl font-semibold font-handwritten-font">
+                    {guestListWithGroupsCount}
+                  </p>
+                  <p className="text-stone-700 text-sm">Invitations</p>
+                </div>
+                <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
+                  <p className="text-2xl font-semibold font-handwritten-font">
+                    {guestListCount}
+                  </p>
+                  <p className="text-stone-700 text-sm">Expected Guests</p>
+                </div>
+                <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
+                  <p className="text-2xl font-semibold font-handwritten-font">
+                    {plusOneCount}
+                  </p>
+                  <p className="text-stone-700 text-sm">Plus Ones</p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  Add Guest
+                </Button>
+              </div>
+
+              <AddGuestDialog
+                open={isAddDialogOpen}
+                onOpenChange={setIsAddDialogOpen}
+                onSubmit={(data) => addGuestMutation.mutate(data)}
+                isSubmitting={addGuestMutation.isPending}
+              />
+
+              <GuestListDisplay
+                guestListWithGroups={accumulatedGuests}
+                onUpdateGuest={(payload) => updateGuestMutation.mutate(payload)}
+                onDeleteGuest={(entryId) => deleteGuestMutation.mutate(entryId)}
+                isUpdating={updateGuestMutation.isPending}
+                editingId={editingId}
+                onEditingIdChange={setEditingId}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchResults={searchData?.results ?? null}
+                searchResultsCount={searchData?.count ?? 0}
+                isSearching={isSearching}
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
+                isSorting={isFetchingGuestList && offset === 0}
+                hasMore={hasMore}
+                onLoadMore={handleLoadMore}
+                isLoadingMore={isFetchingGuestList && offset > 0}
+              />
+            </SignedIn>
+            <SignedOut>
+              <div className="my-6">
+                <p className="text-stone-700 font-handwritten-font text-2xl text-center">
+                  Please sign in to view the guest list.
                 </p>
-                <p className="text-stone-700 text-sm">Expected Guests</p>
               </div>
-              <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-center">
-                <p className="text-2xl font-semibold font-handwritten-font">
-                  {plusOneCount}
-                </p>
-                <p className="text-stone-700 text-sm">Plus Ones</p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                Add Guest
-              </Button>
-            </div>
-
-            <AddGuestDialog
-              open={isAddDialogOpen}
-              onOpenChange={setIsAddDialogOpen}
-              onSubmit={(data) => addGuestMutation.mutate(data)}
-              isSubmitting={addGuestMutation.isPending}
-            />
-
-            <GuestListDisplay
-              guestListWithGroups={accumulatedGuests}
-              onUpdateGuest={(payload) => updateGuestMutation.mutate(payload)}
-              onDeleteGuest={(entryId) => deleteGuestMutation.mutate(entryId)}
-              isUpdating={updateGuestMutation.isPending}
-              editingId={editingId}
-              onEditingIdChange={setEditingId}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              searchResults={searchData?.results ?? null}
-              searchResultsCount={searchData?.count ?? 0}
-              isSearching={isSearching}
-              sortBy={sortBy}
-              onSortChange={handleSortChange}
-              isSorting={isFetchingGuestList && offset === 0}
-              hasMore={hasMore}
-              onLoadMore={handleLoadMore}
-              isLoadingMore={isFetchingGuestList && offset > 0}
-            />
-          </SignedIn>
-          <SignedOut>
-            <div className="my-6">
-              <p className="text-stone-700 font-handwritten-font text-2xl text-center">
-                Please sign in to view the guest list.
-              </p>
-            </div>
-          </SignedOut>
+            </SignedOut>
+          </div>
         </div>
       </div>
-    </div>
+    </EngagedShell>
   );
 }

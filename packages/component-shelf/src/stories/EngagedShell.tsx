@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { Menu, Bell, X } from "lucide-react";
 import { clsx } from "clsx";
@@ -10,11 +12,11 @@ const defaultUser = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Guest List", href: "#", current: false },
-  { name: "Seating Planner", href: "#", current: false },
-  { name: "Website Builder", href: "#", current: false },
-  { name: "Memories", href: "#", current: false },
+  { name: "Dashboard", href: "/engaged", current: true },
+  { name: "Guest List", href: "/engaged/guest-list", current: false },
+  { name: "Seating Planner", href: "/engaged/seating-planner", current: false },
+  { name: "Website Builder", href: "/engaged/website-builder", current: false },
+  { name: "Memories", href: "/engaged/memories", current: false },
 ];
 const userNavigation = [
   { name: "Your profile", href: "#" },
@@ -31,11 +33,13 @@ interface EngagedShellProps {
     imageUrl: string;
   };
   userButton?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export default function EngagedShell({
   user = defaultUser,
   userButton,
+  children,
 }: EngagedShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -67,29 +71,9 @@ export default function EngagedShell({
           <div className="mn-engaged-nav-container flex h-16 items-center justify-between">
             <div className="mn-engaged-nav-left flex items-center">
               <h1 className="mn-engaged-nav-title">Married Next</h1>
-              <div className="mn-engaged-nav-links-wrapper hidden md:block">
-                <div className="mn-engaged-nav-links ml-10 flex items-baseline space-x-4">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.current ? "page" : undefined}
-                      className={clsx(
-                        "mn-engaged-nav-link",
-                        "rounded-md px-3 py-2 text-sm font-medium",
-                        item.current
-                          ? "text-gray-900"
-                          : "text-gray-500 hover:text-gray-900"
-                      )}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
             </div>
             <div className="mn-engaged-nav-right hidden md:block">
-              <div className="mn-engaged-nav-actions ml-4 flex items-center md:ml-6">
+              <div className="mn-engaged-nav-actions ml-4 gap-4 flex items-center md:ml-6">
                 <button
                   type="button"
                   className="mn-engaged-nav-notification-button relative rounded-full p-1 focus:outline-2 focus:outline-offset-2 focus:outline-current"
@@ -151,6 +135,25 @@ export default function EngagedShell({
                   <Menu aria-hidden="true" className="size-6" />
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+        <div className="mn-engaged-nav-links-wrapper shadow-sm hidden md:block bg-stone-100 w-full">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mn-engaged-nav-links flex justify-center items-baseline space-x-4 py-3">
+              {navigation.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  aria-current={item.current ? "page" : undefined}
+                  className={clsx(
+                    "mn-engaged-nav-link group inline-flex h-9 w-max items-center justify-center px-4 py-2 text-sm font-medium disabled:pointer-events-none disabled:opacity-50 outline-none border-b-4 border-transparent hover:border-yellow-400",
+                    item.current && "border-yellow-400"
+                  )}
+                >
+                  {item.name}
+                </a>
+              ))}
             </div>
           </div>
         </div>
@@ -217,16 +220,10 @@ export default function EngagedShell({
           </div>
         )}
       </nav>
-
-      <header className="mn-engaged-header relative bg-white shadow-sm">
-        <div className="mn-engaged-header-shell mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="mn-engaged-header-title text-3xl font-bold tracking-tight text-gray-900">
-            Dashboard
-          </h1>
-        </div>
-      </header>
       <main className="mn-engaged-main">
-        <div className="mn-engaged-main-shell mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"></div>
+        <div className="mn-engaged-main-shell mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </div>
       </main>
     </div>
   );

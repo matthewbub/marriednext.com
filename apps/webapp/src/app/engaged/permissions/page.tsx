@@ -26,6 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MoreVertical } from "lucide-react";
+import { EngagedShell } from "component-shelf";
+import { UserButton } from "@clerk/nextjs";
 
 interface Collaborator {
   id: string;
@@ -229,9 +231,11 @@ export default function PermissionsPage() {
 
   if (isLoading || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
+      <EngagedShell userButton={<UserButton />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </EngagedShell>
     );
   }
 
@@ -244,147 +248,152 @@ export default function PermissionsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="w-full mb-4 mt-20">
-        <div className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg text-gray-900">
-          <div className="mb-6">
-            <h1 className="text-5xl font-bold mb-1">Permissions</h1>
-            <p className="text-stone-700 text-lg mb-3">
-              Invite collaborators to help manage your wedding website. All
-              collaborators have full admin access.
-            </p>
-          </div>
+    <EngagedShell userButton={<UserButton />}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6">
+        <div className="w-full mb-4 mt-20">
+          <div className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg text-gray-900">
+            <div className="mb-6">
+              <h1 className="text-5xl font-bold mb-1">Permissions</h1>
+              <p className="text-stone-700 text-lg mb-3">
+                Invite collaborators to help manage your wedding website. All
+                collaborators have full admin access.
+              </p>
+            </div>
 
-          <div className="w-full flex justify-end mb-6">
-            <Button onClick={() => setIsDialogOpen(true)}>
-              Invite Collaborator
-            </Button>
-          </div>
+            <div className="w-full flex justify-end mb-6">
+              <Button onClick={() => setIsDialogOpen(true)}>
+                Invite Collaborator
+              </Button>
+            </div>
 
-          <InviteUserDialog
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            onSubmit={handleInviteUser}
-            isSubmitting={inviteUserMutation.isPending}
-          />
-
-          <div className="mb-6">
-            <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
-              Your Role
-            </h2>
-            <CurrentUserCard
-              email={currentUser.email}
-              role={currentUser.role}
-              onRoleChange={handleRoleChange}
+            <InviteUserDialog
+              open={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              onSubmit={handleInviteUser}
+              isSubmitting={inviteUserMutation.isPending}
             />
-          </div>
 
-          {collaborators.length > 0 && (
             <div className="mb-6">
               <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
-                Collaborators
+                Your Role
               </h2>
-              <ul className="space-y-3">
-                {collaborators.map((collaborator) => (
-                  <li
-                    key={collaborator.id}
-                    className="rounded-xl bg-white border border-gray-200 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold truncate text-gray-900">
-                          {collaborator.email}
-                        </h3>
-                        <div className="flex gap-3 mt-2 flex-wrap items-center">
-                          <span className="text-sm text-gray-600">
-                            {roleLabels[collaborator.role]}
-                          </span>
+              <CurrentUserCard
+                email={currentUser.email}
+                role={currentUser.role}
+                onRoleChange={handleRoleChange}
+              />
+            </div>
+
+            {collaborators.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
+                  Collaborators
+                </h2>
+                <ul className="space-y-3">
+                  {collaborators.map((collaborator) => (
+                    <li
+                      key={collaborator.id}
+                      className="rounded-xl bg-white border border-gray-200 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold truncate text-gray-900">
+                            {collaborator.email}
+                          </h3>
+                          <div className="flex gap-3 mt-2 flex-wrap items-center">
+                            <span className="text-sm text-gray-600">
+                              {roleLabels[collaborator.role]}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Select
+                            value={collaborator.role}
+                            onValueChange={(value: UserRole) =>
+                              handleCollaboratorRoleChange(
+                                collaborator.id,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="spouse">Spouse</SelectItem>
+                              <SelectItem value="family">
+                                Family Member
+                              </SelectItem>
+                              <SelectItem value="planner">
+                                Wedding Planner
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="px-2"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() =>
+                                  handleRemoveCollaborator(collaborator.id)
+                                }
+                              >
+                                Remove Collaborator
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Select
-                          value={collaborator.role}
-                          onValueChange={(value: UserRole) =>
-                            handleCollaboratorRoleChange(collaborator.id, value)
-                          }
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="spouse">Spouse</SelectItem>
-                            <SelectItem value="family">
-                              Family Member
-                            </SelectItem>
-                            <SelectItem value="planner">
-                              Wedding Planner
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="px-2"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() =>
-                                handleRemoveCollaborator(collaborator.id)
-                              }
-                            >
-                              Remove Collaborator
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                      <div className="mt-3 text-xs text-gray-600 font-medium">
+                        <p>
+                          Joined:{" "}
+                          {new Date(collaborator.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}
+                        </p>
                       </div>
-                    </div>
-                    <div className="mt-3 text-xs text-gray-600 font-medium">
-                      <p>
-                        Joined:{" "}
-                        {new Date(collaborator.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          {invitations.length > 0 && (
-            <div>
-              <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
-                Invitations
-              </h2>
-              <ul className="space-y-3">
-                {invitations.map((invitation) => (
-                  <CollaboratorInvitationCard
-                    key={invitation.id}
-                    invitation={invitation}
-                    currentUserRole={currentUser.role}
-                    onRemove={handleRemoveInvitation}
-                    onResend={handleResendInvitation}
-                    onCopyInviteUrl={handleCopyInviteUrl}
-                    onChangeRole={handleChangeInvitationRole}
-                  />
-                ))}
-              </ul>
-            </div>
-          )}
+            {invitations.length > 0 && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-700 mb-3 uppercase tracking-wide">
+                  Invitations
+                </h2>
+                <ul className="space-y-3">
+                  {invitations.map((invitation) => (
+                    <CollaboratorInvitationCard
+                      key={invitation.id}
+                      invitation={invitation}
+                      currentUserRole={currentUser.role}
+                      onRemove={handleRemoveInvitation}
+                      onResend={handleResendInvitation}
+                      onCopyInviteUrl={handleCopyInviteUrl}
+                      onChangeRole={handleChangeInvitationRole}
+                    />
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </EngagedShell>
   );
 }

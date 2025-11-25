@@ -1,3 +1,6 @@
+"use client";
+
+import { useUser } from "@clerk/nextjs";
 import {
   MarriedNextMarketingNavigation,
   MarriedNextMarketingHero,
@@ -9,9 +12,11 @@ import {
 import "style-shelf/styles";
 
 export default function Home() {
+  const { isSignedIn } = useUser();
+
   return (
     <div>
-      <MarriedNextMarketingNavigation />
+      <MarriedNextMarketingNavigation isAuthenticated={isSignedIn} />
       <MarriedNextMarketingHero />
       <MarriedNextMarketingHowItWorks />
       <MarriedNextMarketingSeatingPlanner />

@@ -15,8 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <NavBar />
-      <div className="mx-auto">{children}</div>
+      <div className="mn-engaged-layout">{children}</div>
     </>
   );
 }

@@ -6,6 +6,7 @@ export { MarriedNextMarketingUploadMemories } from "./stories/MarriedNextMarketi
 export { MarriedNextMarketingFooter } from "./stories/MarriedNextMarketingFooter";
 export { GoogleMaps } from "./stories/GoogleMaps";
 export { TenantHomePage } from "./stories/TenantHomePage";
+export { default as EngagedShell } from "./stories/EngagedShell";
 
 export { marriedNextMarketingNavigationDefaults } from "./stories/MarriedNextMarketingNavigation.constants";
 export { marriedNextMarketingHeroDefaults } from "./stories/MarriedNextMarketingHero.constants";
