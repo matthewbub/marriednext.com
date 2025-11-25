@@ -1,3 +1,25 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+catalog:
+  react: 19.2.0
+  react-dom: 19.2.0
+  clsx: 2.1.1
+  lucide-react: 0.540.0
+  drizzle-kit: 0.31.4
+  drizzle-orm: 0.44.5
+  postgres: 3.4.7
+  postcss: 8.5.6
+  postcss-mixins: 12.1.2
+  "@tailwindcss/postcss": 4.1.17
+  tailwindcss: 4.1.17
+  "@types/node": 24.10.0
+  "@types/react": 19.2.2
+  "@types/react-dom": 19.2.2
+  typescript: 5.9.3
+  eslint: 9.39.1
+  playwright: 1.56.1
+  vitest: 4.0.9
+  "@vitest/coverage-v8": 4.0.9
+  dotenv: 17.2.2

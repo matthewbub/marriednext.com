@@ -9,12 +9,12 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "drizzle-kit": "0.31.4",
-    "drizzle-orm": "0.44.5",
-    "postgres": "3.4.7"
+    "drizzle-kit": "catalog:",
+    "drizzle-orm": "catalog:",
+    "postgres": "catalog:"
   },
   "devDependencies": {
-    "dotenv": "17.2.2"
+    "dotenv": "catalog:"
   },
   "main": "./drizzle/schema.ts",
   "types": "./drizzle/schema.ts",
