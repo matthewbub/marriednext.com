@@ -110,6 +110,9 @@ importers:
       next-themes:
         specifier: 0.4.6
         version: 0.4.6(react-dom@19.2.0)(react@19.2.0)
+      orm-shelf:
+        specifier: workspace:*
+        version: link:../../packages/orm-shelf
       postgres:
         specifier: 3.4.7
         version: 3.4.7
@@ -331,6 +334,22 @@ importers:
       vitest:
         specifier: 4.0.9
         version: 4.0.9(@types/node@24.10.0)(@vitest/browser-playwright@4.0.9)
+
+  packages/orm-shelf:
+    dependencies:
+      drizzle-kit:
+        specifier: 0.31.4
+        version: 0.31.4
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@neondatabase/serverless@1.0.1)(@upstash/redis@1.35.6)(postgres@3.4.7)
+      postgres:
+        specifier: 3.4.7
+        version: 3.4.7
+    devDependencies:
+      dotenv:
+        specifier: 17.2.2
+        version: 17.2.2
 
   packages/style-shelf:
     dependencies:

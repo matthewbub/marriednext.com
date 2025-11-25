@@ -1,13 +1,19 @@
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
-import { invitation, guest, weddingUsers, seatingTable, seatAssignment } from "@/drizzle/schema";
-import * as schema from "@/drizzle/schema";
+import { eq, count, and, sql } from "drizzle-orm";
+import * as schema from "orm-shelf/schema";
+import {
+  invitation,
+  guest,
+  weddingUsers,
+  seatingTable,
+  seatAssignment,
+} from "orm-shelf/schema";
 import {
   guestRelations,
   weddingRelations,
   invitationRelations,
   weddingUsersRelations,
-} from "@/drizzle/relations";
+} from "orm-shelf/relations";
 import type { InferSelectModel } from "drizzle-orm";
 import postgres from "postgres";
 
@@ -49,6 +55,18 @@ export const getGuestList = async (weddingId: string): Promise<DbGuest[]> => {
     .from(guest)
     .where(eq(guest.weddingId, weddingId));
   return guestList;
+};
+
+export const getConfirmedRsvpCount = async (
+  weddingId: string
+): Promise<number> => {
+  const result = await db
+    .select({
+      count: sql<number>`count(*) + COALESCE(sum(case when ${guest.hasPlusOne} then 1 else 0 end), 0)`,
+    })
+    .from(guest)
+    .where(and(eq(guest.weddingId, weddingId), eq(guest.isAttending, true)));
+  return Number(result[0].count) ?? 0;
 };
 
 export const getInvitationsWithGuests = async (

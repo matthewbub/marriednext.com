@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
-import { invitation } from "@/drizzle/schema";
+import { invitation } from "orm-shelf/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";

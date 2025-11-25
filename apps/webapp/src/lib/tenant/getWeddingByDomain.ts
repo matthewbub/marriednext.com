@@ -1,6 +1,6 @@
 import { db } from "@/database/drizzle";
 import { redis } from "@/database/redis";
-import { wedding } from "@/drizzle/schema";
+import { wedding } from "orm-shelf/schema";
 import { eq, or } from "drizzle-orm";
 import type { WeddingData } from "@/lib/tenant/weddingData.types";
 import { WEDDING_CACHE_TTL } from "@/lib/cache/constants";

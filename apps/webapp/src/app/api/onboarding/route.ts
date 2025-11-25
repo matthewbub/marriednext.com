@@ -6,7 +6,7 @@ import {
   wedding,
   weddingUsers,
   collaboratorInvitations,
-} from "@/drizzle/schema";
+} from "orm-shelf/schema";
 import { eq } from "drizzle-orm";
 import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";
 import { RESERVED_SUBDOMAINS } from "@/lib/rewrites/multitenancy";

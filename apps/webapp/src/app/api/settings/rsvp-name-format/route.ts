@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/database/drizzle";
-import { wedding } from "@/drizzle/schema";
+import { wedding } from "orm-shelf/schema";
 import { eq } from "drizzle-orm";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
 import { updateWeddingCache } from "@/lib/admin/invalidateWeddingCache";

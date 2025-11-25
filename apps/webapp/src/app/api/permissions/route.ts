@@ -1,6 +1,6 @@
 import { UserRole } from "@/components/permissions/permissions.types";
 import { db } from "@/database/drizzle";
-import { collaboratorInvitations, weddingUsers } from "@/drizzle/schema";
+import { collaboratorInvitations, weddingUsers } from "orm-shelf/schema";
 import { extractWeddingId } from "@/lib/extractWeddingId";
 import { formatDate } from "@/lib/utils";
 import {

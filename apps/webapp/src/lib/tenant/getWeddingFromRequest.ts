@@ -1,5 +1,5 @@
 import { db } from "@/database/drizzle";
-import { wedding } from "@/drizzle/schema";
+import { wedding } from "orm-shelf/schema";
 import { eq, or } from "drizzle-orm";
 import { getHostType } from "../rewrites/multitenancy";
 
