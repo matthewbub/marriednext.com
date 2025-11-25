@@ -1,6 +1,6 @@
 import { howItWorksDefaults } from "./MarriedNextMarketingHowItWorks.constants";
 import type { HowItWorksTypes } from "./MarriedNextMarketingHowItWorks.types";
-import WheelSvg from "./WheelSvg";
+import WheelSvg from "../WheelSvg";
 
 export const MarriedNextMarketingHowItWorks = ({
   howItWorksLabel = howItWorksDefaults.howItWorksLabel,
