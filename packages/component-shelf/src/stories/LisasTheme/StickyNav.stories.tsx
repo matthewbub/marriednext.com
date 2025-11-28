@@ -1,6 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { StickyNav } from "./StickyNav";
+import { StickyNav } from "../../components/theme/lisastheme/StickyNav";
 
 const meta = {
   title: "LisasTheme/StickyNav",

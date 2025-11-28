@@ -6,7 +6,7 @@ export { MarriedNextMarketingUploadMemories } from "./stories/MarriedNextMarketi
 export { MarriedNextMarketingFooter } from "./stories/MarriedNextMarketingFooter/MarriedNextMarketingFooter";
 export { GoogleMaps } from "./stories/GoogleMaps/GoogleMaps";
 export { TenantHomePage } from "./stories/TenantHomePage/TenantHomePage";
-export { LisasTheme } from "./stories/LisasTheme/LisasTheme";
+export { LisasTheme } from "./components/theme/lisastheme/LisasTheme";
 export { default as EngagedShell } from "./stories/EngagedShell/EngagedShell";
 
 export { marriedNextMarketingNavigationDefaults } from "./stories/MarriedNextMarketingNavigation/MarriedNextMarketingNavigation.constants";
@@ -26,6 +26,6 @@ export type { MarriedNextMarketingUploadMemoriesTypes } from "./stories/MarriedN
 export type { MarriedNextMarketingFooterTypes } from "./stories/MarriedNextMarketingFooter/MarriedNextMarketingFooter.types";
 export type { GoogleMapsTypes } from "./stories/GoogleMaps/GoogleMaps.types";
 export type { TenantHomePageTypes } from "./stories/TenantHomePage/TenantHomePage.types";
-export type { LisasThemeTypes } from "./stories/LisasTheme/LisasTheme";
+export type { LisasThemeTypes } from "./components/theme/lisastheme/LisasTheme";
 
 export { default as WheelSvg } from "./stories/WheelSvg";

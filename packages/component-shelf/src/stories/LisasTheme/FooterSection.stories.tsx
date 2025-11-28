@@ -1,6 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { FooterSection } from "./FooterSection";
+import { FooterSection } from "../../components/theme/lisastheme/FooterSection";
 
 const meta = {
   title: "LisasTheme/FooterSection",

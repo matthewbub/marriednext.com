@@ -1,6 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { GallerySection } from "./GallerySection";
+import { GallerySection } from "../../components/theme/lisastheme/GallerySection";
 
 const meta = {
   title: "LisasTheme/GallerySection",

@@ -1,6 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { HeroSection } from "./HeroSection";
+import { HeroSection } from "../../components/theme/lisastheme/HeroSection";
 
 const meta = {
   title: "LisasTheme/HeroSection",
