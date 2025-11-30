@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { useState, useEffect } from "react";
 import { Calendar, Pencil, Check, X } from "lucide-react";
 import { Button } from "../../components/ui/button";

@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import labels from "label-shelf/lisastheme";
 import type {
   Milestone,
@@ -51,7 +51,10 @@ export function OurStorySection({
     data?.nameA && data?.nameB ? `${data?.nameA} and ${data?.nameB}` : "Us";
   const milestones = data?.milestones ?? defaultMilestones;
 
-  const handleChange = (key: keyof OurStorySectionCustomization, value: string) => {
+  const handleChange = (
+    key: keyof OurStorySectionCustomization,
+    value: string
+  ) => {
     onCustomizationChange?.(key, value);
   };
 

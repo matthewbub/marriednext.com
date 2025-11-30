@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { StickyNav } from "../../components/theme/lisastheme/StickyNav";
 
@@ -17,4 +17,3 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {},
 };
-

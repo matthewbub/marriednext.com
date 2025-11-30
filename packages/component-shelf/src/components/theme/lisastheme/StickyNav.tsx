@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { useState, useEffect, useMemo } from "react";
 import type { StickyNavCustomization, StickyNavProps } from "./types";
 import { cn } from "../../../lib/utils";
@@ -24,7 +24,10 @@ export function StickyNav({
     ...customization?.navLabels,
   };
 
-  const handleChange = (key: keyof NonNullable<StickyNavCustomization["navLabels"]>, value: string) => {
+  const handleChange = (
+    key: keyof NonNullable<StickyNavCustomization["navLabels"]>,
+    value: string
+  ) => {
     onCustomizationChange?.(key, value);
   };
 

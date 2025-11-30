@@ -1,30 +1,18 @@
-import "style-shelf/styles";
+import "style-shelf/tailwind";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Rubik, Gloria_Hallelujah, Vollkorn } from "next/font/google";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 
-const rubik = Rubik({
-  variable: "--font-rubik",
-  subsets: ["latin"],
-});
-
-const vullkorn = Vollkorn({
-  variable: "--font-vullkorn",
-  subsets: ["latin"],
-});
-
-const shadowsIntoLight = Gloria_Hallelujah({
-  variable: "--font-shadows-into-light",
-  subsets: ["latin"],
-  weight: "400",
-});
+const dmSans = DM_Sans({ subsets: ["latin"] });
+const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Married Next",
-  description: "Build a beautiful wedding website in minutes.",
+  title: "Married Next — Your Wedding, Your Way",
+  description:
+    "The free, open-source wedding planning platform. Beautiful websites, smart guest lists, and seamless RSVPs — free to start with optional upgrades.",
 };
 
 export default function RootLayout({
@@ -36,7 +24,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${rubik.variable} ${vullkorn.variable} ${shadowsIntoLight.variable} antialiased bg-transparent`}
+          className={`${dmSans.className} ${playfair.className} antialiased bg-transparent`}
         >
           <QueryProvider>
             <div className="mx-auto">{children}</div>

@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { ImageIcon, ArrowRight, AlertTriangle } from "lucide-react";
 import { Button } from "../../components/ui/button";
 

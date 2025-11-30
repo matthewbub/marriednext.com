@@ -1,6 +1,6 @@
 import { SignUp } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 
 export const metadata: Metadata = {
   title: "Register - Married Next",

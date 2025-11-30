@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import labels from "label-shelf/lisastheme";
 import type { FooterSectionCustomization, FooterSectionProps } from "./types";
 import { EditableLabel } from "../../ui/editable-label";
@@ -29,7 +29,10 @@ export function FooterSection({
     .filter(Boolean)
     .join(" · ");
 
-  const handleChange = (key: keyof FooterSectionCustomization, value: string) => {
+  const handleChange = (
+    key: keyof FooterSectionCustomization,
+    value: string
+  ) => {
     onCustomizationChange?.(key, value);
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import type { LisasThemeTypes } from "./types";
 import { StickyNav } from "./StickyNav";
 import { HeroSection } from "./HeroSection";
@@ -25,12 +25,13 @@ export function LisasTheme({
   rsvpFormComponent,
   ourStoryImageUrl,
   ourStoryImageComponent,
-  editable = false,
+  editable = true,
   onCustomizationChange,
 }: LisasThemeTypes) {
-  const handleSectionChange = (section: string) => (key: string, value: string) => {
-    onCustomizationChange?.(section, key, value);
-  };
+  const handleSectionChange =
+    (section: string) => (key: string, value: string) => {
+      onCustomizationChange?.(section, key, value);
+    };
 
   return (
     <div className="min-h-screen">

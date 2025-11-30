@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, Bell, X } from "lucide-react";
 import { clsx } from "clsx";
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 
 const defaultUser = {
   name: "Matthew Bub",

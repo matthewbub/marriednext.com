@@ -3,7 +3,7 @@ declare module "style-shelf/styles" {
   export default content;
 }
 
-declare module "style-shelf/tailwind-hybrid" {
+declare module "style-shelf/tailwind" {
   const content: string;
   export default content;
 }

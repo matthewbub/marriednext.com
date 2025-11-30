@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CountdownSection } from "../../components/theme/lisastheme/CountdownSection";
 

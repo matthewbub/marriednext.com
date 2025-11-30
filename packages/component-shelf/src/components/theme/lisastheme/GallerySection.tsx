@@ -1,8 +1,12 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import labels from "label-shelf/lisastheme";
-import type { GalleryImage, GallerySectionCustomization, GallerySectionProps } from "./types";
+import type {
+  GalleryImage,
+  GallerySectionCustomization,
+  GallerySectionProps,
+} from "./types";
 import { EditableLabel } from "../../ui/editable-label";
 
 const defaultImages: GalleryImage[] = [
@@ -28,7 +32,10 @@ export function GallerySection({
 }: GallerySectionProps) {
   const images = data?.images ?? defaultImages;
 
-  const handleChange = (key: keyof GallerySectionCustomization, value: string) => {
+  const handleChange = (
+    key: keyof GallerySectionCustomization,
+    value: string
+  ) => {
     onCustomizationChange?.(key, value);
   };
 
@@ -58,7 +65,12 @@ export function GallerySection({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {images.map((image, index) => (
-            <div key={index} className={`overflow-hidden group cursor-pointer ${image?.span ?? ""}`}>
+            <div
+              key={index}
+              className={`overflow-hidden group cursor-pointer ${
+                image?.span ?? ""
+              }`}
+            >
               <img
                 src={image?.src || "/placeholder.svg"}
                 alt={`${customization?.imageAltLabel} ${index + 1}`}

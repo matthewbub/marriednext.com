@@ -8,9 +8,7 @@
     "dev": "NODE_ENV=development postcss src/defaults.css src/tailwind-hybrid.css --dir dist --watch"
   },
   "exports": {
-    "./styles": "./dist/defaults.css",
-    "./tailwind-hybrid": "./src/tailwind-hybrid.css",
-    ".": "./dist/defaults.css"
+    "./tailwind": "./src/tailwind-hybrid.css"
   },
   "files": [
     "dist",
@@ -24,6 +22,7 @@
     "postcss-import": "16.1.1",
     "postcss-mixins": "catalog:",
     "postcss-nested": "7.0.2",
-    "tailwindcss": "catalog:"
+    "tailwindcss": "catalog:",
+    "tw-animate-css": "catalog:"
   }
 }

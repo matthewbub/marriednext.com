@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
-import "style-shelf/tailwind-hybrid";
-import { Users, UserCheck, Clock } from "lucide-react"
+import "style-shelf/tailwind";
+import { Users, UserCheck, Clock } from "lucide-react";
 
 interface RsvpStatsProps {
-  totalHeadcount: number
-  confirmedRsvps: number
-  pendingRsvps: number
+  totalHeadcount: number;
+  confirmedRsvps: number;
+  pendingRsvps: number;
 }
 
-export function RsvpStats({ totalHeadcount, confirmedRsvps, pendingRsvps }: RsvpStatsProps) {
+export function RsvpStats({
+  totalHeadcount,
+  confirmedRsvps,
+  pendingRsvps,
+}: RsvpStatsProps) {
   const stats = [
     {
       icon: Users,
@@ -29,7 +33,7 @@ export function RsvpStats({ totalHeadcount, confirmedRsvps, pendingRsvps }: Rsvp
       label: "Pending RSVPs",
       color: "bg-amber-500",
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -43,10 +47,12 @@ export function RsvpStats({ totalHeadcount, confirmedRsvps, pendingRsvps }: Rsvp
           </div>
           <div>
             <p className="font-serif text-3xl text-[#2c2c2c]">{stat.value}</p>
-            <p className="font-sans text-base text-[#2c2c2c]/60">{stat.label}</p>
+            <p className="font-sans text-base text-[#2c2c2c]/60">
+              {stat.label}
+            </p>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }

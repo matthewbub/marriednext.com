@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { useEffect, useState } from "react";
 import type { HeroSectionProps } from "./types";
 import labels from "label-shelf/lisastheme";

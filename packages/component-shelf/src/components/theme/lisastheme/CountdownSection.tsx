@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { useState, useEffect } from "react";
 import { differenceInSeconds } from "date-fns";
 import labels from "label-shelf/lisastheme";

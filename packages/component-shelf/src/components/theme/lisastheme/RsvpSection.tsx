@@ -1,6 +1,6 @@
 "use client";
 
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import type React from "react";
 
 import { useState } from "react";
@@ -105,20 +105,20 @@ export function RsvpSection({
           <EditableLabel
             as="p"
             value={customization?.pretitleLabel}
-              editable={editable}
-              onChange={(v) => handleChange("pretitleLabel", v)}
-              className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
-            />
-          )}
+            editable={editable}
+            onChange={(v) => handleChange("pretitleLabel", v)}
+            className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
+          />
+        )}
         {customization?.titleLabel && (
           <EditableLabel
             as="h2"
             value={customization?.titleLabel}
-              editable={editable}
-              onChange={(v) => handleChange("titleLabel", v)}
-              className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4"
-            />
-          )}
+            editable={editable}
+            onChange={(v) => handleChange("titleLabel", v)}
+            className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4"
+          />
+        )}
         {customization?.descriptionLabel && (
           <EditableLabel
             as="p"

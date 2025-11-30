@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import { MapPin, Clock, Sparkles } from "lucide-react";
 import labels from "label-shelf/lisastheme";
 import type { EventDetailsSectionProps } from "./types";

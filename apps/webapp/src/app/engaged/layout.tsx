@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 
 export const metadata: Metadata = {
   title: "Married Next",

@@ -1,4 +1,4 @@
-import "style-shelf/tailwind-hybrid";
+import "style-shelf/tailwind";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { QuickActions } from "./QuickActions";
 
@@ -16,4 +16,3 @@ export const Primary: Story = {
     contributorCount: 3,
   },
 };
-
