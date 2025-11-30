@@ -58,7 +58,7 @@ export function RsvpSection({
 
   const labelValues = { firstName };
   const confirmationHeading = fillTemplate(
-    customization.confirmationHeadingLabel,
+    customization?.confirmationHeadingLabel,
     labelValues
   );
 
@@ -71,25 +71,25 @@ export function RsvpSection({
         <div className="absolute top-0 left-0 w-64 h-64 bg-[#745656]/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#745656]/5 rounded-full translate-x-1/2 translate-y-1/2" />
         <div className="max-w-xl mx-auto px-6 text-center relative z-10">
-          {customization.pretitleLabel && (
+          {customization?.pretitleLabel && (
             <EditableLabel
               as="p"
-              value={customization.pretitleLabel}
+              value={customization?.pretitleLabel}
               editable={editable}
               onChange={(v) => handleChange("pretitleLabel", v)}
               className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
             />
           )}
-          {customization.titleLabel && (
+          {customization?.titleLabel && (
             <EditableLabel
               as="h2"
-              value={customization.titleLabel}
+              value={customization?.titleLabel}
               editable={editable}
               onChange={(v) => handleChange("titleLabel", v)}
               className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4"
             />
           )}
-          <div className="mt-12">{data.rsvpFormComponent}</div>
+          <div className="mt-12">{data?.rsvpFormComponent}</div>
         </div>
       </section>
     );
@@ -101,28 +101,28 @@ export function RsvpSection({
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#745656]/5 rounded-full translate-x-1/2 translate-y-1/2" />
 
       <div className="max-w-xl mx-auto px-6 text-center relative z-10">
-        {customization.pretitleLabel && (
+        {customization?.pretitleLabel && (
           <EditableLabel
             as="p"
-            value={customization.pretitleLabel}
-            editable={editable}
-            onChange={(v) => handleChange("pretitleLabel", v)}
-            className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
-          />
-        )}
-        {customization.titleLabel && (
+            value={customization?.pretitleLabel}
+              editable={editable}
+              onChange={(v) => handleChange("pretitleLabel", v)}
+              className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
+            />
+          )}
+        {customization?.titleLabel && (
           <EditableLabel
             as="h2"
-            value={customization.titleLabel}
-            editable={editable}
-            onChange={(v) => handleChange("titleLabel", v)}
-            className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4"
-          />
-        )}
-        {customization.descriptionLabel && (
+            value={customization?.titleLabel}
+              editable={editable}
+              onChange={(v) => handleChange("titleLabel", v)}
+              className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4"
+            />
+          )}
+        {customization?.descriptionLabel && (
           <EditableLabel
             as="p"
-            value={customization.descriptionLabel}
+            value={customization?.descriptionLabel}
             editable={editable}
             onChange={(v) => handleChange("descriptionLabel", v)}
             className="text-[#2c2c2c]/70 mb-12"
@@ -134,7 +134,7 @@ export function RsvpSection({
             <div className="relative">
               <Input
                 type="text"
-                placeholder={customization.searchPlaceholderLabel}
+                placeholder={customization?.searchPlaceholderLabel}
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className="h-14 text-lg text-center bg-transparent border-0 border-b-2 border-[#745656]/30 rounded-none focus:border-[#745656] focus:ring-0 placeholder:text-[#2c2c2c]/40"
@@ -144,7 +144,7 @@ export function RsvpSection({
               type="submit"
               className="h-14 px-12 bg-[#745656] hover:bg-[#5d4545] text-white tracking-[0.2em] uppercase text-sm"
             >
-              {customization.searchButtonLabel}
+              {customization?.searchButtonLabel}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </form>
@@ -153,10 +153,10 @@ export function RsvpSection({
         {step === "found" && (
           <div className="space-y-8">
             <div className="py-8 border-y border-[#745656]/20">
-              {customization.invitationLabel && (
+              {customization?.invitationLabel && (
                 <EditableLabel
                   as="p"
-                  value={customization.invitationLabel}
+                  value={customization?.invitationLabel}
                   editable={editable}
                   onChange={(v) => handleChange("invitationLabel", v)}
                   className="text-[#2c2c2c]/60 text-sm tracking-[0.2em] uppercase mb-2"
@@ -168,10 +168,10 @@ export function RsvpSection({
             </div>
 
             <div className="space-y-4">
-              {customization.questionLabel && (
+              {customization?.questionLabel && (
                 <EditableLabel
                   as="p"
-                  value={customization.questionLabel}
+                  value={customization?.questionLabel}
                   editable={editable}
                   onChange={(v) => handleChange("questionLabel", v)}
                   className="text-[#2c2c2c]/70"
@@ -182,13 +182,13 @@ export function RsvpSection({
                   onClick={handleConfirm}
                   className="h-14 px-10 bg-[#745656] hover:bg-[#5d4545] text-white tracking-[0.2em] uppercase text-sm"
                 >
-                  {customization.acceptButtonLabel}
+                  {customization?.acceptButtonLabel}
                 </Button>
                 <Button
                   variant="outline"
                   className="h-14 px-10 border-[#745656]/30 text-[#2c2c2c] hover:bg-[#745656]/5 tracking-[0.2em] uppercase text-sm bg-transparent"
                 >
-                  {customization.declineButtonLabel}
+                  {customization?.declineButtonLabel}
                 </Button>
               </div>
             </div>
@@ -204,10 +204,10 @@ export function RsvpSection({
               <h3 className="font-serif text-3xl text-[#2c2c2c] italic mb-2">
                 {confirmationHeading}
               </h3>
-              {customization.confirmationTextLabel && (
+              {customization?.confirmationTextLabel && (
                 <EditableLabel
                   as="p"
-                  value={customization.confirmationTextLabel}
+                  value={customization?.confirmationTextLabel}
                   editable={editable}
                   onChange={(v) => handleChange("confirmationTextLabel", v)}
                   className="text-[#2c2c2c]/70"

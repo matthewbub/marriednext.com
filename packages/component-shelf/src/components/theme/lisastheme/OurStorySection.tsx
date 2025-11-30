@@ -48,8 +48,8 @@ export function OurStorySection({
   onCustomizationChange,
 }: OurStorySectionProps) {
   const coupleName =
-    data.nameA && data.nameB ? `${data.nameA} and ${data.nameB}` : "Us";
-  const milestones = data.milestones ?? defaultMilestones;
+    data?.nameA && data?.nameB ? `${data?.nameA} and ${data?.nameB}` : "Us";
+  const milestones = data?.milestones ?? defaultMilestones;
 
   const handleChange = (key: keyof OurStorySectionCustomization, value: string) => {
     onCustomizationChange?.(key, value);
@@ -59,19 +59,19 @@ export function OurStorySection({
     <section id="story" className="py-32 bg-[#f5f3eb]">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
-          {customization.pretitleLabel && (
+          {customization?.pretitleLabel && (
             <EditableLabel
               as="p"
-              value={customization.pretitleLabel}
+              value={customization?.pretitleLabel}
               editable={editable}
               onChange={(v) => handleChange("pretitleLabel", v)}
               className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
             />
           )}
-          {customization.titleLabel && (
+          {customization?.titleLabel && (
             <EditableLabel
               as="h2"
-              value={customization.titleLabel}
+              value={customization?.titleLabel}
               editable={editable}
               onChange={(v) => handleChange("titleLabel", v)}
               className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic"
@@ -81,10 +81,10 @@ export function OurStorySection({
 
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <div className="aspect-[4/5] overflow-hidden">
-            {data.imageComponent || (
+            {data?.imageComponent || (
               <img
                 src={
-                  data.imageUrl ||
+                  data?.imageUrl ||
                   "/romantic-couple-engagement-photo-in-nature-golden-.jpg"
                 }
                 alt={coupleName}
@@ -93,19 +93,19 @@ export function OurStorySection({
             )}
           </div>
           <div className="space-y-8">
-            {customization.sectionTextLabel && (
+            {customization?.sectionTextLabel && (
               <EditableLabel
                 as="p"
-                value={customization.sectionTextLabel}
+                value={customization?.sectionTextLabel}
                 editable={editable}
                 onChange={(v) => handleChange("sectionTextLabel", v)}
                 className="text-xl md:text-2xl text-[#2c2c2c]/80 font-light leading-relaxed"
               />
             )}
-            {customization.sectionSubtextLabel && (
+            {customization?.sectionSubtextLabel && (
               <EditableLabel
                 as="p"
-                value={customization.sectionSubtextLabel}
+                value={customization?.sectionSubtextLabel}
                 editable={editable}
                 onChange={(v) => handleChange("sectionSubtextLabel", v)}
                 className="text-lg text-[#2c2c2c]/70 leading-relaxed"
@@ -120,7 +120,7 @@ export function OurStorySection({
           <div className="space-y-16">
             {milestones.map((milestone, index) => (
               <div
-                key={milestone.title}
+                key={milestone?.title}
                 className={`relative grid md:grid-cols-2 gap-8 ${
                   index % 2 === 0 ? "" : "md:direction-rtl"
                 }`}
@@ -133,13 +133,13 @@ export function OurStorySection({
                   }`}
                 >
                   <span className="text-[#745656] tracking-[0.2em] uppercase text-sm">
-                    {milestone.date}
+                    {milestone?.date}
                   </span>
                   <h3 className="font-serif text-3xl text-[#2c2c2c] mt-2 mb-3 font-light italic">
-                    {milestone.title}
+                    {milestone?.title}
                   </h3>
                   <p className="text-[#2c2c2c]/70 leading-relaxed">
-                    {milestone.description}
+                    {milestone?.description}
                   </p>
                 </div>
 

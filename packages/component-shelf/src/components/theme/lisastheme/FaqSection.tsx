@@ -61,7 +61,7 @@ export function FaqSection({
   onCustomizationChange,
 }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const faqItems = data.faqs ?? defaultFaqItems;
+  const faqItems = data?.faqs ?? defaultFaqItems;
 
   const handleChange = (key: keyof FaqSectionCustomization, value: string) => {
     onCustomizationChange?.(key, value);
@@ -71,19 +71,19 @@ export function FaqSection({
     <section id="faq" className="py-32 px-6 bg-[#faf9f6]">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-20">
-          {customization.pretitleLabel && (
+          {customization?.pretitleLabel && (
             <EditableLabel
               as="p"
-              value={customization.pretitleLabel}
+              value={customization?.pretitleLabel}
               editable={editable}
               onChange={(v) => handleChange("pretitleLabel", v)}
               className="text-sm tracking-[0.3em] uppercase text-[#745656] mb-4"
             />
           )}
-          {customization.titleLabel && (
+          {customization?.titleLabel && (
             <EditableLabel
               as="h2"
-              value={customization.titleLabel}
+              value={customization?.titleLabel}
               editable={editable}
               onChange={(v) => handleChange("titleLabel", v)}
               className="font-serif text-5xl md:text-6xl text-[#2c2c2c] mb-6"
@@ -100,7 +100,7 @@ export function FaqSection({
                 className="w-full flex items-center justify-between text-left group"
               >
                 <span className="font-serif text-xl md:text-2xl text-[#2c2c2c] group-hover:text-[#745656] transition-colors duration-300 pr-8">
-                  {faq.question}
+                  {faq?.question}
                 </span>
                 <ChevronDown
                   className={cn(
@@ -118,7 +118,7 @@ export function FaqSection({
                 )}
               >
                 <p className="text-lg text-[#2c2c2c]/70 leading-relaxed pl-0 md:pl-0">
-                  {faq.answer}
+                  {faq?.answer}
                 </p>
               </div>
             </div>
@@ -126,23 +126,23 @@ export function FaqSection({
         </div>
 
         <div className="mt-16 pt-12 border-t border-[#745656]/20 text-center">
-          {customization.noteLabel && (
+          {customization?.noteLabel && (
             <EditableLabel
               as="p"
-              value={customization.noteLabel}
+              value={customization?.noteLabel}
               editable={editable}
               onChange={(v) => handleChange("noteLabel", v)}
               className="text-lg text-[#2c2c2c]/70 mb-4"
             />
           )}
-          {customization.noteLinkLabel && (
+          {customization?.noteLinkLabel && (
             <a
-              href={customization.noteLinkHref}
+              href={customization?.noteLinkHref}
               className="inline-flex items-center gap-2 text-[#745656] text-lg hover:underline underline-offset-4 transition-all"
             >
               <EditableLabel
                 as="span"
-                value={customization.noteLinkLabel}
+                value={customization?.noteLinkLabel}
                 editable={editable}
                 onChange={(v) => handleChange("noteLinkLabel", v)}
               />

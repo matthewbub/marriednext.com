@@ -23,9 +23,9 @@ export function FooterSection({
   onCustomizationChange,
 }: FooterSectionProps) {
   const coupleName =
-    data.nameA && data.nameB ? `${data.nameA} & ${data.nameB}` : "Us";
-  const formattedDate = formatDate(data.eventDate);
-  const dateLocation = [formattedDate, data.location]
+    data?.nameA && data?.nameB ? `${data?.nameA} & ${data?.nameB}` : "Us";
+  const formattedDate = formatDate(data?.eventDate);
+  const dateLocation = [formattedDate, data?.location]
     .filter(Boolean)
     .join(" · ");
 
@@ -36,10 +36,10 @@ export function FooterSection({
   return (
     <footer className="py-20 bg-[#2c2c2c] text-white/80">
       <div className="max-w-4xl mx-auto px-6 text-center">
-        {customization.pretitleLabel && (
+        {customization?.pretitleLabel && (
           <EditableLabel
             as="p"
-            value={customization.pretitleLabel}
+            value={customization?.pretitleLabel}
             editable={editable}
             onChange={(v) => handleChange("pretitleLabel", v)}
             className="tracking-[0.4em] uppercase text-sm text-white/50 mb-4"
@@ -56,17 +56,17 @@ export function FooterSection({
           <span className="w-16 h-px bg-white/20" />
         </div>
 
-        {data.nameA && data.nameB && (
+        {data?.nameA && data?.nameB && (
           <p className="text-white/40 text-sm">
-            #{data.nameA}And{data.nameB}
-            {data.eventDate ? new Date(data.eventDate).getFullYear() : ""}
+            #{data?.nameA}And{data?.nameB}
+            {data?.eventDate ? new Date(data?.eventDate).getFullYear() : ""}
           </p>
         )}
 
-        {customization.signatureLabel && (
+        {customization?.signatureLabel && (
           <EditableLabel
             as="p"
-            value={customization.signatureLabel}
+            value={customization?.signatureLabel}
             editable={editable}
             onChange={(v) => handleChange("signatureLabel", v)}
             className="mt-12 text-white/30 text-xs"

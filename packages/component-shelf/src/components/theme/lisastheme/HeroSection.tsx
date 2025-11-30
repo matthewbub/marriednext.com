@@ -31,7 +31,7 @@ export function HeroSection({
     return () => clearTimeout(timer);
   }, []);
 
-  const formattedDate = formatDate(data.eventDate);
+  const formattedDate = formatDate(data?.eventDate);
 
   const handleChange = (key: keyof typeof customization, value: string) => {
     onCustomizationChange?.(key, value);
@@ -43,14 +43,14 @@ export function HeroSection({
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0">
-        {data.imageComponent ? (
+        {data?.imageComponent ? (
           <div className="w-full h-full [&>img]:w-full [&>img]:h-full [&>img]:object-cover">
-            {data.imageComponent}
+            {data?.imageComponent}
           </div>
         ) : (
           <img
             src={
-              data.imageUrl ||
+              data?.imageUrl ||
               "/romantic-vineyard-wedding-venue-at-golden-hour-wit.jpg"
             }
             alt=""
@@ -65,10 +65,10 @@ export function HeroSection({
           mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
-        {customization.subtitleLabel && (
+        {customization?.subtitleLabel && (
           <EditableLabel
             as="p"
-            value={customization.subtitleLabel}
+            value={customization?.subtitleLabel}
             editable={editable}
             onChange={(v) => handleChange("subtitleLabel", v)}
             className="text-white/90 tracking-[0.4em] uppercase text-sm mb-6"
@@ -76,17 +76,17 @@ export function HeroSection({
         )}
 
         <h1 className="font-serif text-white">
-          {data.nameA && (
+          {data?.nameA && (
             <span className="block text-7xl md:text-8xl lg:text-9xl font-light italic mb-2">
-              {data.nameA}
+              {data?.nameA}
             </span>
           )}
           <span className="block text-2xl md:text-3xl tracking-[0.5em] uppercase font-sans font-light my-6">
             &
           </span>
-          {data.nameB && (
+          {data?.nameB && (
             <span className="block text-7xl md:text-8xl lg:text-9xl font-light italic">
-              {data.nameB}
+              {data?.nameB}
             </span>
           )}
         </h1>
@@ -101,9 +101,9 @@ export function HeroSection({
           </div>
         )}
 
-        {data.location && (
+        {data?.location && (
           <p className="mt-4 text-white/80 tracking-[0.2em] uppercase text-sm">
-            {data.location}
+            {data?.location}
           </p>
         )}
       </div>

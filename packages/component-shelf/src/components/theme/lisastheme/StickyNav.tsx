@@ -21,7 +21,7 @@ export function StickyNav({
     details: labels["lisastheme.nav.details.label"],
     gallery: labels["lisastheme.nav.gallery.label"],
     rsvp: labels["lisastheme.nav.rsvp.label"],
-    ...customization.navLabels,
+    ...customization?.navLabels,
   };
 
   const handleChange = (key: keyof NonNullable<StickyNavCustomization["navLabels"]>, value: string) => {
@@ -30,18 +30,18 @@ export function StickyNav({
 
   const navItems = useMemo(
     () => [
-      { label: navLabels.home, href: "#home", key: "home" as const },
-      { label: navLabels.story, href: "#story", key: "story" as const },
-      { label: navLabels.details, href: "#details", key: "details" as const },
-      { label: navLabels.gallery, href: "#gallery", key: "gallery" as const },
-      { label: navLabels.rsvp, href: "#rsvp", key: "rsvp" as const },
+      { label: navLabels?.home, href: "#home", key: "home" as const },
+      { label: navLabels?.story, href: "#story", key: "story" as const },
+      { label: navLabels?.details, href: "#details", key: "details" as const },
+      { label: navLabels?.gallery, href: "#gallery", key: "gallery" as const },
+      { label: navLabels?.rsvp, href: "#rsvp", key: "rsvp" as const },
     ],
     [
-      navLabels.home,
-      navLabels.story,
-      navLabels.details,
-      navLabels.gallery,
-      navLabels.rsvp,
+      navLabels?.home,
+      navLabels?.story,
+      navLabels?.details,
+      navLabels?.gallery,
+      navLabels?.rsvp,
     ]
   );
 
@@ -49,7 +49,7 @@ export function StickyNav({
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
 
-      const sections = navItems.map((item) => item.href.slice(1));
+      const sections = navItems.map((item) => item?.href?.slice(1));
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
         if (element) {
@@ -82,7 +82,7 @@ export function StickyNav({
             href={item.href}
             className={cn(
               "relative text-base tracking-[0.2em] uppercase transition-colors duration-300",
-              activeSection === item.href.slice(1)
+              activeSection === item?.href?.slice(1)
                 ? isScrolled
                   ? "text-[#745656]"
                   : "text-white"
@@ -91,15 +91,15 @@ export function StickyNav({
                 : "text-white/90 hover:text-white"
             )}
           >
-            {item.label && (
+            {item?.label && (
               <EditableLabel
                 as="span"
-                value={item.label}
+                value={item?.label}
                 editable={editable}
                 onChange={(v) => handleChange(item.key, v)}
               />
             )}
-            {activeSection === item.href.slice(1) && (
+            {activeSection === item?.href?.slice(1) && (
               <span
                 className={cn(
                   "absolute -bottom-1 left-0 right-0 h-px",

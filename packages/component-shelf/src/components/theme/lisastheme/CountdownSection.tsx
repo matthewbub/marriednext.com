@@ -27,8 +27,8 @@ export function CountdownSection({
   });
 
   useEffect(() => {
-    const weddingDate = data.eventDate
-      ? new Date(data.eventDate)
+    const weddingDate = data?.eventDate
+      ? new Date(data?.eventDate)
       : new Date("2026-07-26T07:00:00");
 
     const calculateTimeLeft = () => {
@@ -60,7 +60,7 @@ export function CountdownSection({
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [data.eventDate]);
+  }, [data?.eventDate]);
 
   const handleChange = (key: keyof typeof customization, value: string) => {
     onCustomizationChange?.(key, value);
@@ -69,22 +69,22 @@ export function CountdownSection({
   const timeUnits = [
     {
       value: timeLeft.days,
-      label: customization.daysLabel,
+      label: customization?.daysLabel,
       key: "daysLabel" as const,
     },
     {
       value: timeLeft.hours,
-      label: customization.hoursLabel,
+      label: customization?.hoursLabel,
       key: "hoursLabel" as const,
     },
     {
       value: timeLeft.minutes,
-      label: customization.minutesLabel,
+      label: customization?.minutesLabel,
       key: "minutesLabel" as const,
     },
     {
       value: timeLeft.seconds,
-      label: customization.secondsLabel,
+      label: customization?.secondsLabel,
       key: "secondsLabel" as const,
     },
   ];
@@ -92,10 +92,10 @@ export function CountdownSection({
   return (
     <section className="py-32 bg-[#faf9f6]">
       <div className="max-w-5xl mx-auto px-6 text-center">
-        {customization.pretextLabel && (
+        {customization?.pretextLabel && (
           <EditableLabel
             as="p"
-            value={customization.pretextLabel}
+            value={customization?.pretextLabel}
             editable={editable}
             onChange={(v) => handleChange("pretextLabel", v)}
             className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4"
