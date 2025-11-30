@@ -1,0 +1,82 @@
+---
+description: Conventions for wedding website theme components
+globs:
+  - packages/component-shelf/src/components/theme/**/*
+alwaysApply: false
+---
+
+# Theme Component Conventions
+
+Wedding website themes use a strict prop convention to separate database-required data from optional customizations.
+
+## Prop Structure
+
+Components that receive database data use two prop categories:
+
+### `data` (Required)
+
+Database-sourced values essential for the component to function. Marked with `@database` JSDoc tag.
+
+```typescript
+export interface HeroSectionData {
+  nameA: string | null;
+  nameB: string | null;
+  eventDate?: string | null;
+}
+```
+
+### `customization` (Optional)
+
+Label and style tweaks with sensible defaults from `label-shelf`. Marked with `@customizable` JSDoc tag.
+
+```typescript
+export interface HeroSectionCustomization {
+  subtitleLabel?: string;
+}
+```
+
+### Combined Props Interface
+
+```typescript
+export interface HeroSectionProps {
+  /** Required data from the database */
+  data: HeroSectionData;
+  /** Optional label/style customizations */
+  customization?: HeroSectionCustomization;
+}
+```
+
+## Type Naming Convention
+
+- `*Data` - Database-required fields (e.g., `HeroSectionData`)
+- `*Customization` - Optional label/style overrides (e.g., `HeroSectionCustomization`)
+- `*Props` - Combined interface with `data` and `customization` (e.g., `HeroSectionProps`)
+
+## Component Implementation
+
+```tsx
+export function HeroSection({
+  data,
+  customization = {
+    subtitleLabel: labels["lisastheme.hero.pretext.label"],
+  },
+}: HeroSectionProps) {
+  // Access database values via data.*
+  const formattedDate = formatDate(data.eventDate);
+
+  // Access customizations via customization.*
+  return <p>{customization.subtitleLabel}</p>;
+}
+```
+
+## Components Without Database Data
+
+Some components have no required database fields (e.g., `StickyNav`, `RegistrySection`). These use only `customization?` without a `data` prop.
+
+## Adding New Sections
+
+1. Define `*Data` interface in `types.ts` with `@database` JSDoc tag (if component needs DB data)
+2. Define `*Customization` interface with `@customizable` JSDoc tag
+3. Define `*Props` interface combining both with JSDoc comments
+4. Implement component destructuring `data` and `customization` with defaults
+5. Wire up in parent theme component (e.g., `LisasTheme.tsx`)

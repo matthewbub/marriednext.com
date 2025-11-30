@@ -8,6 +8,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { ArrowRight, Check } from "lucide-react";
 import labels from "label-shelf/lisastheme";
+import type { RsvpSectionProps } from "./types";
 
 function fillTemplate(
   template: string | undefined,
@@ -17,27 +18,8 @@ function fillTemplate(
   return template.replace(/\{([^}]+)\}/g, (_, key) => values[key] ?? "");
 }
 
-interface RsvpSectionCustomization {
-  pretitleLabel?: string;
-  titleLabel?: string;
-  descriptionLabel?: string;
-  searchPlaceholderLabel?: string;
-  searchButtonLabel?: string;
-  invitationLabel?: string;
-  questionLabel?: string;
-  acceptButtonLabel?: string;
-  declineButtonLabel?: string;
-  confirmationHeadingLabel?: string;
-  confirmationTextLabel?: string;
-}
-
-interface RsvpSectionProps {
-  rsvpFormComponent?: React.ReactNode;
-  customization?: RsvpSectionCustomization;
-}
-
 export function RsvpSection({
-  rsvpFormComponent,
+  data,
   customization = {
     pretitleLabel: labels["lisastheme.rsvp.pretitle.label"],
     titleLabel: labels["lisastheme.rsvp.title.label"],
@@ -73,7 +55,7 @@ export function RsvpSection({
     labelValues
   );
 
-  if (rsvpFormComponent) {
+  if (data?.rsvpFormComponent) {
     return (
       <section
         id="rsvp"
@@ -88,7 +70,7 @@ export function RsvpSection({
           <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4">
             {customization.titleLabel}
           </h2>
-          <div className="mt-12">{rsvpFormComponent}</div>
+          <div className="mt-12">{data.rsvpFormComponent}</div>
         </div>
       </section>
     );

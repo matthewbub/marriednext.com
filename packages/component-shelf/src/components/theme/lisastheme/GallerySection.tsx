@@ -2,34 +2,28 @@
 
 import "style-shelf/tailwind-hybrid";
 import labels from "label-shelf/lisastheme";
+import type { GalleryImage, GallerySectionProps } from "./types";
 
-interface GallerySectionCustomization {
-  pretitleLabel?: string;
-  titleLabel?: string;
-  imageAltLabel?: string;
-}
-
-interface GallerySectionProps {
-  customization?: GallerySectionCustomization;
-}
+const defaultImages: GalleryImage[] = [
+  { src: "/romantic-couple-portrait-engagement.jpg", span: "row-span-2" },
+  { src: "/couple-laughing-candid-moment.jpg", span: "" },
+  { src: "/couple-holding-hands-closeup.jpg", span: "" },
+  { src: "/couple-sunset-silhouette-romantic.jpg", span: "col-span-2" },
+  { src: "/couple-adventure-hiking-together.jpg", span: "" },
+  { src: "/engagement-ring-proposal-moment.jpg", span: "row-span-2" },
+  { src: "/couple-cooking-kitchen.png", span: "" },
+  { src: "/romantic-dance.png", span: "" },
+];
 
 export function GallerySection({
+  data,
   customization = {
     pretitleLabel: labels["lisastheme.moments.pretitle.label"],
     titleLabel: labels["lisastheme.moments.title.label"],
     imageAltLabel: labels["lisastheme.moments.image.alt.label"],
   },
 }: GallerySectionProps) {
-  const images = [
-    { src: "/romantic-couple-portrait-engagement.jpg", span: "row-span-2" },
-    { src: "/couple-laughing-candid-moment.jpg", span: "" },
-    { src: "/couple-holding-hands-closeup.jpg", span: "" },
-    { src: "/couple-sunset-silhouette-romantic.jpg", span: "col-span-2" },
-    { src: "/couple-adventure-hiking-together.jpg", span: "" },
-    { src: "/engagement-ring-proposal-moment.jpg", span: "row-span-2" },
-    { src: "/couple-cooking-kitchen.png", span: "" },
-    { src: "/romantic-dance.png", span: "" },
-  ]
+  const images = data.images ?? defaultImages;
 
   return (
     <section id="gallery" className="py-32 bg-[#f5f3eb]">
@@ -45,7 +39,7 @@ export function GallerySection({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {images.map((image, index) => (
-            <div key={index} className={`overflow-hidden group cursor-pointer ${image.span}`}>
+            <div key={index} className={`overflow-hidden group cursor-pointer ${image.span ?? ""}`}>
               <img
                 src={image.src || "/placeholder.svg"}
                 alt={`${customization.imageAltLabel} ${index + 1}`}
@@ -56,5 +50,5 @@ export function GallerySection({
         </div>
       </div>
     </section>
-  )
+  );
 }

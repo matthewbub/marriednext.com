@@ -2,22 +2,8 @@
 
 import "style-shelf/tailwind-hybrid";
 import { useEffect, useState } from "react";
-import type React from "react";
+import type { HeroSectionProps } from "./types";
 import labels from "label-shelf/lisastheme";
-
-interface HeroSectionCustomization {
-  subtitleLabel?: string;
-}
-
-interface HeroSectionProps {
-  nameA: string | null;
-  nameB: string | null;
-  eventDate?: string | null;
-  location?: string | null;
-  imageUrl?: string;
-  imageComponent?: React.ReactNode;
-  customization?: HeroSectionCustomization;
-}
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "";
@@ -30,12 +16,7 @@ function formatDate(dateString: string | null | undefined): string {
 }
 
 export function HeroSection({
-  nameA,
-  nameB,
-  eventDate,
-  location,
-  imageUrl,
-  imageComponent,
+  data,
   customization = {
     subtitleLabel: labels["lisastheme.hero.pretext.label"],
   },
@@ -47,7 +28,7 @@ export function HeroSection({
     return () => clearTimeout(timer);
   }, []);
 
-  const formattedDate = formatDate(eventDate);
+  const formattedDate = formatDate(data.eventDate);
 
   return (
     <section
@@ -55,14 +36,14 @@ export function HeroSection({
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0">
-        {imageComponent ? (
+        {data.imageComponent ? (
           <div className="w-full h-full [&>img]:w-full [&>img]:h-full [&>img]:object-cover">
-            {imageComponent}
+            {data.imageComponent}
           </div>
         ) : (
           <img
             src={
-              imageUrl ||
+              data.imageUrl ||
               "/romantic-vineyard-wedding-venue-at-golden-hour-wit.jpg"
             }
             alt=""
@@ -84,17 +65,17 @@ export function HeroSection({
         )}
 
         <h1 className="font-serif text-white">
-          {nameA && (
+          {data.nameA && (
             <span className="block text-7xl md:text-8xl lg:text-9xl font-light italic mb-2">
-              {nameA}
+              {data.nameA}
             </span>
           )}
           <span className="block text-2xl md:text-3xl tracking-[0.5em] uppercase font-sans font-light my-6">
             &
           </span>
-          {nameB && (
+          {data.nameB && (
             <span className="block text-7xl md:text-8xl lg:text-9xl font-light italic">
-              {nameB}
+              {data.nameB}
             </span>
           )}
         </h1>
@@ -109,9 +90,9 @@ export function HeroSection({
           </div>
         )}
 
-        {location && (
+        {data.location && (
           <p className="mt-4 text-white/80 tracking-[0.2em] uppercase text-sm">
-            {location}
+            {data.location}
           </p>
         )}
       </div>

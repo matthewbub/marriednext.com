@@ -1,28 +1,10 @@
-import type React from "react";
 import "style-shelf/tailwind-hybrid";
 import labels from "label-shelf/lisastheme";
-
-interface Milestone {
-  date: string;
-  title: string;
-  description: string;
-}
-
-interface OurStorySectionCustomization {
-  pretitleLabel?: string;
-  titleLabel?: string;
-  sectionTextLabel?: string;
-  sectionSubtextLabel?: string;
-}
-
-interface OurStorySectionProps {
-  nameA?: string | null;
-  nameB?: string | null;
-  imageUrl?: string;
-  imageComponent?: React.ReactNode;
-  milestones?: Milestone[];
-  customization?: OurStorySectionCustomization;
-}
+import type {
+  Milestone,
+  OurStorySectionCustomization,
+  OurStorySectionProps,
+} from "./types";
 
 const defaultMilestones: Milestone[] = [
   {
@@ -51,20 +33,20 @@ const defaultMilestones: Milestone[] = [
   },
 ];
 
+const defaultOurStoryCustomization: OurStorySectionCustomization = {
+  pretitleLabel: labels["lisastheme.ourstory.pretitle.label"],
+  titleLabel: labels["lisastheme.ourstory.title.label"],
+  sectionTextLabel: labels["lisastheme.ourstory.section.text.label"],
+  sectionSubtextLabel: labels["lisastheme.ourstory.section.subtext.label"],
+};
+
 export function OurStorySection({
-  nameA,
-  nameB,
-  imageUrl,
-  imageComponent,
-  milestones = defaultMilestones,
-  customization = {
-    pretitleLabel: labels["lisastheme.ourstory.pretitle.label"],
-    titleLabel: labels["lisastheme.ourstory.title.label"],
-    sectionTextLabel: labels["lisastheme.ourstory.section.text.label"],
-    sectionSubtextLabel: labels["lisastheme.ourstory.section.subtext.label"],
-  },
+  data,
+  customization = defaultOurStoryCustomization,
 }: OurStorySectionProps) {
-  const coupleName = nameA && nameB ? `${nameA} and ${nameB}` : "Us";
+  const coupleName =
+    data.nameA && data.nameB ? `${data.nameA} and ${data.nameB}` : "Us";
+  const milestones = data.milestones ?? defaultMilestones;
 
   return (
     <section id="story" className="py-32 bg-[#f5f3eb]">
@@ -80,10 +62,10 @@ export function OurStorySection({
 
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <div className="aspect-[4/5] overflow-hidden">
-            {imageComponent || (
+            {data.imageComponent || (
               <img
                 src={
-                  imageUrl ||
+                  data.imageUrl ||
                   "/romantic-couple-engagement-photo-in-nature-golden-.jpg"
                 }
                 alt={coupleName}

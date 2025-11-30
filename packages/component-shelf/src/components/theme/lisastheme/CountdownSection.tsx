@@ -4,29 +4,10 @@ import "style-shelf/tailwind-hybrid";
 import { useState, useEffect } from "react";
 import { differenceInSeconds } from "date-fns";
 import labels from "label-shelf/lisastheme";
-
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
-interface CountdownSectionCustomization {
-  pretextLabel?: string;
-  daysLabel?: string;
-  hoursLabel?: string;
-  minutesLabel?: string;
-  secondsLabel?: string;
-}
-
-interface CountdownSectionProps {
-  eventDate?: string | null;
-  customization?: CountdownSectionCustomization;
-}
+import type { CountdownSectionProps, TimeLeft } from "./types";
 
 export function CountdownSection({
-  eventDate,
+  data,
   customization = {
     pretextLabel: labels["lisastheme.countdown.pretext.label"],
     daysLabel: labels["lisastheme.countdown.days.label"],
@@ -43,8 +24,8 @@ export function CountdownSection({
   });
 
   useEffect(() => {
-    const weddingDate = eventDate
-      ? new Date(eventDate)
+    const weddingDate = data.eventDate
+      ? new Date(data.eventDate)
       : new Date("2026-07-26T07:00:00");
 
     const calculateTimeLeft = () => {
@@ -76,7 +57,7 @@ export function CountdownSection({
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [eventDate]);
+  }, [data.eventDate]);
 
   const timeUnits = [
     { value: timeLeft.days, label: customization.daysLabel },

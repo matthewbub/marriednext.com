@@ -4,20 +4,11 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import labels from "label-shelf/lisastheme";
-
-interface FaqItem {
-  question: string;
-  answer: string;
-}
-
-interface FaqSectionCustomization {
-  pretitleLabel?: string;
-  titleLabel?: string;
-  noteLabel?: string;
-  noteLinkLabel?: string;
-  noteLinkHref?: string;
-  faqs?: FaqItem[];
-}
+import type {
+  FaqItem,
+  FaqSectionCustomization,
+  FaqSectionProps,
+} from "./types";
 
 const defaultFaqItems: FaqItem[] = [
   {
@@ -60,18 +51,14 @@ const defaultFaqCustomization: FaqSectionCustomization = {
   noteLabel: labels["lisastheme.faq.section.intro.label"],
   noteLinkLabel: labels["lisastheme.faq.note.link.label"],
   noteLinkHref: labels["lisastheme.faq.note.link.href"],
-  faqs: defaultFaqItems,
 };
 
-interface FaqSectionProps {
-  customization?: FaqSectionCustomization;
-}
-
 export function FaqSection({
+  data,
   customization = defaultFaqCustomization,
 }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const faqItems = customization.faqs ?? [];
+  const faqItems = data.faqs ?? defaultFaqItems;
 
   return (
     <section id="faq" className="py-32 px-6 bg-[#faf9f6]">

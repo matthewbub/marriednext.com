@@ -2,24 +2,11 @@
 
 import "style-shelf/tailwind-hybrid";
 import { useState, useEffect, useMemo } from "react";
+import type { StickyNavProps } from "./types";
 import { cn } from "../../../lib/utils";
 import labels from "label-shelf/lisastheme";
 
-interface StickyNavCustomization {
-  navLabels?: {
-    home?: string;
-    story?: string;
-    details?: string;
-    gallery?: string;
-    rsvp?: string;
-  };
-}
-
-export function StickyNav({
-  customization = {},
-}: {
-  customization?: StickyNavCustomization;
-}) {
+export function StickyNav({ customization = {} }: StickyNavProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 

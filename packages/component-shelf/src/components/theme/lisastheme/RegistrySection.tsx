@@ -2,21 +2,11 @@
 
 import { ExternalLink } from "lucide-react";
 import labels from "label-shelf/lisastheme";
-
-interface RegistryEntry {
-  name: string;
-  description: string;
-  url: string;
-}
-
-interface RegistrySectionCustomization {
-  pretitleLabel?: string;
-  titleLabel?: string;
-  descriptionLabel?: string;
-  entryButtonLabel?: string;
-  noteLabel?: string;
-  registries?: RegistryEntry[];
-}
+import type {
+  RegistryEntry,
+  RegistrySectionCustomization,
+  RegistrySectionProps,
+} from "./types";
 
 const defaultRegistryEntries: RegistryEntry[] = [
   {
@@ -49,10 +39,6 @@ const defaultRegistryCustomization: RegistrySectionCustomization = {
   noteLabel: labels["lisastheme.registry.note.label"],
   registries: defaultRegistryEntries,
 };
-
-interface RegistrySectionProps {
-  customization?: RegistrySectionCustomization;
-}
 
 export function RegistrySection({
   customization = defaultRegistryCustomization,

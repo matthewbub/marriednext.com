@@ -1,18 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import labels from "label-shelf/lisastheme";
-
-interface FooterSectionCustomization {
-  pretitleLabel?: string;
-  signatureLabel?: string;
-}
-
-interface FooterSectionProps {
-  nameA?: string | null;
-  nameB?: string | null;
-  eventDate?: string | null;
-  location?: string | null;
-  customization?: FooterSectionCustomization;
-}
+import type { FooterSectionProps } from "./types";
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "";
@@ -25,18 +13,18 @@ function formatDate(dateString: string | null | undefined): string {
 }
 
 export function FooterSection({
-  nameA,
-  nameB,
-  eventDate,
-  location,
+  data,
   customization = {
     pretitleLabel: labels["lisastheme.footer.pretitle.label"],
     signatureLabel: labels["lisastheme.footer.signature.label"],
   },
 }: FooterSectionProps) {
-  const coupleName = nameA && nameB ? `${nameA} & ${nameB}` : "Us";
-  const formattedDate = formatDate(eventDate);
-  const dateLocation = [formattedDate, location].filter(Boolean).join(" · ");
+  const coupleName =
+    data.nameA && data.nameB ? `${data.nameA} & ${data.nameB}` : "Us";
+  const formattedDate = formatDate(data.eventDate);
+  const dateLocation = [formattedDate, data.location]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <footer className="py-20 bg-[#2c2c2c] text-white/80">
@@ -55,10 +43,10 @@ export function FooterSection({
           <span className="w-16 h-px bg-white/20" />
         </div>
 
-        {nameA && nameB && (
+        {data.nameA && data.nameB && (
           <p className="text-white/40 text-sm">
-            #{nameA}And{nameB}
-            {eventDate ? new Date(eventDate).getFullYear() : ""}
+            #{data.nameA}And{data.nameB}
+            {data.eventDate ? new Date(data.eventDate).getFullYear() : ""}
           </p>
         )}
 

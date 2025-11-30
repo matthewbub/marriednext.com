@@ -1,34 +1,10 @@
 import "style-shelf/tailwind-hybrid";
 import { MapPin, Clock, Sparkles } from "lucide-react";
 import labels from "label-shelf/lisastheme";
-
-interface EventDetailsSectionProps {
-  locationName?: string | null;
-  locationAddress?: string | null;
-  eventDate?: string | null;
-  eventTime?: string | null;
-  mapsShareUrl?: string | null;
-  customization?: {
-    headingPretextLabel?: string;
-    headingLabel?: string;
-    ceremonyHeadingLabel?: string;
-    ceremonyDescriptionLabel?: string;
-    venueHeadingLabel?: string;
-    viewMapLabel?: string;
-    celebrationHeadingLabel?: string;
-    celebrationDescriptionLabel?: string;
-    celebrationAttireLabel?: string;
-    dressCodeSectionLabel?: string;
-    dressCodeValueLabel?: string;
-    dressCodeNoteLabel?: string;
-  };
-}
+import type { EventDetailsSectionProps } from "./types";
 
 export function EventDetailsSection({
-  locationName,
-  locationAddress,
-  eventTime,
-  mapsShareUrl,
+  data,
   customization = {
     headingPretextLabel: labels["lisastheme.details.pretitle.label"],
     headingLabel: labels["lisastheme.details.title.label"],
@@ -48,8 +24,8 @@ export function EventDetailsSection({
     dressCodeNoteLabel: labels["lisastheme.details.dresscode.text.label"],
   },
 }: EventDetailsSectionProps) {
-  const formattedTime = eventTime;
-  const addressLines = locationAddress?.split("\n") || [];
+  const formattedTime = data.eventTime;
+  const addressLines = data.locationAddress?.split("\n") || [];
 
   return (
     <section id="details" className="py-32 bg-[#faf9f6]">
@@ -92,7 +68,7 @@ export function EventDetailsSection({
             </div>
           )}
 
-          {locationName && (
+          {data.locationName && (
             <div
               className={`text-center ${
                 formattedTime
@@ -109,7 +85,7 @@ export function EventDetailsSection({
                 </h3>
               )}
               <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
-                {locationName}
+                {data.locationName}
               </p>
               {addressLines.length > 0 && (
                 <address className="not-italic text-[#2c2c2c]/80 space-y-1">
@@ -118,9 +94,9 @@ export function EventDetailsSection({
                   ))}
                 </address>
               )}
-              {mapsShareUrl && customization?.viewMapLabel && (
+              {data.mapsShareUrl && customization?.viewMapLabel && (
                 <a
-                  href={mapsShareUrl}
+                  href={data.mapsShareUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-4 text-[#745656] text-sm tracking-[0.2em] uppercase border-b border-[#745656]/30 pb-1 hover:border-[#745656] transition-colors"
