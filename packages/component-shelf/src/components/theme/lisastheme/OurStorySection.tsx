@@ -1,10 +1,18 @@
 import type React from "react";
 import "style-shelf/tailwind-hybrid";
+import labels from "label-shelf/lisastheme";
 
 interface Milestone {
   date: string;
   title: string;
   description: string;
+}
+
+interface OurStorySectionCustomization {
+  pretitleLabel?: string;
+  titleLabel?: string;
+  sectionTextLabel?: string;
+  sectionSubtextLabel?: string;
 }
 
 interface OurStorySectionProps {
@@ -13,6 +21,7 @@ interface OurStorySectionProps {
   imageUrl?: string;
   imageComponent?: React.ReactNode;
   milestones?: Milestone[];
+  customization?: OurStorySectionCustomization;
 }
 
 const defaultMilestones: Milestone[] = [
@@ -48,6 +57,12 @@ export function OurStorySection({
   imageUrl,
   imageComponent,
   milestones = defaultMilestones,
+  customization = {
+    pretitleLabel: labels["lisastheme.ourstory.pretitle.label"],
+    titleLabel: labels["lisastheme.ourstory.title.label"],
+    sectionTextLabel: labels["lisastheme.ourstory.section.text.label"],
+    sectionSubtextLabel: labels["lisastheme.ourstory.section.subtext.label"],
+  },
 }: OurStorySectionProps) {
   const coupleName = nameA && nameB ? `${nameA} and ${nameB}` : "Us";
 
@@ -56,10 +71,10 @@ export function OurStorySection({
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
           <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
-            How It All Began
+            {customization.pretitleLabel}
           </p>
           <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic">
-            Our Story
+            {customization.titleLabel}
           </h2>
         </div>
 
@@ -78,14 +93,10 @@ export function OurStorySection({
           </div>
           <div className="space-y-8">
             <p className="text-xl md:text-2xl text-[#2c2c2c]/80 font-light leading-relaxed">
-              Some love stories are written in the stars. Ours was written in
-              stolen glances, late-night conversations, and the quiet certainty
-              that we had found our person.
+              {customization.sectionTextLabel}
             </p>
             <p className="text-lg text-[#2c2c2c]/70 leading-relaxed">
-              From that first meeting, we knew there was something
-              different—something worth holding onto. We're ready to make it
-              official, surrounded by the people who matter most to us.
+              {customization.sectionSubtextLabel}
             </p>
           </div>
         </div>

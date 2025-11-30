@@ -3,6 +3,7 @@
 import "style-shelf/tailwind-hybrid";
 import { useState, useEffect } from "react";
 import { differenceInSeconds } from "date-fns";
+import labels from "label-shelf/lisastheme";
 
 interface TimeLeft {
   days: number;
@@ -11,11 +12,29 @@ interface TimeLeft {
   seconds: number;
 }
 
-interface CountdownSectionProps {
-  eventDate?: string | null;
+interface CountdownSectionCustomization {
+  pretextLabel?: string;
+  daysLabel?: string;
+  hoursLabel?: string;
+  minutesLabel?: string;
+  secondsLabel?: string;
 }
 
-export function CountdownSection({ eventDate }: CountdownSectionProps) {
+interface CountdownSectionProps {
+  eventDate?: string | null;
+  customization?: CountdownSectionCustomization;
+}
+
+export function CountdownSection({
+  eventDate,
+  customization = {
+    pretextLabel: labels["lisastheme.countdown.pretext.label"],
+    daysLabel: labels["lisastheme.countdown.days.label"],
+    hoursLabel: labels["lisastheme.countdown.hours.label"],
+    minutesLabel: labels["lisastheme.countdown.minutes.label"],
+    secondsLabel: labels["lisastheme.countdown.seconds.label"],
+  },
+}: CountdownSectionProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -60,17 +79,17 @@ export function CountdownSection({ eventDate }: CountdownSectionProps) {
   }, [eventDate]);
 
   const timeUnits = [
-    { value: timeLeft.days, label: "Days" },
-    { value: timeLeft.hours, label: "Hours" },
-    { value: timeLeft.minutes, label: "Minutes" },
-    { value: timeLeft.seconds, label: "Seconds" },
+    { value: timeLeft.days, label: customization.daysLabel },
+    { value: timeLeft.hours, label: customization.hoursLabel },
+    { value: timeLeft.minutes, label: customization.minutesLabel },
+    { value: timeLeft.seconds, label: customization.secondsLabel },
   ];
 
   return (
     <section className="py-32 bg-[#faf9f6]">
       <div className="max-w-5xl mx-auto px-6 text-center">
         <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
-          Counting Down To Forever
+          {customization.pretextLabel}
         </p>
 
         <div className="flex items-center justify-center gap-8 md:gap-16 mt-12">

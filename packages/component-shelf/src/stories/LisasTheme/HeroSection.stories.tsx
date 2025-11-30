@@ -22,4 +22,3 @@ export const Primary: Story = {
     location: "Bel Vino Winery",
   },
 };
-

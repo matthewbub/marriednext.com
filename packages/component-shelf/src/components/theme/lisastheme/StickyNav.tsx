@@ -1,20 +1,52 @@
 "use client";
 
 import "style-shelf/tailwind-hybrid";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "../../../lib/utils";
+import labels from "label-shelf/lisastheme";
 
-const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "Our Story", href: "#story" },
-  { label: "Details", href: "#details" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "RSVP", href: "#rsvp" },
-];
+interface StickyNavCustomization {
+  navLabels?: {
+    home?: string;
+    story?: string;
+    details?: string;
+    gallery?: string;
+    rsvp?: string;
+  };
+}
 
-export function StickyNav() {
+export function StickyNav({
+  customization = {},
+}: {
+  customization?: StickyNavCustomization;
+}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+
+  const navLabels = {
+    home: labels["lisastheme.nav.home.label"],
+    story: labels["lisastheme.nav.story.label"],
+    details: labels["lisastheme.nav.details.label"],
+    gallery: labels["lisastheme.nav.gallery.label"],
+    rsvp: labels["lisastheme.nav.rsvp.label"],
+    ...customization.navLabels,
+  };
+  const navItems = useMemo(
+    () => [
+      { label: navLabels.home, href: "#home" },
+      { label: navLabels.story, href: "#story" },
+      { label: navLabels.details, href: "#details" },
+      { label: navLabels.gallery, href: "#gallery" },
+      { label: navLabels.rsvp, href: "#rsvp" },
+    ],
+    [
+      navLabels.home,
+      navLabels.story,
+      navLabels.details,
+      navLabels.gallery,
+      navLabels.rsvp,
+    ]
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +67,7 @@ export function StickyNav() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [navItems]);
 
   return (
     <nav

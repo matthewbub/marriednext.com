@@ -3,6 +3,11 @@
 import "style-shelf/tailwind-hybrid";
 import { useEffect, useState } from "react";
 import type React from "react";
+import labels from "label-shelf/lisastheme";
+
+interface HeroSectionCustomization {
+  subtitleLabel?: string;
+}
 
 interface HeroSectionProps {
   nameA: string | null;
@@ -11,6 +16,7 @@ interface HeroSectionProps {
   location?: string | null;
   imageUrl?: string;
   imageComponent?: React.ReactNode;
+  customization?: HeroSectionCustomization;
 }
 
 function formatDate(dateString: string | null | undefined): string {
@@ -30,11 +36,15 @@ export function HeroSection({
   location,
   imageUrl,
   imageComponent,
+  customization = {
+    subtitleLabel: labels["lisastheme.hero.pretext.label"],
+  },
 }: HeroSectionProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const formattedDate = formatDate(eventDate);
@@ -67,9 +77,11 @@ export function HeroSection({
           mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
-        <p className="text-white/90 tracking-[0.4em] uppercase text-sm mb-6">
-          We're Getting Married
-        </p>
+        {customization.subtitleLabel && (
+          <p className="text-white/90 tracking-[0.4em] uppercase text-sm mb-6">
+            {customization.subtitleLabel}
+          </p>
+        )}
 
         <h1 className="font-serif text-white">
           {nameA && (

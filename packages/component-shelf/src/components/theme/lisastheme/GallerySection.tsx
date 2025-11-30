@@ -1,6 +1,25 @@
-import "style-shelf/tailwind-hybrid";
+"use client";
 
-export function GallerySection() {
+import "style-shelf/tailwind-hybrid";
+import labels from "label-shelf/lisastheme";
+
+interface GallerySectionCustomization {
+  pretitleLabel?: string;
+  titleLabel?: string;
+  imageAltLabel?: string;
+}
+
+interface GallerySectionProps {
+  customization?: GallerySectionCustomization;
+}
+
+export function GallerySection({
+  customization = {
+    pretitleLabel: labels["lisastheme.moments.pretitle.label"],
+    titleLabel: labels["lisastheme.moments.title.label"],
+    imageAltLabel: labels["lisastheme.moments.image.alt.label"],
+  },
+}: GallerySectionProps) {
   const images = [
     { src: "/romantic-couple-portrait-engagement.jpg", span: "row-span-2" },
     { src: "/couple-laughing-candid-moment.jpg", span: "" },
@@ -16,8 +35,12 @@ export function GallerySection() {
     <section id="gallery" className="py-32 bg-[#f5f3eb]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">Moments We've Shared</p>
-          <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic">Our Gallery</h2>
+          <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
+            {customization.pretitleLabel}
+          </p>
+          <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic">
+            {customization.titleLabel}
+          </h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -25,7 +48,7 @@ export function GallerySection() {
             <div key={index} className={`overflow-hidden group cursor-pointer ${image.span}`}>
               <img
                 src={image.src || "/placeholder.svg"}
-                alt={`Yulissa and Matthew - Photo ${index + 1}`}
+                alt={`${customization.imageAltLabel} ${index + 1}`}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>

@@ -1,50 +1,79 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import labels from "label-shelf/lisastheme";
 
-const registries = [
+interface RegistryEntry {
+  name: string;
+  description: string;
+  url: string;
+}
+
+interface RegistrySectionCustomization {
+  pretitleLabel?: string;
+  titleLabel?: string;
+  descriptionLabel?: string;
+  entryButtonLabel?: string;
+  noteLabel?: string;
+  registries?: RegistryEntry[];
+}
+
+const defaultRegistryEntries: RegistryEntry[] = [
   {
-    name: "Amazon",
-    description: "Home essentials & everyday items",
-    url: "#",
+    name: labels["lisastheme.registry.amazon.name.label"],
+    description: labels["lisastheme.registry.amazon.description.label"],
+    url: labels["lisastheme.registry.amazon.url.label"],
   },
   {
-    name: "Crate & Barrel",
-    description: "Kitchen & dining",
-    url: "#",
+    name: labels["lisastheme.registry.crateandbarrel.name.label"],
+    description: labels["lisastheme.registry.crateandbarrel.description.label"],
+    url: labels["lisastheme.registry.crateandbarrel.url.label"],
   },
   {
-    name: "Williams Sonoma",
-    description: "Cookware & entertaining",
-    url: "#",
+    name: labels["lisastheme.registry.williamssonoma.name.label"],
+    description: labels["lisastheme.registry.williamssonoma.description.label"],
+    url: labels["lisastheme.registry.williamssonoma.url.label"],
   },
   {
-    name: "Honeymoon Fund",
-    description: "Help us create lasting memories",
-    url: "#",
+    name: labels["lisastheme.registry.honeymoon.name.label"],
+    description: labels["lisastheme.registry.honeymoon.description.label"],
+    url: labels["lisastheme.registry.honeymoon.url.label"],
   },
 ];
 
-export function RegistrySection() {
+const defaultRegistryCustomization: RegistrySectionCustomization = {
+  pretitleLabel: labels["lisastheme.registry.section.pretitle.label"],
+  titleLabel: labels["lisastheme.registry.section.title.label"],
+  descriptionLabel: labels["lisastheme.registry.section.description.label"],
+  entryButtonLabel: labels["lisastheme.registry.entry.button.label"],
+  noteLabel: labels["lisastheme.registry.note.label"],
+  registries: defaultRegistryEntries,
+};
+
+interface RegistrySectionProps {
+  customization?: RegistrySectionCustomization;
+}
+
+export function RegistrySection({
+  customization = defaultRegistryCustomization,
+}: RegistrySectionProps) {
+  const registries = customization.registries ?? [];
+
   return (
     <section id="registry" className="py-32 px-6 bg-[#faf9f6]">
       <div className="max-w-4xl mx-auto">
-        {/* Section Header */}
         <div className="text-center mb-20">
           <p className="text-base tracking-[0.3em] uppercase text-[#745656] mb-4">
-            Gifts
+            {customization.pretitleLabel}
           </p>
           <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] mb-6">
-            Registry
+            {customization.titleLabel}
           </h2>
           <p className="text-xl text-[#2c2c2c]/70 max-w-2xl mx-auto leading-relaxed">
-            Your presence at our wedding is the greatest gift of all. However,
-            if you wish to honor us with a gift, we have registered at the
-            following places.
+            {customization.descriptionLabel}
           </p>
         </div>
 
-        {/* Registry List */}
         <div className="border-t border-[#2c2c2c]/10">
           {registries.map((registry) => (
             <a
@@ -63,16 +92,17 @@ export function RegistrySection() {
                 </p>
               </div>
               <div className="ml-6 flex items-center gap-2 text-[#745656] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-base tracking-wide">View Registry</span>
+                <span className="text-base tracking-wide">
+                  {customization.entryButtonLabel}
+                </span>
                 <ExternalLink className="w-5 h-5" />
               </div>
             </a>
           ))}
         </div>
 
-        {/* Note */}
         <p className="text-center text-lg text-[#2c2c2c]/50 mt-12 italic">
-          For those who prefer, monetary gifts can be given at the reception.
+          {customization.noteLabel}
         </p>
       </div>
     </section>

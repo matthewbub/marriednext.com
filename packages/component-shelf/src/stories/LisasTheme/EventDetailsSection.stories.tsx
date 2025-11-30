@@ -19,7 +19,7 @@ export const Primary: Story = {
     locationName: "Bel Vino Winery",
     locationAddress: "33515 Rancho California Rd, Temecula, CA 92591",
     eventDate: "2026-07-26 07:00:00",
-    eventTime: "17:00:00",
+    eventTime: "5:00 PM",
     mapsShareUrl: "https://maps.app.goo.gl/LzKDwyJxmDePAbvb6",
   },
 };

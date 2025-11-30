@@ -1,10 +1,17 @@
 import "style-shelf/tailwind-hybrid";
+import labels from "label-shelf/lisastheme";
+
+interface FooterSectionCustomization {
+  pretitleLabel?: string;
+  signatureLabel?: string;
+}
 
 interface FooterSectionProps {
   nameA?: string | null;
   nameB?: string | null;
   eventDate?: string | null;
   location?: string | null;
+  customization?: FooterSectionCustomization;
 }
 
 function formatDate(dateString: string | null | undefined): string {
@@ -22,6 +29,10 @@ export function FooterSection({
   nameB,
   eventDate,
   location,
+  customization = {
+    pretitleLabel: labels["lisastheme.footer.pretitle.label"],
+    signatureLabel: labels["lisastheme.footer.signature.label"],
+  },
 }: FooterSectionProps) {
   const coupleName = nameA && nameB ? `${nameA} & ${nameB}` : "Us";
   const formattedDate = formatDate(eventDate);
@@ -31,7 +42,7 @@ export function FooterSection({
     <footer className="py-20 bg-[#2c2c2c] text-white/80">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <p className="tracking-[0.4em] uppercase text-sm text-white/50 mb-4">
-          See You Soon
+          {customization.pretitleLabel}
         </p>
         <h2 className="font-serif text-4xl md:text-5xl text-white font-light italic mb-8">
           {coupleName}
@@ -52,7 +63,7 @@ export function FooterSection({
         )}
 
         <p className="mt-12 text-white/30 text-xs">
-          Made with love using MarriedNext
+          {customization.signatureLabel}
         </p>
       </div>
     </footer>

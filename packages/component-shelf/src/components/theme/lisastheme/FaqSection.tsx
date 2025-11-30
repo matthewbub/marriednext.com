@@ -3,68 +3,91 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import labels from "label-shelf/lisastheme";
 
-const faqs = [
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface FaqSectionCustomization {
+  pretitleLabel?: string;
+  titleLabel?: string;
+  noteLabel?: string;
+  noteLinkLabel?: string;
+  noteLinkHref?: string;
+  faqs?: FaqItem[];
+}
+
+const defaultFaqItems: FaqItem[] = [
   {
-    question: "What is the dress code?",
-    answer:
-      "We kindly request cocktail attire. Ladies, feel free to wear elegant dresses or jumpsuits. Gentlemen, suits or dress slacks with a blazer are perfect. The ceremony will be outdoors, so we recommend comfortable footwear for grass.",
+    question: labels["lisastheme.faq.question.0.label"],
+    answer: labels["lisastheme.faq.answer.0.label"],
   },
   {
-    question: "Can I bring a plus one?",
-    answer:
-      "Due to limited space, we can only accommodate guests who have been specifically named on the invitation. Please refer to your invitation for details on your party size.",
+    question: labels["lisastheme.faq.question.1.label"],
+    answer: labels["lisastheme.faq.answer.1.label"],
   },
   {
-    question: "Are children welcome?",
-    answer:
-      "While we love your little ones, we have chosen to make our wedding an adults-only celebration. We hope this gives you the opportunity to enjoy a night out!",
+    question: labels["lisastheme.faq.question.2.label"],
+    answer: labels["lisastheme.faq.answer.2.label"],
   },
   {
-    question: "Will there be parking available?",
-    answer:
-      "Yes, complimentary valet parking will be available at the venue. There is also a parking lot adjacent to the venue for self-parking.",
+    question: labels["lisastheme.faq.question.3.label"],
+    answer: labels["lisastheme.faq.answer.3.label"],
   },
   {
-    question: "What time should I arrive?",
-    answer:
-      "We recommend arriving 20-30 minutes before the ceremony begins to find your seats and settle in. The ceremony will begin promptly at 4:00 PM.",
+    question: labels["lisastheme.faq.question.4.label"],
+    answer: labels["lisastheme.faq.answer.4.label"],
   },
   {
-    question: "Is the venue wheelchair accessible?",
-    answer:
-      "Yes, the venue is fully wheelchair accessible. Please let us know in advance if you require any special accommodations and we will be happy to assist.",
+    question: labels["lisastheme.faq.question.5.label"],
+    answer: labels["lisastheme.faq.answer.5.label"],
   },
   {
-    question: "Will the ceremony be indoors or outdoors?",
-    answer:
-      "The ceremony will take place outdoors in the vineyard garden, with the reception following indoors in the grand ballroom. In case of inclement weather, both will be held indoors.",
+    question: labels["lisastheme.faq.question.6.label"],
+    answer: labels["lisastheme.faq.answer.6.label"],
   },
   {
-    question: "Can I take photos during the ceremony?",
-    answer:
-      "We kindly ask that you keep your phones and cameras put away during the ceremony so you can be fully present with us. Our photographer will capture all the special moments, and we will share photos with you after the wedding.",
+    question: labels["lisastheme.faq.question.7.label"],
+    answer: labels["lisastheme.faq.answer.7.label"],
   },
 ];
 
-export function FaqSection() {
+const defaultFaqCustomization: FaqSectionCustomization = {
+  pretitleLabel: labels["lisastheme.faq.section.pretitle.label"],
+  titleLabel: labels["lisastheme.faq.section.title.label"],
+  noteLabel: labels["lisastheme.faq.section.intro.label"],
+  noteLinkLabel: labels["lisastheme.faq.note.link.label"],
+  noteLinkHref: labels["lisastheme.faq.note.link.href"],
+  faqs: defaultFaqItems,
+};
+
+interface FaqSectionProps {
+  customization?: FaqSectionCustomization;
+}
+
+export function FaqSection({
+  customization = defaultFaqCustomization,
+}: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const faqItems = customization.faqs ?? [];
 
   return (
     <section id="faq" className="py-32 px-6 bg-[#faf9f6]">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-20">
           <p className="text-sm tracking-[0.3em] uppercase text-[#745656] mb-4">
-            Questions & Answers
+            {customization.pretitleLabel}
           </p>
           <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] mb-6">
-            Frequently Asked
+            {customization.titleLabel}
           </h2>
           <div className="w-24 h-px bg-[#745656]/30 mx-auto" />
         </div>
 
         <div className="divide-y divide-[#745656]/20">
-          {faqs.map((faq, index) => (
+          {faqItems.map((faq, index) => (
             <div key={index} className="py-6">
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -98,13 +121,13 @@ export function FaqSection() {
 
         <div className="mt-16 pt-12 border-t border-[#745656]/20 text-center">
           <p className="text-lg text-[#2c2c2c]/70 mb-4">
-            Still have questions?
+            {customization.noteLabel}
           </p>
           <a
-            href="mailto:hello@yulissaandmatthew.com"
+            href={customization.noteLinkHref}
             className="inline-flex items-center gap-2 text-[#745656] text-lg hover:underline underline-offset-4 transition-all"
           >
-            Reach out to us directly
+            {customization.noteLinkLabel}
           </a>
         </div>
       </div>

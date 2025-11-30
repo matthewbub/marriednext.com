@@ -7,12 +7,52 @@ import { useState } from "react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { ArrowRight, Check } from "lucide-react";
+import labels from "label-shelf/lisastheme";
+
+function fillTemplate(
+  template: string | undefined,
+  values: Record<string, string | undefined>
+) {
+  if (!template) return "";
+  return template.replace(/\{([^}]+)\}/g, (_, key) => values[key] ?? "");
+}
+
+interface RsvpSectionCustomization {
+  pretitleLabel?: string;
+  titleLabel?: string;
+  descriptionLabel?: string;
+  searchPlaceholderLabel?: string;
+  searchButtonLabel?: string;
+  invitationLabel?: string;
+  questionLabel?: string;
+  acceptButtonLabel?: string;
+  declineButtonLabel?: string;
+  confirmationHeadingLabel?: string;
+  confirmationTextLabel?: string;
+}
 
 interface RsvpSectionProps {
   rsvpFormComponent?: React.ReactNode;
+  customization?: RsvpSectionCustomization;
 }
 
-export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
+export function RsvpSection({
+  rsvpFormComponent,
+  customization = {
+    pretitleLabel: labels["lisastheme.rsvp.pretitle.label"],
+    titleLabel: labels["lisastheme.rsvp.title.label"],
+    descriptionLabel: labels["lisastheme.rsvp.text.label"],
+    searchPlaceholderLabel: labels["lisastheme.rsvp.search.placeholder.label"],
+    searchButtonLabel: labels["lisastheme.rsvp.search.button.label"],
+    invitationLabel: labels["lisastheme.rsvp.search.results.pretitle.label"],
+    questionLabel: labels["lisastheme.rsvp.search.question.label"],
+    acceptButtonLabel: labels["lisastheme.rsvp.search.accept.label"],
+    declineButtonLabel: labels["lisastheme.rsvp.search.decline.label"],
+    confirmationHeadingLabel:
+      labels["lisastheme.rsvp.confirmation.heading.label"],
+    confirmationTextLabel: labels["lisastheme.rsvp.confirmation.text.label"],
+  },
+}: RsvpSectionProps) {
   const [step, setStep] = useState<"search" | "found" | "confirmed">("search");
   const [firstName, setFirstName] = useState("");
 
@@ -27,6 +67,12 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
     setStep("confirmed");
   };
 
+  const labelValues = { firstName };
+  const confirmationHeading = fillTemplate(
+    customization.confirmationHeadingLabel,
+    labelValues
+  );
+
   if (rsvpFormComponent) {
     return (
       <section
@@ -37,10 +83,10 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#745656]/5 rounded-full translate-x-1/2 translate-y-1/2" />
         <div className="max-w-xl mx-auto px-6 text-center relative z-10">
           <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
-            We Hope You Can Join Us
+            {customization.pretitleLabel}
           </p>
           <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4">
-            RSVP
+            {customization.titleLabel}
           </h2>
           <div className="mt-12">{rsvpFormComponent}</div>
         </div>
@@ -55,13 +101,13 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
 
       <div className="max-w-xl mx-auto px-6 text-center relative z-10">
         <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
-          We Hope You Can Join Us
+          {customization.pretitleLabel}
         </p>
         <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic mb-4">
-          RSVP
+          {customization.titleLabel}
         </h2>
         <p className="text-[#2c2c2c]/70 mb-12">
-          Please respond by March 15, 2026
+          {customization.descriptionLabel}
         </p>
 
         {step === "search" && (
@@ -69,7 +115,7 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Enter your first name"
+                placeholder={customization.searchPlaceholderLabel}
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className="h-14 text-lg text-center bg-transparent border-0 border-b-2 border-[#745656]/30 rounded-none focus:border-[#745656] focus:ring-0 placeholder:text-[#2c2c2c]/40"
@@ -79,7 +125,7 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
               type="submit"
               className="h-14 px-12 bg-[#745656] hover:bg-[#5d4545] text-white tracking-[0.2em] uppercase text-sm"
             >
-              Find My Invitation
+              {customization.searchButtonLabel}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </form>
@@ -89,7 +135,7 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
           <div className="space-y-8">
             <div className="py-8 border-y border-[#745656]/20">
               <p className="text-[#2c2c2c]/60 text-sm tracking-[0.2em] uppercase mb-2">
-                Invitation for
+                {customization.invitationLabel}
               </p>
               <p className="font-serif text-3xl text-[#2c2c2c] italic">
                 {firstName} & Guest
@@ -97,19 +143,19 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
             </div>
 
             <div className="space-y-4">
-              <p className="text-[#2c2c2c]/70">Will you be joining us?</p>
+              <p className="text-[#2c2c2c]/70">{customization.questionLabel}</p>
               <div className="flex gap-4 justify-center">
                 <Button
                   onClick={handleConfirm}
                   className="h-14 px-10 bg-[#745656] hover:bg-[#5d4545] text-white tracking-[0.2em] uppercase text-sm"
                 >
-                  Joyfully Accept
+                  {customization.acceptButtonLabel}
                 </Button>
                 <Button
                   variant="outline"
                   className="h-14 px-10 border-[#745656]/30 text-[#2c2c2c] hover:bg-[#745656]/5 tracking-[0.2em] uppercase text-sm bg-transparent"
                 >
-                  Regretfully Decline
+                  {customization.declineButtonLabel}
                 </Button>
               </div>
             </div>
@@ -123,11 +169,10 @@ export function RsvpSection({ rsvpFormComponent }: RsvpSectionProps) {
             </div>
             <div>
               <h3 className="font-serif text-3xl text-[#2c2c2c] italic mb-2">
-                Thank You, {firstName}!
+                {confirmationHeading}
               </h3>
               <p className="text-[#2c2c2c]/70">
-                We can't wait to celebrate with you. Check your email for
-                confirmation details.
+                {customization.confirmationTextLabel}
               </p>
             </div>
           </div>

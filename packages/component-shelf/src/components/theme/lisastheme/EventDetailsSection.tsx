@@ -1,5 +1,6 @@
 import "style-shelf/tailwind-hybrid";
 import { MapPin, Clock, Sparkles } from "lucide-react";
+import labels from "label-shelf/lisastheme";
 
 interface EventDetailsSectionProps {
   locationName?: string | null;
@@ -7,11 +8,20 @@ interface EventDetailsSectionProps {
   eventDate?: string | null;
   eventTime?: string | null;
   mapsShareUrl?: string | null;
-}
-
-function formatTime(timeString: string | null | undefined): string {
-  if (!timeString) return "";
-  return timeString;
+  customization?: {
+    headingPretextLabel?: string;
+    headingLabel?: string;
+    ceremonyHeadingLabel?: string;
+    ceremonyDescriptionLabel?: string;
+    venueHeadingLabel?: string;
+    viewMapLabel?: string;
+    celebrationHeadingLabel?: string;
+    celebrationDescriptionLabel?: string;
+    celebrationAttireLabel?: string;
+    dressCodeSectionLabel?: string;
+    dressCodeValueLabel?: string;
+    dressCodeNoteLabel?: string;
+  };
 }
 
 export function EventDetailsSection({
@@ -19,20 +29,42 @@ export function EventDetailsSection({
   locationAddress,
   eventTime,
   mapsShareUrl,
+  customization = {
+    headingPretextLabel: labels["lisastheme.details.pretitle.label"],
+    headingLabel: labels["lisastheme.details.title.label"],
+    ceremonyHeadingLabel: labels["lisastheme.details.ceremony.title.label"],
+    ceremonyDescriptionLabel: labels["lisastheme.details.ceremony.text.label"],
+    venueHeadingLabel: labels["lisastheme.details.venue.title.label"],
+    viewMapLabel: labels["lisastheme.details.venue.button.label"],
+    celebrationHeadingLabel:
+      labels["lisastheme.details.celebration.title.label"],
+    celebrationDescriptionLabel:
+      labels["lisastheme.details.celebration.text.1.label"],
+    celebrationAttireLabel:
+      labels["lisastheme.details.celebration.text.2.label"],
+    dressCodeSectionLabel:
+      labels["lisastheme.details.dresscode.pretitle.label"],
+    dressCodeValueLabel: labels["lisastheme.details.dresscode.title.label"],
+    dressCodeNoteLabel: labels["lisastheme.details.dresscode.text.label"],
+  },
 }: EventDetailsSectionProps) {
-  const formattedTime = formatTime(eventTime);
+  const formattedTime = eventTime;
   const addressLines = locationAddress?.split("\n") || [];
 
   return (
     <section id="details" className="py-32 bg-[#faf9f6]">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
-          <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
-            Join Us On Our Special Day
-          </p>
-          <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic">
-            The Details
-          </h2>
+          {customization?.headingPretextLabel && (
+            <p className="text-[#745656] tracking-[0.4em] uppercase text-sm mb-4">
+              {customization.headingPretextLabel}
+            </p>
+          )}
+          {customization?.headingLabel && (
+            <h2 className="font-serif text-5xl md:text-6xl text-[#2c2c2c] font-light italic">
+              {customization.headingLabel}
+            </h2>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-12 md:gap-8">
@@ -41,13 +73,16 @@ export function EventDetailsSection({
               <div className="inline-flex items-center justify-center w-16 h-16 border border-[#745656]/30 rounded-full mb-6">
                 <Sparkles className="w-6 h-6 text-[#745656]" />
               </div>
-              <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
-                The Ceremony
-              </h3>
-              <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
-                We invite you to witness our union as we exchange vows and begin
-                our forever.
-              </p>
+              {customization?.ceremonyHeadingLabel && (
+                <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
+                  {customization.ceremonyHeadingLabel}
+                </h3>
+              )}
+              {customization?.ceremonyDescriptionLabel && (
+                <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
+                  {customization.ceremonyDescriptionLabel}
+                </p>
+              )}
               <div className="space-y-2 text-[#2c2c2c]/80">
                 <p className="flex items-center justify-center gap-2">
                   <Clock className="w-4 h-4 text-[#745656]" />
@@ -68,9 +103,11 @@ export function EventDetailsSection({
               <div className="inline-flex items-center justify-center w-16 h-16 border border-[#745656]/30 rounded-full mb-6">
                 <MapPin className="w-6 h-6 text-[#745656]" />
               </div>
-              <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
-                The Venue
-              </h3>
+              {customization?.venueHeadingLabel && (
+                <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
+                  {customization.venueHeadingLabel}
+                </h3>
+              )}
               <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
                 {locationName}
               </p>
@@ -81,14 +118,14 @@ export function EventDetailsSection({
                   ))}
                 </address>
               )}
-              {mapsShareUrl && (
+              {mapsShareUrl && customization?.viewMapLabel && (
                 <a
                   href={mapsShareUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-4 text-[#745656] text-sm tracking-[0.2em] uppercase border-b border-[#745656]/30 pb-1 hover:border-[#745656] transition-colors"
                 >
-                  View Map
+                  {customization.viewMapLabel}
                 </a>
               )}
             </div>
@@ -98,31 +135,47 @@ export function EventDetailsSection({
             <div className="inline-flex items-center justify-center w-16 h-16 border border-[#745656]/30 rounded-full mb-6">
               <span className="text-[#745656] text-xl">✦</span>
             </div>
-            <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
-              The Celebration
-            </h3>
-            <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
-              Dinner, dancing, and endless memories under the stars.
-            </p>
-            <div className="space-y-2 text-[#2c2c2c]/80">
-              <p className="text-sm">Cocktail attire</p>
-            </div>
+            {customization?.celebrationHeadingLabel && (
+              <h3 className="font-serif text-2xl text-[#2c2c2c] mb-4 italic">
+                {customization.celebrationHeadingLabel}
+              </h3>
+            )}
+            {customization?.celebrationDescriptionLabel && (
+              <p className="text-[#2c2c2c]/70 mb-6 leading-relaxed">
+                {customization.celebrationDescriptionLabel}
+              </p>
+            )}
+            {customization?.celebrationAttireLabel && (
+              <div className="space-y-2 text-[#2c2c2c]/80">
+                <p className="text-sm">
+                  {customization.celebrationAttireLabel}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Dress code note */}
-        <div className="mt-20 pt-12 border-t border-[#745656]/10 text-center">
-          <p className="text-[#745656] tracking-[0.3em] uppercase text-sm mb-3">
-            Dress Code
-          </p>
-          <p className="font-serif text-2xl text-[#2c2c2c] italic">
-            Cocktail Attire
-          </p>
-          <p className="text-[#2c2c2c]/60 mt-3 max-w-lg mx-auto">
-            We kindly ask that guests avoid wearing white, ivory, or cream—those
-            colors are reserved for the bride.
-          </p>
-        </div>
+        {(customization?.dressCodeSectionLabel ||
+          customization?.dressCodeValueLabel ||
+          customization?.dressCodeNoteLabel) && (
+          <div className="mt-20 pt-12 border-t border-[#745656]/10 text-center">
+            {customization?.dressCodeSectionLabel && (
+              <p className="text-[#745656] tracking-[0.3em] uppercase text-sm mb-3">
+                {customization.dressCodeSectionLabel}
+              </p>
+            )}
+            {customization?.dressCodeValueLabel && (
+              <p className="font-serif text-2xl text-[#2c2c2c] italic">
+                {customization.dressCodeValueLabel}
+              </p>
+            )}
+            {customization?.dressCodeNoteLabel && (
+              <p className="text-[#2c2c2c]/60 mt-3 max-w-lg mx-auto">
+                {customization.dressCodeNoteLabel}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

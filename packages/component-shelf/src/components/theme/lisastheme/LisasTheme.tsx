@@ -2,7 +2,6 @@
 
 import "style-shelf/tailwind-hybrid";
 import type React from "react";
-// import labels from "label-shelf/lisastheme";
 import { StickyNav } from "./StickyNav";
 import { HeroSection } from "./HeroSection";
 import { CountdownSection } from "./CountdownSection";
