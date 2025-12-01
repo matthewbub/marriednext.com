@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { Button } from "../../components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export function ApplicationSeatingPlannerSection() {
   return (
@@ -7,13 +7,16 @@ export function ApplicationSeatingPlannerSection() {
       <div className="mx-auto max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="text-sm font-medium text-primary uppercase tracking-wider">Featured</span>
+            <span className="text-sm font-medium text-primary uppercase tracking-wider">
+              Featured
+            </span>
             <h2 className="mt-2 font-serif text-4xl md:text-5xl font-medium text-foreground text-balance">
               Seating plans made simple
             </h2>
             <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              Drag and drop guests between tables, keep feuding relatives apart, and ensure your best friends are right
-              where you want them. Our visual seating planner makes table arrangements actually fun.
+              Drag and drop guests between tables, keep feuding relatives apart,
+              and ensure your best friends are right where you want them. Our
+              visual seating planner makes table arrangements actually fun.
             </p>
             <ul className="mt-6 space-y-3">
               {[
@@ -22,7 +25,10 @@ export function ApplicationSeatingPlannerSection() {
                 "Handles dietary requirements",
                 "Export for caterers & venue",
               ].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-foreground">
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-foreground"
+                >
                   <span className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="w-2 h-2 rounded-full bg-primary" />
                   </span>
@@ -46,25 +52,29 @@ export function ApplicationSeatingPlannerSection() {
                   >
                     <div className="text-center">
                       <p className="text-xs text-muted-foreground">Table</p>
-                      <p className="font-serif font-medium text-foreground">{table}</p>
+                      <p className="font-serif font-medium text-foreground">
+                        {table}
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="mt-6 flex gap-2 flex-wrap">
-                {["Mom & Dad", "Best Friends", "College Crew", "Work"].map((group) => (
-                  <span
-                    key={group}
-                    className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm cursor-pointer hover:bg-primary/20 transition-colors"
-                  >
-                    {group}
-                  </span>
-                ))}
+                {["Mom & Dad", "Best Friends", "College Crew", "Work"].map(
+                  (group) => (
+                    <span
+                      key={group}
+                      className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm cursor-pointer hover:bg-primary/20 transition-colors"
+                    >
+                      {group}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

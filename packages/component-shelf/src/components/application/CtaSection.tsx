@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Heart } from "lucide-react"
+import { Button } from "../../components/ui/button";
+import { ArrowRight, Heart } from "lucide-react";
 
 export function ApplicationCtaSection() {
   return (
@@ -12,15 +12,19 @@ export function ApplicationCtaSection() {
           Ready to start planning?
         </h2>
         <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto">
-          Everything you need to plan your perfect day — beautiful websites, smart guest lists, and seamless RSVPs. And
-          it's free to start.
+          Everything you need to plan your perfect day — beautiful websites,
+          smart guest lists, and seamless RSVPs. And it's free to start.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" className="gap-2 text-base px-8">
             Create Your Wedding Site
             <ArrowRight className="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="lg" className="text-base px-8 bg-transparent">
+          <Button
+            variant="outline"
+            size="lg"
+            className="text-base px-8 bg-transparent"
+          >
             Try the Seating Planner
           </Button>
         </div>
@@ -29,5 +33,5 @@ export function ApplicationCtaSection() {
         </p>
       </div>
     </section>
-  )
+  );
 }

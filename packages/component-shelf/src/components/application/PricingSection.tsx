@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Check, Sparkles } from "lucide-react"
+import { Button } from "../../components/ui/button";
+import { Check, Sparkles } from "lucide-react";
 
 const plans = [
   {
@@ -56,20 +56,22 @@ const plans = [
     cta: "Add Custom Domain",
     highlighted: false,
   },
-]
+];
 
 export function ApplicationPricingSection() {
   return (
     <section id="pricing" className="py-24 px-6 lg:px-8 bg-secondary/30">
       <div className="mx-auto max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <p className="text-sm font-medium text-primary mb-4">Simple Pricing</p>
+          <p className="text-sm font-medium text-primary mb-4">
+            Simple Pricing
+          </p>
           <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground text-balance">
             Start free, upgrade when ready
           </h2>
           <p className="mt-6 text-lg text-muted-foreground">
-            Most couples never need to pay. But if you want premium templates, more storage, or a custom domain — we've
-            got you covered.
+            Most couples never need to pay. But if you want premium templates,
+            more storage, or a custom domain — we've got you covered.
           </p>
         </div>
 
@@ -93,20 +95,38 @@ export function ApplicationPricingSection() {
               )}
 
               <div className="mb-6">
-                <h3 className={`text-lg font-medium ${plan.highlighted ? "text-background" : "text-foreground"}`}>
+                <h3
+                  className={`text-lg font-medium ${
+                    plan.highlighted ? "text-background" : "text-foreground"
+                  }`}
+                >
                   {plan.name}
                 </h3>
                 <div className="mt-3 flex items-baseline gap-1">
                   <span
-                    className={`text-4xl font-serif font-semibold ${plan.highlighted ? "text-background" : "text-foreground"}`}
+                    className={`text-4xl font-serif font-semibold ${
+                      plan.highlighted ? "text-background" : "text-foreground"
+                    }`}
                   >
                     {plan.price}
                   </span>
-                  <span className={plan.highlighted ? "text-background/70" : "text-muted-foreground"}>
+                  <span
+                    className={
+                      plan.highlighted
+                        ? "text-background/70"
+                        : "text-muted-foreground"
+                    }
+                  >
                     /{plan.period}
                   </span>
                 </div>
-                <p className={`mt-3 text-sm ${plan.highlighted ? "text-background/80" : "text-muted-foreground"}`}>
+                <p
+                  className={`mt-3 text-sm ${
+                    plan.highlighted
+                      ? "text-background/80"
+                      : "text-muted-foreground"
+                  }`}
+                >
                   {plan.description}
                 </p>
               </div>
@@ -114,8 +134,18 @@ export function ApplicationPricingSection() {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <Check className={`h-5 w-5 flex-shrink-0 ${plan.highlighted ? "text-primary" : "text-primary"}`} />
-                    <span className={`text-sm ${plan.highlighted ? "text-background/90" : "text-muted-foreground"}`}>
+                    <Check
+                      className={`h-5 w-5 flex-shrink-0 ${
+                        plan.highlighted ? "text-primary" : "text-primary"
+                      }`}
+                    />
+                    <span
+                      className={`text-sm ${
+                        plan.highlighted
+                          ? "text-background/90"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {feature}
                     </span>
                   </li>
@@ -123,7 +153,11 @@ export function ApplicationPricingSection() {
               </ul>
 
               <Button
-                className={`w-full ${plan.highlighted ? "bg-background text-foreground hover:bg-background/90" : ""}`}
+                className={`w-full ${
+                  plan.highlighted
+                    ? "bg-background text-foreground hover:bg-background/90"
+                    : ""
+                }`}
                 variant={plan.highlighted ? "default" : "outline"}
               >
                 {plan.cta}
@@ -133,9 +167,10 @@ export function ApplicationPricingSection() {
         </div>
 
         <p className="text-center mt-12 text-sm text-muted-foreground">
-          All plans include our core features. Open source means you can self-host for free anytime.
+          All plans include our core features. Open source means you can
+          self-host for free anytime.
         </p>
       </div>
     </section>
-  )
+  );
 }
