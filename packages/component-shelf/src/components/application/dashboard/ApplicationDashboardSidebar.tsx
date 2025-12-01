@@ -1,5 +1,6 @@
 "use client";
 import type { ApplicationLinkComponent } from "../link-types";
+import type { DashboardWeddingData } from "./ApplicationDashboardLayout";
 import { cn } from "@/lib/utils";
 import {
   Heart,
@@ -29,11 +30,44 @@ const bottomNavItems = [
   { name: "Help", href: "/dashboard/help", icon: HelpCircle },
 ];
 
+function formatWeddingDate(dateString: string | null): string {
+  if (!dateString) return "Date TBD";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function getDaysUntilWedding(dateString: string | null): string {
+  if (!dateString) return "Set your date";
+  const weddingDate = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  weddingDate.setHours(0, 0, 0, 0);
+  const diffTime = weddingDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return "Wedding day passed";
+  if (diffDays === 0) return "Today's the day!";
+  if (diffDays === 1) return "1 day to go";
+  return `${diffDays} days to go`;
+}
+
+function getCoupleDisplayName(wedding?: DashboardWeddingData): string {
+  if (!wedding) return "Your Wedding";
+  if (wedding.displayName) return wedding.displayName;
+  if (wedding.nameA && wedding.nameB)
+    return `${wedding.nameA} & ${wedding.nameB}`;
+  return "Your Wedding";
+}
+
 interface DashboardSidebarProps {
   mobileOpen?: boolean;
   onMobileClose?: () => void;
   Link?: ApplicationLinkComponent;
   pathname?: string;
+  wedding?: DashboardWeddingData;
 }
 
 export function ApplicationDashboardSidebar({
@@ -41,19 +75,27 @@ export function ApplicationDashboardSidebar({
   onMobileClose,
   Link = "a",
   pathname = "/",
+  wedding,
 }: DashboardSidebarProps) {
+  const coupleDisplayName = getCoupleDisplayName(wedding);
+  const weddingDateFormatted = formatWeddingDate(wedding?.eventDate ?? null);
+  const daysUntil = getDaysUntilWedding(wedding?.eventDate ?? null);
+
   const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
-      {/* Couple Names */}
       <div className="rounded-lg bg-primary/5 border border-primary/10 p-4">
         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
           Your Wedding
         </p>
-        <p className="font-serif text-lg text-foreground">Sarah & Michael</p>
-        <p className="text-sm text-muted-foreground mt-1">June 15, 2025</p>
+        <p className="font-serif text-lg text-foreground">
+          {coupleDisplayName}
+        </p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {weddingDateFormatted}
+        </p>
         <div className="flex items-center gap-2 mt-3">
           <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-xs text-muted-foreground">168 days to go</span>
+          <span className="text-xs text-muted-foreground">{daysUntil}</span>
         </div>
       </div>
 

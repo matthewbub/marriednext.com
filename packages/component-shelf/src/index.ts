@@ -46,6 +46,7 @@ export { ApplicationRegistryEtiquetteArticle } from "./components/application/bl
 export { ApplicationBillingSettings } from "./components/application/dashboard/ApplicationBillingSettings";
 export { ApplicationDashboardHeader } from "./components/application/dashboard/ApplicationDashboardHeader";
 export { ApplicationDashboardLayout } from "./components/application/dashboard/ApplicationDashboardLayout";
+export type { DashboardUserData, DashboardWeddingData } from "./components/application/dashboard/ApplicationDashboardLayout";
 export { ApplicationDashboardOverview } from "./components/application/dashboard/ApplicationDashboardOverview";
 export type { HomeStatsData, ApplicationDashboardOverviewProps } from "./components/application/dashboard/ApplicationDashboardOverview";
 export { ApplicationDashboardSidebar } from "./components/application/dashboard/ApplicationDashboardSidebar";

@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
   ApplicationDashboardOverview,
   HomeStatsData,
+  DashboardUserData,
+  DashboardWeddingData,
 } from "component-shelf";
 
 const homeStatsSchema = z.object({
@@ -23,9 +27,17 @@ const homeStatsSchema = z.object({
   }),
   subscriptionPlan: z.string(),
   siteUrl: z.string(),
+  user: z.object({
+    fullName: z.string(),
+    imageUrl: z.string().nullable(),
+    initials: z.string(),
+    email: z.string(),
+  }),
 });
 
-async function fetchHomeStats(): Promise<HomeStatsData> {
+type HomeStatsResponse = z.infer<typeof homeStatsSchema>;
+
+async function fetchHomeStats(): Promise<HomeStatsResponse> {
   const res = await fetch("/api/v2/engaged/home-stats");
   if (!res.ok) {
     throw new Error("Failed to fetch home stats");
@@ -34,15 +46,61 @@ async function fetchHomeStats(): Promise<HomeStatsData> {
   return homeStatsSchema.parse(data);
 }
 
+function transformToOverviewData(response: HomeStatsResponse): HomeStatsData {
+  return {
+    totalGuests: response.totalGuests,
+    respondedGuests: response.respondedGuests,
+    responseRate: response.responseRate,
+    attendingGuests: response.attendingGuests,
+    declinedGuests: response.declinedGuests,
+    pendingGuests: response.pendingGuests,
+    weddingDate: response.weddingDate,
+    coupleNames: response.coupleNames,
+    subscriptionPlan: response.subscriptionPlan,
+    siteUrl: response.siteUrl,
+  };
+}
+
+function transformToUserData(response: HomeStatsResponse): DashboardUserData {
+  return {
+    fullName: response.user.fullName,
+    email: response.user.email,
+    imageUrl: response.user.imageUrl,
+    initials: response.user.initials,
+    subscriptionPlan: response.subscriptionPlan,
+  };
+}
+
+function transformToWeddingData(
+  response: HomeStatsResponse
+): DashboardWeddingData {
+  return {
+    displayName: response.coupleNames.displayName,
+    nameA: response.coupleNames.nameA,
+    nameB: response.coupleNames.nameB,
+    eventDate: response.weddingDate,
+  };
+}
+
 export default function DashboardPage() {
+  const pathname = usePathname();
   const { data, isLoading } = useQuery({
     queryKey: ["home-stats"],
     queryFn: fetchHomeStats,
   });
 
+  const overviewData = data ? transformToOverviewData(data) : undefined;
+  const userData = data ? transformToUserData(data) : undefined;
+  const weddingData = data ? transformToWeddingData(data) : undefined;
+
   return (
-    <ApplicationDashboardLayout>
-      <ApplicationDashboardOverview data={data} isLoading={isLoading} />
+    <ApplicationDashboardLayout
+      user={userData}
+      wedding={weddingData}
+      Link={Link}
+      pathname={pathname}
+    >
+      <ApplicationDashboardOverview data={overviewData} isLoading={isLoading} />
     </ApplicationDashboardLayout>
   );
 }

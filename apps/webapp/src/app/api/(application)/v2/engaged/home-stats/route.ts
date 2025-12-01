@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
 import { guest } from "orm-shelf/schema";
 import { eq, sql } from "drizzle-orm";
@@ -18,9 +19,35 @@ function buildSiteUrl(
   return customDomain || subdomainUrl;
 }
 
+function getInitials(
+  fullName: string | null,
+  firstName: string | null,
+  lastName: string | null
+): string {
+  if (fullName) {
+    const parts = fullName.split(" ").filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+  }
+  const first = firstName?.[0] || "";
+  const last = lastName?.[0] || "";
+  return (first + last).toUpperCase() || "U";
+}
+
 export async function GET() {
   try {
-    const weddingData = await getCurrentWedding();
+    const [user, weddingData] = await Promise.all([
+      currentUser(),
+      getCurrentWedding(),
+    ]);
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (!weddingData) {
       return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
@@ -64,6 +91,16 @@ export async function GET() {
       },
       subscriptionPlan,
       siteUrl,
+      user: {
+        fullName:
+          user.fullName ||
+          user.firstName ||
+          user.emailAddresses[0]?.emailAddress ||
+          "User",
+        imageUrl: user.imageUrl || null,
+        initials: getInitials(user.fullName, user.firstName, user.lastName),
+        email: user.emailAddresses[0]?.emailAddress || "",
+      },
     });
   } catch (error) {
     console.error("Error fetching home stats:", error);

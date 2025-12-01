@@ -1,16 +1,42 @@
 "use client";
 
 import type React from "react";
+import type { ApplicationLinkComponent } from "../link-types";
 
 import { useState } from "react";
 import { ApplicationDashboardSidebar } from "./ApplicationDashboardSidebar";
 import { ApplicationDashboardHeader } from "./ApplicationDashboardHeader";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
+export interface DashboardUserData {
+  fullName: string;
+  email: string;
+  imageUrl: string | null;
+  initials: string;
+  subscriptionPlan: string;
 }
 
-export function ApplicationDashboardLayout({ children }: DashboardLayoutProps) {
+export interface DashboardWeddingData {
+  displayName: string;
+  nameA: string;
+  nameB: string;
+  eventDate: string | null;
+}
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  user?: DashboardUserData;
+  wedding?: DashboardWeddingData;
+  Link?: ApplicationLinkComponent;
+  pathname?: string;
+}
+
+export function ApplicationDashboardLayout({
+  children,
+  user,
+  wedding,
+  Link,
+  pathname,
+}: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -18,10 +44,14 @@ export function ApplicationDashboardLayout({ children }: DashboardLayoutProps) {
       <ApplicationDashboardSidebar
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
+        wedding={wedding}
+        Link={Link}
+        pathname={pathname}
       />
       <div className="lg:pl-64">
         <ApplicationDashboardHeader
           onMenuClick={() => setMobileMenuOpen(true)}
+          user={user}
         />
         <main className="p-6 pb-24 lg:pb-6">{children}</main>
       </div>
