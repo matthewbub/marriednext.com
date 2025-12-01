@@ -1,0 +1,75 @@
+import { NextResponse } from "next/server";
+import { db } from "@/database/drizzle";
+import { guest } from "orm-shelf/schema";
+import { eq, sql } from "drizzle-orm";
+import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
+
+function buildSiteUrl(
+  subdomain: string | null,
+  customDomain: string | null,
+  plan: string
+): string {
+  const subdomainUrl = subdomain ? `https://${subdomain}.marriednext.com` : "";
+
+  if (plan === "Free") {
+    return subdomainUrl;
+  }
+
+  return customDomain || subdomainUrl;
+}
+
+export async function GET() {
+  try {
+    const weddingData = await getCurrentWedding();
+
+    if (!weddingData) {
+      return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
+    }
+
+    const [stats] = await db
+      .select({
+        totalGuests: sql<number>`count(*)::int`,
+        attendingGuests: sql<number>`count(*) filter (where ${guest.isAttending} = true)::int`,
+        declinedGuests: sql<number>`count(*) filter (where ${guest.isAttending} = false)::int`,
+        pendingGuests: sql<number>`count(*) filter (where ${guest.isAttending} is null)::int`,
+        respondedGuests: sql<number>`count(*) filter (where ${guest.isAttending} is not null)::int`,
+      })
+      .from(guest)
+      .where(eq(guest.weddingId, weddingData.id));
+
+    const totalGuests = stats?.totalGuests ?? 0;
+    const respondedGuests = stats?.respondedGuests ?? 0;
+    const responseRate =
+      totalGuests > 0 ? Math.round((respondedGuests / totalGuests) * 100) : 0;
+
+    const subscriptionPlan = "Free";
+    const siteUrl = buildSiteUrl(
+      weddingData.subdomain,
+      weddingData.customDomain,
+      subscriptionPlan
+    );
+
+    return NextResponse.json({
+      totalGuests,
+      respondedGuests,
+      responseRate,
+      attendingGuests: stats?.attendingGuests ?? 0,
+      declinedGuests: stats?.declinedGuests ?? 0,
+      pendingGuests: stats?.pendingGuests ?? 0,
+      weddingDate: weddingData.fieldEventDate || null,
+      coupleNames: {
+        nameA: weddingData.fieldNameA || "",
+        nameB: weddingData.fieldNameB || "",
+        displayName: weddingData.fieldDisplayName || "",
+      },
+      subscriptionPlan,
+      siteUrl,
+    });
+  } catch (error) {
+    console.error("Error fetching home stats:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch home stats" },
+      { status: 500 }
+    );
+  }
+}

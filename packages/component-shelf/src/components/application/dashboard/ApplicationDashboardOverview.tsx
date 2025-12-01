@@ -20,34 +20,27 @@ import {
   Grid3X3,
 } from "lucide-react";
 
-const stats = [
-  {
-    name: "Total Guests",
-    value: "124",
-    change: "+12 this week",
-    icon: Users,
-  },
-  {
-    name: "RSVPs Received",
-    value: "87",
-    subtext: "70% response rate",
-    icon: Mail,
-  },
-  {
-    name: "Attending",
-    value: "72",
-    subtext: "of 87 responses",
-    icon: CheckCircle2,
-    color: "text-accent",
-  },
-  {
-    name: "Declined",
-    value: "15",
-    subtext: "of 87 responses",
-    icon: XCircle,
-    color: "text-destructive",
-  },
-];
+export interface HomeStatsData {
+  totalGuests: number;
+  respondedGuests: number;
+  responseRate: number;
+  attendingGuests: number;
+  declinedGuests: number;
+  pendingGuests: number;
+  weddingDate: string | null;
+  coupleNames: {
+    nameA: string;
+    nameB: string;
+    displayName: string;
+  };
+  subscriptionPlan: string;
+  siteUrl: string;
+}
+
+export interface ApplicationDashboardOverviewProps {
+  data?: HomeStatsData;
+  isLoading?: boolean;
+}
 
 const recentActivity = [
   {
@@ -109,14 +102,63 @@ const quickActions = [
   },
 ];
 
-export function ApplicationDashboardOverview() {
+export function ApplicationDashboardOverview({
+  data,
+  isLoading,
+}: ApplicationDashboardOverviewProps) {
+  const displayName =
+    data?.coupleNames?.displayName ||
+    (data?.coupleNames?.nameA && data?.coupleNames?.nameB
+      ? `${data.coupleNames.nameA} & ${data.coupleNames.nameB}`
+      : "");
+
+  const stats = [
+    {
+      name: "Total Guests",
+      value: data?.totalGuests ?? 0,
+      subtext: "invited",
+      icon: Users,
+    },
+    {
+      name: "RSVPs Received",
+      value: data?.respondedGuests ?? 0,
+      subtext: `${data?.responseRate ?? 0}% response rate`,
+      icon: Mail,
+    },
+    {
+      name: "Attending",
+      value: data?.attendingGuests ?? 0,
+      subtext: `of ${data?.respondedGuests ?? 0} responses`,
+      icon: CheckCircle2,
+      color: "text-accent",
+    },
+    {
+      name: "Declined",
+      value: data?.declinedGuests ?? 0,
+      subtext: `of ${data?.respondedGuests ?? 0} responses`,
+      icon: XCircle,
+      color: "text-destructive",
+    },
+  ];
+
+  const formattedDate = data?.weddingDate
+    ? new Date(data.weddingDate).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-foreground">
-            Welcome back, Sarah
+            {isLoading ? (
+              <span className="inline-block h-8 w-48 bg-muted animate-pulse rounded" />
+            ) : (
+              `Welcome back${displayName ? `, ${displayName}` : ""}`
+            )}
           </h1>
           <p className="text-muted-foreground mt-1">
             Here's what's happening with your wedding planning.
@@ -129,7 +171,6 @@ export function ApplicationDashboardOverview() {
         </Button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.name}>
@@ -139,13 +180,17 @@ export function ApplicationDashboardOverview() {
                   className={`h-5 w-5 ${stat.color || "text-muted-foreground"}`}
                 />
                 <span className="text-xs text-muted-foreground">
-                  {stat.subtext || stat.change}
+                  {stat.subtext}
                 </span>
               </div>
               <div className="mt-4">
-                <p className="text-3xl font-semibold text-foreground">
-                  {stat.value}
-                </p>
+                {isLoading ? (
+                  <span className="inline-block h-9 w-16 bg-muted animate-pulse rounded" />
+                ) : (
+                  <p className="text-3xl font-semibold text-foreground">
+                    {stat.value}
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground mt-1">
                   {stat.name}
                 </p>
@@ -165,7 +210,7 @@ export function ApplicationDashboardOverview() {
               <div>
                 <CardTitle className="text-lg">Your Wedding Website</CardTitle>
                 <CardDescription>
-                  sarahandmichael.marriednext.com
+                  {data?.siteUrl || "Not set up yet"}
                 </CardDescription>
               </div>
               <Button variant="outline" size="sm">
@@ -183,10 +228,10 @@ export function ApplicationDashboardOverview() {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                   <p className="font-serif text-2xl text-white">
-                    Sarah & Michael
+                    {displayName || "Your Wedding"}
                   </p>
                   <p className="text-white/80 text-sm">
-                    June 15, 2025 • The Grand Estate
+                    {formattedDate || "Set your wedding date"}
                   </p>
                 </div>
               </div>
@@ -205,7 +250,6 @@ export function ApplicationDashboardOverview() {
             </CardContent>
           </Card>
 
-          {/* RSVP Progress */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">RSVP Progress</CardTitle>
@@ -218,25 +262,30 @@ export function ApplicationDashboardOverview() {
                     Responses received
                   </span>
                   <span className="font-medium text-foreground">
-                    87 of 124 guests
+                    {data?.respondedGuests ?? 0} of {data?.totalGuests ?? 0}{" "}
+                    guests
                   </span>
                 </div>
-                <Progress value={70} className="h-2" />
+                <Progress value={data?.responseRate ?? 0} className="h-2" />
               </div>
               <div className="grid grid-cols-3 gap-4 pt-2">
                 <div className="text-center p-4 rounded-lg bg-accent/10">
-                  <p className="text-2xl font-semibold text-accent">72</p>
+                  <p className="text-2xl font-semibold text-accent">
+                    {isLoading ? "-" : data?.attendingGuests ?? 0}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Attending
                   </p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-destructive/10">
-                  <p className="text-2xl font-semibold text-destructive">15</p>
+                  <p className="text-2xl font-semibold text-destructive">
+                    {isLoading ? "-" : data?.declinedGuests ?? 0}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">Declined</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-muted">
                   <p className="text-2xl font-semibold text-muted-foreground">
-                    37
+                    {isLoading ? "-" : data?.pendingGuests ?? 0}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Pending</p>
                 </div>
@@ -273,7 +322,7 @@ export function ApplicationDashboardOverview() {
                       {table}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {Math.floor(Math.random() * 4) + 6}/10
+                      {((table * 3) % 5) + 6}/10
                     </span>
                   </div>
                 ))}

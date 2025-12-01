@@ -47,6 +47,7 @@ export { ApplicationBillingSettings } from "./components/application/dashboard/A
 export { ApplicationDashboardHeader } from "./components/application/dashboard/ApplicationDashboardHeader";
 export { ApplicationDashboardLayout } from "./components/application/dashboard/ApplicationDashboardLayout";
 export { ApplicationDashboardOverview } from "./components/application/dashboard/ApplicationDashboardOverview";
+export type { HomeStatsData, ApplicationDashboardOverviewProps } from "./components/application/dashboard/ApplicationDashboardOverview";
 export { ApplicationDashboardSidebar } from "./components/application/dashboard/ApplicationDashboardSidebar";
 export { ApplicationGuestListManager } from "./components/application/dashboard/ApplicationGuestListManager";
 export { ApplicationMemoriesGallery } from "./components/application/dashboard/ApplicationMemoriesGallery";
