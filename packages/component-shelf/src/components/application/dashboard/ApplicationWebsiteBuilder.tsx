@@ -149,6 +149,9 @@ export function ApplicationWebsiteBuilder({
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("images");
   const [isUploading, setIsUploading] = useState(false);
+  const [recentlyUploadedPhotos, setRecentlyUploadedPhotos] = useState<
+    Map<string, string>
+  >(new Map());
 
   const defaultContent: WebsiteContent = {
     coupleNames: "Sarah & Michael",
@@ -252,6 +255,21 @@ export function ApplicationWebsiteBuilder({
         galleryImages:
           galleryPhotos.length > 0 ? galleryPhotos : prev.galleryImages,
       }));
+
+      setRecentlyUploadedPhotos((prev) => {
+        const syncedUrls = new Set(
+          data.photos
+            ?.filter((p) => p.photoType === "gallery" && p.themeId === themeId)
+            .map((p) => p.blobUrl) || []
+        );
+        const newMap = new Map();
+        for (const [url, id] of prev.entries()) {
+          if (!syncedUrls.has(url)) {
+            newMap.set(url, id);
+          }
+        }
+        return newMap;
+      });
     }
   }, [data, themeId]);
 
@@ -290,6 +308,11 @@ export function ApplicationWebsiteBuilder({
           ...prev,
           galleryImages: [...prev.galleryImages, photo.blobUrl],
         }));
+        setRecentlyUploadedPhotos((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(photo.blobUrl, photo.id);
+          return newMap;
+        });
       }
 
       setHasChanges(true);
@@ -302,21 +325,27 @@ export function ApplicationWebsiteBuilder({
 
   const handleRemoveGalleryPhoto = async (index: number) => {
     const photoUrl = content.galleryImages[index];
-    if (!data?.photos) return;
+    let photoId: string | undefined;
 
-    const photo = data.photos.find(
+    const photoFromData = data?.photos?.find(
       (p) =>
         p.blobUrl === photoUrl &&
         p.photoType === "gallery" &&
         p.themeId === themeId
     );
 
-    if (photo) {
+    if (photoFromData) {
+      photoId = photoFromData.id;
+    } else {
+      photoId = recentlyUploadedPhotos.get(photoUrl);
+    }
+
+    if (photoId) {
       try {
         const response = await fetch("/api/website-builder/photos", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ photoId: photo.id }),
+          body: JSON.stringify({ photoId }),
         });
 
         if (!response.ok) {
@@ -332,6 +361,11 @@ export function ApplicationWebsiteBuilder({
       ...prev,
       galleryImages: prev.galleryImages.filter((_, i) => i !== index),
     }));
+    setRecentlyUploadedPhotos((prev) => {
+      const newMap = new Map(prev);
+      newMap.delete(photoUrl);
+      return newMap;
+    });
     setHasChanges(true);
   };
 
