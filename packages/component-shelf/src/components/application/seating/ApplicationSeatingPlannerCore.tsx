@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -228,7 +226,6 @@ export function ApplicationSeatingPlannerCore({
       <TableDetailView
         table={selectedTable}
         guests={guests}
-        tables={tables}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onBack={() => setSelectedTable(null)}
@@ -238,7 +235,6 @@ export function ApplicationSeatingPlannerCore({
         allGuestsFiltered={allGuestsFiltered}
         isGuestSeatedElsewhere={isGuestSeatedElsewhere}
         getGuestCurrentTable={getGuestCurrentTable}
-        setGuests={setGuests}
       />
     );
   }
@@ -734,7 +730,6 @@ export function ApplicationSeatingPlannerCore({
 interface TableDetailViewProps {
   table: { id: string; name: string; type: TableType; seats: number };
   guests: Guest[];
-  tables: { id: string; name: string }[];
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   onBack: () => void;
@@ -746,13 +741,11 @@ interface TableDetailViewProps {
   getGuestCurrentTable: (
     guestId: string
   ) => { id: string; name: string } | null | undefined;
-  setGuests: React.Dispatch<React.SetStateAction<Guest[]>>;
 }
 
 function TableDetailView({
   table,
   guests,
-  tables,
   searchQuery,
   setSearchQuery,
   onBack,
@@ -762,7 +755,6 @@ function TableDetailView({
   allGuestsFiltered,
   isGuestSeatedElsewhere,
   getGuestCurrentTable,
-  setGuests,
 }: TableDetailViewProps) {
   const [draggedGuest, setDraggedGuest] = useState<string | null>(null);
   const [showReassignWarning, setShowReassignWarning] = useState<{

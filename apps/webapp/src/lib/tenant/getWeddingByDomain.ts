@@ -51,7 +51,7 @@ async function getWeddingFromDatabase(
 
   return {
     ...result,
-    photos: photos.length > 0 ? photos : undefined,
+    photos: photos.length > 0 ? photos.map(photo => ({ ...photo, displayOrder: photo.displayOrder ?? 0 })) : undefined,
   };
 }
 

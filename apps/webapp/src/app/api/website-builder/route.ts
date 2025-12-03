@@ -120,11 +120,14 @@ export async function PATCH(req: NextRequest) {
       })
       .where(eq(wedding.id, weddingData.id));
 
-    return NextResponse.json({ success: true, websiteSections: validatedSections });
+    return NextResponse.json({
+      success: true,
+      websiteSections: validatedSections,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid request data", details: error.errors },
+        { error: "Invalid request data", details: error.issues },
         { status: 400 }
       );
     }

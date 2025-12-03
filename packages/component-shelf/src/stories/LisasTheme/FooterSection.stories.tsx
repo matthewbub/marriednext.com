@@ -16,9 +16,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    nameA: "Yulissa",
-    nameB: "Matthew",
-    eventDate: "2026-07-26 07:00:00",
-    location: "Bel Vino Winery",
+    data: {
+      nameA: "Yulissa",
+      nameB: "Matthew",
+      eventDate: "2026-07-26 07:00:00",
+      location: "Bel Vino Winery",
+    },
   },
 };

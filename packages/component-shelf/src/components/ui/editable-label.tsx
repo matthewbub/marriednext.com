@@ -64,27 +64,27 @@ function EditableLabel({
   };
 
   if (!editable) {
-    return <Component className={className}>{value}</Component>;
+    return React.createElement(Component, { className }, value);
   }
 
-  return (
-    <Component
-      ref={ref}
-      className={cn(
+  return React.createElement(
+    Component,
+    {
+      ref,
+      className: cn(
         className,
         "transition-all duration-150",
         isEditing
           ? "border border-solid border-fuchsia-500 ring-2 ring-fuchsia-500/30 outline-none rounded px-1 -mx-1"
           : "border border-dashed border-transparent hover:border-fuchsia-400/50 hover:cursor-text rounded px-1 -mx-1"
-      )}
-      contentEditable={isEditing}
-      suppressContentEditableWarning
-      onClick={handleClick}
-      onBlur={isEditing ? commit : undefined}
-      onKeyDown={isEditing ? handleKeyDown : undefined}
-    >
-      {value}
-    </Component>
+      ),
+      contentEditable: isEditing,
+      suppressContentEditableWarning: true,
+      onClick: handleClick,
+      onBlur: isEditing ? commit : undefined,
+      onKeyDown: isEditing ? handleKeyDown : undefined,
+    },
+    value
   );
 }
 

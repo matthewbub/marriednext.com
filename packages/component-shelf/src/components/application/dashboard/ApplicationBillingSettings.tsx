@@ -151,9 +151,7 @@ const availableUpgrades = [
 
 export function ApplicationBillingSettings() {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [selectedSubscription, setSelectedSubscription] = useState<
-    string | null
-  >(null);
+  const [, setSelectedSubscription] = useState<string | null>(null);
 
   const handleCancelSubscription = (subId: string) => {
     setSelectedSubscription(subId);

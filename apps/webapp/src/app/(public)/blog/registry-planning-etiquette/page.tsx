@@ -1,11 +1,4 @@
-"use client";
-
-import { useUser } from "@clerk/nextjs";
-import {
-  ApplicationNavbar,
-  ApplicationFooter,
-  ApplicationRegistryEtiquetteArticle,
-} from "component-shelf";
+import { RegistryEtiquettePageClient } from "./RegistryEtiquettePageClient";
 
 export const metadata = {
   title: "The Complete Guide to Wedding Registry Etiquette | Married Next",
@@ -14,12 +7,5 @@ export const metadata = {
 };
 
 export default function RegistryEtiquettePage() {
-  const { isSignedIn } = useUser();
-  return (
-    <main className="min-h-screen bg-background">
-      <ApplicationNavbar isAuthenticated={isSignedIn} />
-      <ApplicationRegistryEtiquetteArticle />
-      <ApplicationFooter />
-    </main>
-  );
+  return <RegistryEtiquettePageClient />;
 }

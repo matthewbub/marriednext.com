@@ -16,10 +16,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    locationName: "Bel Vino Winery",
-    locationAddress: "33515 Rancho California Rd, Temecula, CA 92591",
-    eventDate: "2026-07-26 07:00:00",
-    eventTime: "5:00 PM",
-    mapsShareUrl: "https://maps.app.goo.gl/LzKDwyJxmDePAbvb6",
+    data: {
+      locationName: "Bel Vino Winery",
+      locationAddress: "33515 Rancho California Rd, Temecula, CA 92591",
+      eventDate: "2026-07-26 07:00:00",
+      eventTime: "5:00 PM",
+      mapsShareUrl: "https://maps.app.goo.gl/LzKDwyJxmDePAbvb6",
+    },
   },
 };

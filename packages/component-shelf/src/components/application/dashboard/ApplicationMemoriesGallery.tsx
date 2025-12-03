@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
 import { Progress } from "../../../components/ui/progress";
@@ -93,10 +97,9 @@ const mockPhotos = [
 // Storage simulation
 const storageUsed = 420; // MB
 const storageFree = 500; // MB limit for free tier
-const storagePremium = 10000; // MB (10GB) for premium
 
 export function ApplicationMemoriesGallery() {
-  const [photos, setPhotos] = useState(mockPhotos);
+  const [photos] = useState(mockPhotos);
   const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [viewingPhoto, setViewingPhoto] = useState<
@@ -428,11 +431,10 @@ export function ApplicationMemoriesGallery() {
                 : setViewingPhoto(photo)
             }
           >
-            <Image
+            <img
               src={photo.src || "/placeholder.svg"}
               alt={`Wedding photo by ${photo.uploadedBy}`}
-              fill
-              className="object-cover transition-transform group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
             />
 
             {/* Selection Checkbox */}
@@ -487,11 +489,10 @@ export function ApplicationMemoriesGallery() {
             className="relative max-w-4xl max-h-[80vh] w-full aspect-square"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
+            <img
               src={viewingPhoto.src || "/placeholder.svg"}
               alt={`Wedding photo by ${viewingPhoto.uploadedBy}`}
-              fill
-              className="object-contain"
+              className="absolute inset-0 w-full h-full object-contain"
             />
           </div>
 

@@ -1,7 +1,4 @@
-import { useUser } from "@clerk/nextjs";
-import { ApplicationNavbar } from "component-shelf";
-import { ApplicationFooter } from "component-shelf";
-import { ApplicationHelpCenter } from "component-shelf";
+import { HelpPageClient } from "./HelpPageClient";
 
 export const metadata = {
   title: "Help Center | Married Next",
@@ -10,14 +7,5 @@ export const metadata = {
 };
 
 export default function HelpPage() {
-  const { isSignedIn } = useUser();
-  return (
-    <div className="min-h-screen bg-background">
-      <ApplicationNavbar isAuthenticated={isSignedIn} />
-      <main className="pt-16">
-        <ApplicationHelpCenter />
-      </main>
-      <ApplicationFooter />
-    </div>
-  );
+  return <HelpPageClient />;
 }

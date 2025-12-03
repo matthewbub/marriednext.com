@@ -1,12 +1,4 @@
-import {
-  ApplicationNavbar,
-  ApplicationFooter,
-  ApplicationTemplatesHero,
-  ApplicationTemplatesGrid,
-  ApplicationTemplatesCta,
-} from "component-shelf";
-
-import { useUser } from "@clerk/nextjs";
+import { TemplatesPageClient } from "./TemplatesPageClient";
 
 export const metadata = {
   title: "Wedding Website Templates | Married Next",
@@ -15,14 +7,5 @@ export const metadata = {
 };
 
 export default function TemplatesPage() {
-  const { isSignedIn } = useUser();
-  return (
-    <main className="min-h-screen">
-      <ApplicationNavbar isAuthenticated={isSignedIn} />
-      <ApplicationTemplatesHero />
-      <ApplicationTemplatesGrid />
-      <ApplicationTemplatesCta />
-      <ApplicationFooter />
-    </main>
-  );
+  return <TemplatesPageClient />;
 }

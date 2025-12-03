@@ -1,9 +1,4 @@
-import { useUser } from "@clerk/nextjs";
-import {
-  ApplicationNavbar,
-  ApplicationFooter,
-  ApplicationBlogHome,
-} from "component-shelf";
+import { BlogPageClient } from "./BlogPageClient";
 
 export const metadata = {
   title: "Wedding Planning Blog | Married Next",
@@ -12,12 +7,5 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  const { isSignedIn } = useUser();
-  return (
-    <main className="min-h-screen bg-background">
-      <ApplicationNavbar isAuthenticated={isSignedIn} />
-      <ApplicationBlogHome />
-      <ApplicationFooter />
-    </main>
-  );
+  return <BlogPageClient />;
 }

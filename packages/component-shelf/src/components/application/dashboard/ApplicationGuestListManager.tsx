@@ -180,7 +180,7 @@ const mockInvitations: Invitation[] = [
 ];
 
 export function ApplicationGuestListManager() {
-  const [invitations, setInvitations] = useState<Invitation[]>(mockInvitations);
+  const [invitations] = useState<Invitation[]>(mockInvitations);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedInvitations, setExpandedInvitations] = useState<Set<string>>(
@@ -188,7 +188,6 @@ export function ApplicationGuestListManager() {
   );
   const [rsvpLookupMethod, setRsvpLookupMethod] =
     useState<RsvpLookupMethod>("FULL_NAME");
-  const [showSettings, setShowSettings] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [invitationType, setInvitationType] = useState<
     "single" | "plusone" | "group"

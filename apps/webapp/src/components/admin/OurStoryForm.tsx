@@ -146,9 +146,7 @@ export default function OurStoryForm({
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <Button type="submit" variant="primary">
-          Save Stories
-        </Button>
+        <Button type="submit">Save Stories</Button>
         <Button type="button" onClick={handleAddStory} variant="secondary">
           <Plus className="w-5 h-5" />
           Add Story
