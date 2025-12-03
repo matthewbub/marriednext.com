@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 
+export type WebsiteSection = {
+  id: string;
+  enabled: boolean;
+  order: number;
+};
+
 /**
  * Top-level props for the LisasTheme component.
  * @database
@@ -18,6 +24,7 @@ export interface LisasThemeTypes {
   ourStoryImageUrl?: string;
   ourStoryImageComponent?: ReactNode;
   galleryImages?: string[];
+  websiteSections?: WebsiteSection[] | null;
   editable?: boolean;
   contained?: boolean;
   onCustomizationChange?: (
