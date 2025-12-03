@@ -135,6 +135,9 @@ export type WebsiteBuilderData = {
   fieldMapsShareUrl: string | null;
   photos?: WebsiteBuilderPhoto[];
   websiteSections?: WebsiteSection[] | null;
+  subdomain?: string | null;
+  customDomain?: string | null;
+  subscriptionPlan?: string;
 };
 
 export type ApplicationWebsiteBuilderProps = {
@@ -223,8 +226,27 @@ export function ApplicationWebsiteBuilder({
     setHasChanges(false);
   };
 
+  const getPreviewUrl = (): string => {
+    const plan = data?.subscriptionPlan || "Free";
+    const customDomain = data?.customDomain;
+    const subdomain = data?.subdomain;
+
+    if (plan !== "Free" && customDomain) {
+      return customDomain;
+    }
+
+    if (subdomain) {
+      return `${subdomain}.marriednext.com`;
+    }
+
+    return "marriednext.com/sarah-michael";
+  };
+
+  const previewUrl = getPreviewUrl();
+  const displayUrl = previewUrl.replace(/^https?:\/\//, "");
+
   const copyUrl = () => {
-    navigator.clipboard.writeText("marriednext.com/sarah-michael");
+    navigator.clipboard.writeText(`https://${displayUrl}`);
   };
 
   const updateStyles = (key: keyof WebsiteStyles, value: string | number) => {
@@ -858,11 +880,8 @@ export function ApplicationWebsiteBuilder({
                     Live Preview
                   </span>
                   <div className="flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5">
-                    <span className="text-xs text-muted-foreground">
-                      marriednext.com/
-                    </span>
                     <span className="text-xs font-medium text-foreground">
-                      sarah-michael
+                      {displayUrl}
                     </span>
                     <button
                       onClick={copyUrl}
@@ -900,7 +919,7 @@ export function ApplicationWebsiteBuilder({
                   </div>
                   <Button variant="ghost" size="sm" asChild>
                     <a
-                      href="/sarah-michael"
+                      href={`https://${displayUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

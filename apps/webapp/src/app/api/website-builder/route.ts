@@ -54,6 +54,7 @@ export async function GET() {
       nameA: wedding.fieldNameA || "",
       nameB: wedding.fieldNameB || "",
       subdomain: wedding.subdomain || "",
+      customDomain: wedding.customDomain || null,
       photos,
       user: {
         fullName:

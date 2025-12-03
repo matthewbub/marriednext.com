@@ -22,6 +22,7 @@ const websiteBuilderSchema = z.object({
   nameA: z.string(),
   nameB: z.string(),
   subdomain: z.string(),
+  customDomain: z.string().nullable(),
   photos: z.array(
     z.object({
       id: z.string(),
@@ -63,6 +64,9 @@ function transformToBuilderData(
     fieldEventTime: response.eventTime || null,
     fieldMapsShareUrl: response.mapsShareUrl || null,
     photos: response.photos,
+    subdomain: response.subdomain || null,
+    customDomain: response.customDomain || null,
+    subscriptionPlan: response.subscriptionPlan,
   };
 }
 
