@@ -45,6 +45,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LisasTheme } from "../../theme/lisastheme/LisasTheme";
+import {
+  mergeSectionsWithDefaults,
+  SECTION_DISPLAY_NAMES,
+  type WebsiteSection,
+} from "../../theme/lisastheme/sections";
 
 const colorPresets = [
   {
@@ -129,6 +134,7 @@ export type WebsiteBuilderData = {
   fieldEventTime: string | null;
   fieldMapsShareUrl: string | null;
   photos?: WebsiteBuilderPhoto[];
+  websiteSections?: WebsiteSection[] | null;
 };
 
 export type ApplicationWebsiteBuilderProps = {
@@ -152,6 +158,10 @@ export function ApplicationWebsiteBuilder({
   const [recentlyUploadedPhotos, setRecentlyUploadedPhotos] = useState<
     Map<string, string>
   >(new Map());
+  const [sections, setSections] = useState<WebsiteSection[]>(() =>
+    mergeSectionsWithDefaults(data?.websiteSections)
+  );
+  const [isSavingSections, setIsSavingSections] = useState(false);
 
   const defaultContent: WebsiteContent = {
     coupleNames: "Sarah & Michael",
@@ -270,6 +280,8 @@ export function ApplicationWebsiteBuilder({
         }
         return newMap;
       });
+
+      setSections(mergeSectionsWithDefaults(data.websiteSections));
     }
   }, [data, themeId]);
 
@@ -367,6 +379,35 @@ export function ApplicationWebsiteBuilder({
       return newMap;
     });
     setHasChanges(true);
+  };
+
+  const handleSectionToggle = async (sectionId: string, enabled: boolean) => {
+    const updatedSections = sections.map((section) =>
+      section.id === sectionId ? { ...section, enabled } : section
+    );
+    setSections(updatedSections);
+    setHasChanges(true);
+
+    setIsSavingSections(true);
+    try {
+      const response = await fetch("/api/website-builder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ websiteSections: updatedSections }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save sections");
+      }
+    } catch (error) {
+      console.error("Error saving sections:", error);
+      const revertedSections = sections.map((section) =>
+        section.id === sectionId ? { ...section, enabled: !enabled } : section
+      );
+      setSections(revertedSections);
+    } finally {
+      setIsSavingSections(false);
+    }
   };
 
   return (
@@ -779,25 +820,25 @@ export function ApplicationWebsiteBuilder({
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {[
-                        { name: "Hero", enabled: true },
-                        { name: "Our Story", enabled: true },
-                        { name: "Wedding Details", enabled: true },
-                        { name: "Photo Gallery", enabled: true },
-                        { name: "RSVP Form", enabled: true },
-                        { name: "Registry", enabled: false },
-                        { name: "FAQ", enabled: false },
-                      ].map((section) => (
-                        <div
-                          key={section.name}
-                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card"
-                        >
-                          <span className="text-sm font-medium">
-                            {section.name}
-                          </span>
-                          <Switch checked={section.enabled} />
-                        </div>
-                      ))}
+                      {sections
+                        .sort((a, b) => a.order - b.order)
+                        .map((section) => (
+                          <div
+                            key={section.id}
+                            className="flex items-center justify-between p-3 rounded-lg border border-border bg-card"
+                          >
+                            <span className="text-sm font-medium">
+                              {SECTION_DISPLAY_NAMES[section.id] || section.id}
+                            </span>
+                            <Switch
+                              checked={section.enabled}
+                              onCheckedChange={(enabled) =>
+                                handleSectionToggle(section.id, enabled)
+                              }
+                              disabled={isSavingSections}
+                            />
+                          </div>
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -927,6 +968,7 @@ export function ApplicationWebsiteBuilder({
                       ? content.galleryImages
                       : undefined
                   }
+                  websiteSections={sections}
                   editable={true}
                   contained={true}
                 />

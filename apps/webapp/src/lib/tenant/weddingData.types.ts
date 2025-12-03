@@ -6,6 +6,12 @@ export type WeddingPhoto = {
   displayOrder: number;
 };
 
+export type WebsiteSection = {
+  id: string;
+  enabled: boolean;
+  order: number;
+};
+
 export type WeddingData = {
   id: string;
   subdomain: string | null;
@@ -25,6 +31,7 @@ export type WeddingData = {
   fieldNameB: string | null;
   controlRsvpNameFormat: "FIRST_NAME_ONLY" | "FULL_NAME";
   photos?: WeddingPhoto[];
+  websiteSections?: WebsiteSection[] | null;
 };
 
 export type QA = {

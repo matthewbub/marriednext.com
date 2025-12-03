@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { getCurrentWedding } from "@/lib/admin/getCurrentWedding";
 import { getInitials } from "@/lib/siteUtils";
 import { db } from "@/database/drizzle";
-import { weddingPhotos } from "orm-shelf/schema";
+import { wedding, weddingPhotos } from "orm-shelf/schema";
 import { eq, and, asc } from "drizzle-orm";
+import { z } from "zod";
 
 export async function GET() {
   try {
@@ -64,11 +66,70 @@ export async function GET() {
         email: user.emailAddresses[0]?.emailAddress || "",
       },
       subscriptionPlan,
+      websiteSections: wedding.websiteSections,
     });
   } catch (error) {
     console.error("Error fetching website builder data:", error);
     return NextResponse.json(
       { error: "Failed to fetch website builder data" },
+      { status: 500 }
+    );
+  }
+}
+
+const websiteSectionsSchema = z.array(
+  z.object({
+    id: z.string(),
+    enabled: z.boolean(),
+    order: z.number(),
+  })
+);
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const weddingData = await getCurrentWedding();
+
+    if (!weddingData) {
+      return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
+    const { websiteSections } = body;
+
+    if (!websiteSections) {
+      return NextResponse.json(
+        { error: "websiteSections is required" },
+        { status: 400 }
+      );
+    }
+
+    const validatedSections = websiteSectionsSchema.parse(websiteSections);
+
+    await db
+      .update(wedding)
+      .set({
+        websiteSections: validatedSections,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(wedding.id, weddingData.id));
+
+    return NextResponse.json({ success: true, websiteSections: validatedSections });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Invalid request data", details: error.errors },
+        { status: 400 }
+      );
+    }
+    console.error("Error updating website sections:", error);
+    return NextResponse.json(
+      { error: "Failed to update website sections" },
       { status: 500 }
     );
   }

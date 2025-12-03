@@ -35,6 +35,7 @@ export default function Home() {
           ? galleryPhotos.map((p) => p.blobUrl)
           : undefined
       }
+      websiteSections={weddingData.websiteSections}
     />
   );
 }
