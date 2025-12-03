@@ -9,18 +9,18 @@ export function ApplicationMemoriesSection() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div className="rounded-2xl overflow-hidden shadow-lg">
-                  <img src="/wedding-guests-dancing-at-reception-celebration.jpg" alt="Wedding celebration" className="w-full h-auto" />
+                  <img src="https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/asdrubal-luna-gcJLa12Mb-c-unsplash.jpg" alt="Wedding celebration" className="w-full h-auto" />
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-lg">
-                  <img src="/bride-and-groom-first-dance-romantic.jpg" alt="First dance" className="w-full h-auto" />
+                  <img src="https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/jeferson-santu-5hEJVatOYVo-unsplash.jpg" alt="First dance" className="w-full h-auto" />
                 </div>
               </div>
               <div className="space-y-4 pt-8">
                 <div className="rounded-2xl overflow-hidden shadow-lg">
-                  <img src="/wedding-ceremony-outdoor-garden-beautiful.jpg" alt="Wedding ceremony" className="w-full h-auto" />
+                  <img src="https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/leonardo-miranda-ynfRit2XT4c-unsplash.jpg" alt="Wedding ceremony" className="w-full h-auto" />
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-lg">
-                  <img src="/wedding-cake-cutting-moment-couple.jpg" alt="Cake cutting" className="w-full h-auto" />
+                  <img src="https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/pedro-pulido-G6Yu0BWnggE-unsplash.jpg" alt="Cake cutting" className="w-full h-auto" />
                 </div>
               </div>
             </div>
