@@ -28,10 +28,8 @@ import {
   Palette,
   ImageIcon,
   Layout,
-  Eye,
   ExternalLink,
   Save,
-  Undo,
   Smartphone,
   Monitor,
   Upload,
@@ -516,13 +514,15 @@ export function ApplicationWebsiteBuilder({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" disabled={!hasChanges}>
-            <Undo className="h-4 w-4 mr-2" />
-            Undo
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+            Reset to Default
           </Button>
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4 mr-2" />
-            Preview
+          <Button variant="outline" size="sm" asChild>
+            <a href="/templates">
+              <LayoutTemplate className="h-3.5 w-3.5 mr-1.5" />
+              Change Template
+            </a>
           </Button>
           <Button size="sm" disabled={!hasChanges}>
             <Save className="h-4 w-4 mr-2" />
@@ -1000,29 +1000,13 @@ export function ApplicationWebsiteBuilder({
                 </div>
               </div>
 
-              {/* Bottom row: Template info and actions */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <LayoutTemplate className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    Template:
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    {currentTemplate}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={handleReset}>
-                    <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                    Reset to Default
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="/templates">
-                      <LayoutTemplate className="h-3.5 w-3.5 mr-1.5" />
-                      Change Template
-                    </a>
-                  </Button>
-                </div>
+              {/* Bottom row: Template info */}
+              <div className="flex items-center gap-2">
+                <LayoutTemplate className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Template:</span>
+                <span className="text-sm font-medium text-foreground">
+                  {currentTemplate}
+                </span>
               </div>
             </div>
           </div>
