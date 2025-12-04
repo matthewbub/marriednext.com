@@ -17,6 +17,7 @@ const navigation = [
   { name: "Seating Planner", href: "/engaged/seating-planner", current: false },
   { name: "Website Builder", href: "/engaged/website-builder", current: false },
   { name: "Memories", href: "/engaged/memories", current: false },
+  { name: "v2", href: "/v2/engaged", current: false },
 ];
 const userNavigation = [
   { name: "Your profile", href: "#" },
