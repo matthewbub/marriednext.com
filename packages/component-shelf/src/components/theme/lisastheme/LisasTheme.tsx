@@ -28,7 +28,7 @@ export function LisasTheme({
   ourStoryImageComponent,
   galleryImages,
   websiteSections,
-  editable = true,
+  editable = false,
   contained = false,
   onCustomizationChange,
 }: LisasThemeTypes) {
@@ -102,9 +102,10 @@ export function LisasTheme({
       {isSectionEnabled("gallery") && (
         <GallerySection
           data={{
-            images: galleryImages && galleryImages.length > 0
-              ? galleryImages.map((url) => ({ src: url }))
-              : undefined,
+            images:
+              galleryImages && galleryImages.length > 0
+                ? galleryImages.map((url) => ({ src: url }))
+                : undefined,
           }}
           editable={editable}
           onCustomizationChange={handleSectionChange("gallery")}
