@@ -58,6 +58,7 @@ export interface HeroSectionProps {
   data: HeroSectionData;
   customization?: HeroSectionCustomization;
   editable?: boolean;
+  contained?: boolean;
   onCustomizationChange?: (
     key: keyof HeroSectionCustomization,
     value: string

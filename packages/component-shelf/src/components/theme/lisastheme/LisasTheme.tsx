@@ -177,6 +177,7 @@ export function LisasTheme({
           }}
           customization={getSectionLabels("hero")}
           editable={editable}
+          contained={contained}
           onCustomizationChange={handleSectionChange("hero")}
         />
       )}

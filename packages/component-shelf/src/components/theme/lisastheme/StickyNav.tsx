@@ -1,7 +1,7 @@
 "use client";
 
 import "style-shelf/tailwind";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { StickyNavCustomization, StickyNavProps } from "./types";
 import { cn } from "../../../lib/utils";
 import labels from "label-shelf/lisastheme";
@@ -13,6 +13,7 @@ export function StickyNav({
   contained = false,
   onCustomizationChange,
 }: StickyNavProps) {
+  const navRef = useRef<HTMLElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
@@ -50,8 +51,33 @@ export function StickyNav({
   );
 
   useEffect(() => {
+    const getScrollContainer = (): HTMLElement | null => {
+      if (!contained || !navRef.current) return null;
+      let parent = navRef.current.parentElement;
+      while (parent) {
+        const style = getComputedStyle(parent);
+        if (
+          style.overflow === "auto" ||
+          style.overflow === "scroll" ||
+          style.overflowY === "auto" ||
+          style.overflowY === "scroll"
+        ) {
+          return parent;
+        }
+        parent = parent.parentElement;
+      }
+      return null;
+    };
+
+    const scrollContainer = getScrollContainer();
+    const scrollTarget: HTMLElement | Window =
+      contained && scrollContainer ? scrollContainer : window;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      const scrollY = scrollContainer
+        ? scrollContainer.scrollTop
+        : window.scrollY;
+      setIsScrolled(scrollY > 100);
 
       const sections = navItems.map((item) => item?.href?.slice(1));
       for (const section of sections.reverse()) {
@@ -66,12 +92,13 @@ export function StickyNav({
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [navItems]);
+    scrollTarget.addEventListener("scroll", handleScroll);
+    return () => scrollTarget.removeEventListener("scroll", handleScroll);
+  }, [navItems, contained]);
 
   return (
     <nav
+      ref={navRef}
       className={cn(
         contained ? "sticky" : "fixed",
         "top-0 left-0 right-0 z-50 transition-all duration-500",

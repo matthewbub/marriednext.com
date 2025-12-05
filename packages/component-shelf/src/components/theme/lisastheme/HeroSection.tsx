@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { HeroSectionCustomization, HeroSectionProps } from "./types";
 import labels from "label-shelf/lisastheme";
 import { EditableLabel } from "../../ui/editable-label";
+import { cn } from "@/lib/utils";
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "";
@@ -24,6 +25,7 @@ export function HeroSection({
   data,
   customization,
   editable = false,
+  contained = false,
   onCustomizationChange,
 }: HeroSectionProps) {
   const mergedCustomization = {
@@ -46,7 +48,10 @@ export function HeroSection({
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className={cn(
+        "relative min-h-screen flex items-center justify-center overflow-hidden",
+        contained && "mt-[-75px]"
+      )}
     >
       <div className="absolute inset-0">
         {data?.imageComponent ? (
@@ -67,9 +72,12 @@ export function HeroSection({
       </div>
 
       <div
-        className={`relative z-10 text-center px-6 transition-all duration-1000 ${
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={cn(
+          `relative z-10 text-center px-6 transition-all duration-1000 ${
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`,
+          contained && "mt-[95px] pb-[90px]"
+        )}
       >
         {mergedCustomization.subtitleLabel && (
           <EditableLabel
