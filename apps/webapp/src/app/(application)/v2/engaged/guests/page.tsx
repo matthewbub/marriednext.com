@@ -109,6 +109,21 @@ async function addInvitation(payload: AddInvitationPayload): Promise<void> {
   }
 }
 
+async function deleteInvitation(invitationId: string): Promise<void> {
+  const res = await fetch("/api/v2/engaged/guests/delete", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ invitationId }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to delete invitation");
+  }
+}
+
 export default function GuestsPage() {
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -124,6 +139,13 @@ export default function GuestsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guest-list"] });
       closeDialog();
+    },
+  });
+
+  const deleteInvitationMutation = useMutation({
+    mutationFn: deleteInvitation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guest-list"] });
     },
   });
 
@@ -145,6 +167,10 @@ export default function GuestsPage() {
         rsvpLink={rsvpLink}
         onAddInvitation={(payload) => addInvitationMutation.mutate(payload)}
         isAddingInvitation={addInvitationMutation.isPending}
+        onDeleteInvitation={(invitationId) =>
+          deleteInvitationMutation.mutate(invitationId)
+        }
+        isDeletingInvitation={deleteInvitationMutation.isPending}
       />
     </ApplicationDashboardLayout>
   );

@@ -19,6 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../../components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -74,6 +84,8 @@ export interface ApplicationGuestListManagerProps {
   rsvpLink?: string;
   onAddInvitation?: (data: AddInvitationPayload) => void;
   isAddingInvitation?: boolean;
+  onDeleteInvitation?: (invitationId: string) => void;
+  isDeletingInvitation?: boolean;
 }
 
 const mockInvitations: GuestListInvitation[] = [
@@ -236,6 +248,8 @@ export function ApplicationGuestListManager({
   rsvpLink: propRsvpLink,
   onAddInvitation,
   isAddingInvitation = false,
+  onDeleteInvitation,
+  isDeletingInvitation = false,
 }: ApplicationGuestListManagerProps) {
   const invitations = propInvitations ?? mockInvitations;
   const rsvpLinkValue = propRsvpLink ?? "marriednext.com/rsvp/sarah-michael";
@@ -247,6 +261,10 @@ export function ApplicationGuestListManager({
   );
   const [rsvpLookupMethod, setRsvpLookupMethod] =
     useState<RsvpLookupMethod>("FULL_NAME");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [invitationToDelete, setInvitationToDelete] = useState<string | null>(
+    null
+  );
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -321,6 +339,28 @@ export function ApplicationGuestListManager({
     if (isAttending === false) return <X className="h-4 w-4 text-red-500" />;
     return <Clock className="h-4 w-4 text-muted-foreground" />;
   };
+
+  const handleDeleteClick = (invitationId: string) => {
+    setInvitationToDelete(invitationId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (invitationToDelete && onDeleteInvitation) {
+      onDeleteInvitation(invitationToDelete);
+    }
+    setDeleteDialogOpen(false);
+    setInvitationToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setInvitationToDelete(null);
+  };
+
+  const invitationToDeleteData = invitationToDelete
+    ? invitations.find((inv) => inv.id === invitationToDelete)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -607,7 +647,14 @@ export function ApplicationGuestListManager({
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(invitation.id);
+                          }}
+                          disabled={isDeletingInvitation}
+                        >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
@@ -706,6 +753,34 @@ export function ApplicationGuestListManager({
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Invitation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the invitation for{" "}
+              <strong>
+                {invitationToDeleteData?.groupName || "this group"}
+              </strong>
+              ? This will permanently delete the invitation and all associated
+              guests. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeletingInvitation}
+            >
+              {isDeletingInvitation ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
