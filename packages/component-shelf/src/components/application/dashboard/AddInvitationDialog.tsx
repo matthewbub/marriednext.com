@@ -16,7 +16,22 @@ import {
 import { User, UserPlus, Users, Plus, Trash2 } from "lucide-react";
 import { useAddInvitationDialogStore } from "../../../stores/addInvitationDialogStore";
 
-export function AddInvitationDialog() {
+export type AddInvitationPayload = {
+  guests: string[];
+  hasPlusOne: boolean;
+  inviteGroupName: string | null;
+  email: string | null;
+};
+
+interface AddInvitationDialogProps {
+  onSubmit?: (data: AddInvitationPayload) => void;
+  isSubmitting?: boolean;
+}
+
+export function AddInvitationDialog({
+  onSubmit,
+  isSubmitting = false,
+}: AddInvitationDialogProps) {
   const {
     isOpen,
     invitationType,
@@ -55,7 +70,30 @@ export function AddInvitationDialog() {
   };
 
   const handleSubmit = () => {
-    handleClose();
+    const guests =
+      invitationType === "group"
+        ? guestNames.filter((name) => name.trim() !== "")
+        : guestName.trim()
+        ? [guestName.trim()]
+        : [];
+
+    if (guests.length === 0) {
+      return;
+    }
+
+    const payload: AddInvitationPayload = {
+      guests,
+      hasPlusOne: invitationType === "plusone",
+      inviteGroupName:
+        invitationType === "group" ? groupName.trim() || null : null,
+      email: email.trim() || null,
+    };
+
+    if (onSubmit) {
+      onSubmit(payload);
+    } else {
+      handleClose();
+    }
   };
 
   return (
@@ -195,10 +233,16 @@ export function AddInvitationDialog() {
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Add Invitation</Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Adding..." : "Add Invitation"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

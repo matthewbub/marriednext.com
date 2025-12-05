@@ -100,6 +100,8 @@ export const guest = pgTable(
     }).defaultNow(),
     nameOnInvitation: text("name_on_invitation").notNull(),
     isAttending: boolean("is_attending"),
+
+    // Guests can only have plus ones if they aren't in a group
     hasPlusOne: boolean("has_plus_one"),
     invitationId: uuid("invitation_id"),
   },

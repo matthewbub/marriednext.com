@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
@@ -10,6 +10,8 @@ import {
   DashboardUserData,
   DashboardWeddingData,
   GuestListInvitation,
+  AddInvitationPayload,
+  useAddInvitationDialogStore,
 } from "component-shelf";
 
 const guestSchema = z.object({
@@ -92,11 +94,37 @@ function transformToInvitations(
   }));
 }
 
+async function addInvitation(payload: AddInvitationPayload): Promise<void> {
+  const res = await fetch("/api/v2/engaged/guests", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to add invitation");
+  }
+}
+
 export default function GuestsPage() {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const { closeDialog } = useAddInvitationDialogStore();
+
   const { data, isLoading } = useQuery({
     queryKey: ["guest-list"],
     queryFn: fetchGuestList,
+  });
+
+  const addInvitationMutation = useMutation({
+    mutationFn: addInvitation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guest-list"] });
+      closeDialog();
+    },
   });
 
   const userData = data ? transformToUserData(data) : undefined;
@@ -115,6 +143,8 @@ export default function GuestsPage() {
         invitations={invitations}
         isLoading={isLoading}
         rsvpLink={rsvpLink}
+        onAddInvitation={(payload) => addInvitationMutation.mutate(payload)}
+        isAddingInvitation={addInvitationMutation.isPending}
       />
     </ApplicationDashboardLayout>
   );

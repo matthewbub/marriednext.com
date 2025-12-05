@@ -46,6 +46,7 @@ import {
   Copy,
 } from "lucide-react";
 import { AddInvitationDialog } from "./AddInvitationDialog";
+import type { AddInvitationPayload } from "./AddInvitationDialog";
 
 type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
 
@@ -71,6 +72,8 @@ export interface ApplicationGuestListManagerProps {
   invitations?: GuestListInvitation[];
   isLoading?: boolean;
   rsvpLink?: string;
+  onAddInvitation?: (data: AddInvitationPayload) => void;
+  isAddingInvitation?: boolean;
 }
 
 const mockInvitations: GuestListInvitation[] = [
@@ -231,6 +234,8 @@ export function ApplicationGuestListManager({
   invitations: propInvitations,
   isLoading = false,
   rsvpLink: propRsvpLink,
+  onAddInvitation,
+  isAddingInvitation = false,
 }: ApplicationGuestListManagerProps) {
   const invitations = propInvitations ?? mockInvitations;
   const rsvpLinkValue = propRsvpLink ?? "marriednext.com/rsvp/sarah-michael";
@@ -337,7 +342,10 @@ export function ApplicationGuestListManager({
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <AddInvitationDialog />
+          <AddInvitationDialog
+            onSubmit={onAddInvitation}
+            isSubmitting={isAddingInvitation}
+          />
         </div>
       </div>
 
