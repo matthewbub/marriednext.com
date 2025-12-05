@@ -46,18 +46,34 @@ export { ApplicationRegistryEtiquetteArticle } from "./components/application/bl
 export { ApplicationBillingSettings } from "./components/application/dashboard/ApplicationBillingSettings";
 export { ApplicationDashboardHeader } from "./components/application/dashboard/ApplicationDashboardHeader";
 export { ApplicationDashboardLayout } from "./components/application/dashboard/ApplicationDashboardLayout";
-export type { DashboardUserData, DashboardWeddingData } from "./components/application/dashboard/ApplicationDashboardLayout";
+export type {
+  DashboardUserData,
+  DashboardWeddingData,
+} from "./components/application/dashboard/ApplicationDashboardLayout";
 export { ApplicationDashboardOverview } from "./components/application/dashboard/ApplicationDashboardOverview";
-export type { HomeStatsData, ApplicationDashboardOverviewProps } from "./components/application/dashboard/ApplicationDashboardOverview";
+export type {
+  HomeStatsData,
+  ApplicationDashboardOverviewProps,
+} from "./components/application/dashboard/ApplicationDashboardOverview";
 export { ApplicationDashboardSidebar } from "./components/application/dashboard/ApplicationDashboardSidebar";
 export { ApplicationGuestListManager } from "./components/application/dashboard/ApplicationGuestListManager";
-export type { GuestListInvitation, GuestListGuest, ApplicationGuestListManagerProps } from "./components/application/dashboard/ApplicationGuestListManager";
+export type {
+  GuestListInvitation,
+  GuestListGuest,
+  ApplicationGuestListManagerProps,
+} from "./components/application/dashboard/ApplicationGuestListManager";
 export { AddInvitationDialog } from "./components/application/dashboard/AddInvitationDialog";
 export type { AddInvitationPayload } from "./components/application/dashboard/AddInvitationDialog";
 export { useAddInvitationDialogStore } from "./stores/addInvitationDialogStore";
+export { EditInvitationDialog } from "./components/application/dashboard/EditInvitationDialog";
+export { useEditInvitationDialogStore } from "./stores/editInvitationDialogStore";
+export type { Invitation as EditInvitationDialogInvitation } from "./stores/editInvitationDialogStore";
 export { ApplicationMemoriesGallery } from "./components/application/dashboard/ApplicationMemoriesGallery";
 export { ApplicationWebsiteBuilder } from "./components/application/dashboard/ApplicationWebsiteBuilder";
-export type { WebsiteBuilderData, ApplicationWebsiteBuilderProps } from "./components/application/dashboard/ApplicationWebsiteBuilder";
+export type {
+  WebsiteBuilderData,
+  ApplicationWebsiteBuilderProps,
+} from "./components/application/dashboard/ApplicationWebsiteBuilder";
 export { ApplicationWeddingDetailsSettings } from "./components/application/dashboard/ApplicationWeddingDetailsSettings";
 
 export { ApplicationConnectDomainArticle } from "./components/application/help/ApplicationConnectDomainArticle";

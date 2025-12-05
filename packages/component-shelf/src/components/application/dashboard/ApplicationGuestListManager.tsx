@@ -57,6 +57,8 @@ import {
 } from "lucide-react";
 import { AddInvitationDialog } from "./AddInvitationDialog";
 import type { AddInvitationPayload } from "./AddInvitationDialog";
+import { EditInvitationDialog } from "./EditInvitationDialog";
+import { useEditInvitationDialogStore } from "../../../stores/editInvitationDialogStore";
 
 type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
 
@@ -84,6 +86,8 @@ export interface ApplicationGuestListManagerProps {
   rsvpLink?: string;
   onAddInvitation?: (data: AddInvitationPayload) => void;
   isAddingInvitation?: boolean;
+  onEditInvitation?: (invitation: GuestListInvitation) => void;
+  isEditingInvitation?: boolean;
   onDeleteInvitation?: (invitationId: string) => void;
   isDeletingInvitation?: boolean;
 }
@@ -248,9 +252,12 @@ export function ApplicationGuestListManager({
   rsvpLink: propRsvpLink,
   onAddInvitation,
   isAddingInvitation = false,
+  onEditInvitation,
+  isEditingInvitation = false,
   onDeleteInvitation,
   isDeletingInvitation = false,
 }: ApplicationGuestListManagerProps) {
+  const { openDialog } = useEditInvitationDialogStore();
   const invitations = propInvitations ?? mockInvitations;
   const rsvpLinkValue = propRsvpLink ?? "marriednext.com/rsvp/sarah-michael";
 
@@ -636,7 +643,23 @@ export function ApplicationGuestListManager({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDialog({
+                              id: invitation.id,
+                              groupName: invitation.groupName,
+                              email: invitation.email,
+                              guests: invitation.guests.map((g) => ({
+                                id: g.id,
+                                name: g.name,
+                                isAttending: g.isAttending,
+                                hasPlusOne: g.hasPlusOne,
+                              })),
+                            });
+                          }}
+                          disabled={isEditingInvitation}
+                        >
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
@@ -781,6 +804,8 @@ export function ApplicationGuestListManager({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {onEditInvitation && <EditInvitationDialog onSave={onEditInvitation} />}
     </div>
   );
 }

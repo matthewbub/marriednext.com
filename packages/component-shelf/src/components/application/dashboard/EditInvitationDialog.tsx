@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Badge } from "../../../components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -12,15 +14,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "../../../components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "../../../components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../components/ui/tabs";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "../../../components/ui/form";
 import {
   User,
   UserPlus,
@@ -28,92 +44,83 @@ import {
   Trash2,
   Plus,
   Mail,
-  UtensilsCrossed,
   Check,
   X,
   Clock,
 } from "lucide-react";
+import {
+  useEditInvitationDialogStore,
+  type Invitation,
+} from "../../../stores/editInvitationDialogStore";
 
-type Guest = {
-  id: string;
-  name: string;
-  email?: string;
-  isAttending: boolean | null;
-  hasPlusOne: boolean;
-  plusOneName?: string;
-  plusOneAttending?: boolean | null;
-  dietaryRestrictions?: string;
-};
+const guestSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Name is required"),
+  isAttending: z.boolean().nullable(),
+  hasPlusOne: z.boolean(),
+});
 
-type Invitation = {
-  id: string;
-  groupName: string;
-  email?: string;
-  guests: Guest[];
-  status: "pending" | "sent" | "viewed" | "responded";
-  sentAt?: string;
-  respondedAt?: string;
-};
+const invitationSchema = z.object({
+  id: z.string(),
+  groupName: z.string().min(1, "Invitation name is required"),
+  email: z
+    .union([z.string().email("Invalid email"), z.literal(""), z.null()])
+    .optional(),
+  guests: z.array(guestSchema).min(1, "At least one guest is required"),
+});
+
+type InvitationFormData = z.infer<typeof invitationSchema>;
 
 interface EditInvitationDialogProps {
-  invitation: Invitation | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   onSave: (invitation: Invitation) => void;
+  isSaving?: boolean;
 }
 
 export function EditInvitationDialog({
-  invitation,
-  open,
-  onOpenChange,
   onSave,
+  isSaving = false,
 }: EditInvitationDialogProps) {
-  const [editedInvitation, setEditedInvitation] = useState<Invitation | null>(
-    () =>
-      invitation
-        ? {
-            ...invitation,
-            guests: invitation.guests.map((g) => ({ ...g })),
-          }
-        : null
-  );
-  const [activeTab, setActiveTab] = useState("details");
+  const { isOpen, invitation, closeDialog, reset } =
+    useEditInvitationDialogStore();
 
-  if (!editedInvitation) return null;
+  const form = useForm<InvitationFormData>({
+    resolver: zodResolver(invitationSchema),
+    defaultValues: invitation
+      ? {
+          ...invitation,
+          guests: invitation.guests.map((g) => ({ ...g })),
+        }
+      : undefined,
+  });
 
-  const updateGuest = (guestId: string, updates: Partial<Guest>) => {
-    setEditedInvitation({
-      ...editedInvitation,
-      guests: editedInvitation.guests.map((g) =>
-        g.id === guestId ? { ...g, ...updates } : g
-      ),
-    });
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "guests",
+  });
+
+  useEffect(() => {
+    if (invitation) {
+      form.reset({
+        ...invitation,
+        email: invitation.email ?? undefined,
+        guests: invitation.guests.map((g) => ({ ...g })),
+      });
+    }
+  }, [invitation, form]);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && !isSaving) {
+      closeDialog();
+      reset();
+      form.reset();
+    }
   };
 
-  const addGuest = () => {
-    const newGuest: Guest = {
-      id: `new-${Date.now()}`,
-      name: "",
-      isAttending: null,
-      hasPlusOne: false,
-    };
-    setEditedInvitation({
-      ...editedInvitation,
-      guests: [...editedInvitation.guests, newGuest],
-    });
-  };
-
-  const removeGuest = (guestId: string) => {
-    if (editedInvitation.guests.length <= 1) return;
-    setEditedInvitation({
-      ...editedInvitation,
-      guests: editedInvitation.guests.filter((g) => g.id !== guestId),
-    });
-  };
-
-  const handleSave = () => {
-    onSave(editedInvitation);
-    onOpenChange(false);
+  const onSubmit = (data: InvitationFormData) => {
+    onSave({
+      ...data,
+      email: data.email === "" ? null : data.email ?? null,
+    } as Invitation);
   };
 
   const getAttendanceValue = (isAttending: boolean | null): string => {
@@ -128,16 +135,36 @@ export function EditInvitationDialog({
     return null;
   };
 
+  const addGuest = () => {
+    append({
+      id: `new-${Date.now()}`,
+      name: "",
+      isAttending: null,
+      hasPlusOne: false,
+    });
+  };
+
+  const removeGuest = (index: number) => {
+    if (fields.length <= 1) return;
+    remove(index);
+  };
+
+  const watchedGuests =
+    useWatch({
+      control: form.control,
+      name: "guests",
+    }) || [];
+
   const isSingleGuest =
-    editedInvitation.guests.length === 1 &&
-    !editedInvitation.guests[0].hasPlusOne;
+    watchedGuests.length === 1 && !watchedGuests[0]?.hasPlusOne;
   const isGuestPlusOne =
-    editedInvitation.guests.length === 1 &&
-    editedInvitation.guests[0].hasPlusOne;
-  const isGroup = editedInvitation.guests.length > 1;
+    watchedGuests.length === 1 && watchedGuests[0]?.hasPlusOne;
+  const isGroup = watchedGuests.length > 1;
+
+  if (!invitation) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} key={invitation?.id}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange} key={invitation?.id}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif flex items-center gap-2">
@@ -166,308 +193,219 @@ export function EditInvitationDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="guests">
-              Guests ({editedInvitation.guests.length})
-            </TabsTrigger>
-          </TabsList>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <Tabs defaultValue="details" className="mt-2">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="guests">
+                  Guests ({watchedGuests.length})
+                </TabsTrigger>
+              </TabsList>
 
-          {/* Details Tab */}
-          <TabsContent value="details" className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="groupName">Invitation Name</Label>
-              <Input
-                id="groupName"
-                value={editedInvitation.groupName}
-                onChange={(e) =>
-                  setEditedInvitation({
-                    ...editedInvitation,
-                    groupName: e.target.value,
-                  })
-                }
-                placeholder="e.g., The Smith Family"
-              />
-              <p className="text-xs text-muted-foreground">
-                This is how the invitation will appear in your list
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={editedInvitation.email || ""}
-                  onChange={(e) =>
-                    setEditedInvitation({
-                      ...editedInvitation,
-                      email: e.target.value,
-                    })
-                  }
-                  placeholder="email@example.com"
-                  className="pl-9"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Used for sending digital invitations and reminders
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-border p-4 space-y-3 bg-muted/30">
-              <h4 className="font-medium text-sm">Invitation Status</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Status:</span>
-                  <span className="ml-2 capitalize">
-                    {editedInvitation.status}
-                  </span>
-                </div>
-                {editedInvitation.sentAt && (
-                  <div>
-                    <span className="text-muted-foreground">Sent:</span>
-                    <span className="ml-2">
-                      {new Date(editedInvitation.sentAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                )}
-                {editedInvitation.respondedAt && (
-                  <div>
-                    <span className="text-muted-foreground">Responded:</span>
-                    <span className="ml-2">
-                      {new Date(
-                        editedInvitation.respondedAt
-                      ).toLocaleDateString()}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Guests Tab */}
-          <TabsContent value="guests" className="space-y-4 mt-4">
-            {editedInvitation.guests.map((guest, index) => (
-              <div
-                key={guest.id}
-                className="rounded-lg border border-border p-4 space-y-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
-                      {guest.name
-                        ? guest.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()
-                        : "?"}
-                    </div>
-                    <div>
-                      <p className="font-medium">Guest {index + 1}</p>
-                      {guest.hasPlusOne && (
-                        <p className="text-xs text-muted-foreground">Has +1</p>
-                      )}
-                    </div>
-                  </div>
-                  {editedInvitation.guests.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeGuest(guest.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor={`name-${guest.id}`}>Full Name</Label>
-                    <Input
-                      id={`name-${guest.id}`}
-                      value={guest.name}
-                      onChange={(e) =>
-                        updateGuest(guest.id, { name: e.target.value })
-                      }
-                      placeholder="Guest name"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor={`attendance-${guest.id}`}>
-                      RSVP Status
-                    </Label>
-                    <Select
-                      value={getAttendanceValue(guest.isAttending)}
-                      onValueChange={(v) =>
-                        updateGuest(guest.id, {
-                          isAttending: parseAttendanceValue(v),
-                        })
-                      }
-                    >
-                      <SelectTrigger id={`attendance-${guest.id}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            Pending
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="yes">
-                          <div className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-green-600" />
-                            Attending
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="no">
-                          <div className="flex items-center gap-2">
-                            <X className="h-4 w-4 text-red-500" />
-                            Declined
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor={`dietary-${guest.id}`}>
-                    Dietary Restrictions
-                  </Label>
-                  <div className="relative">
-                    <UtensilsCrossed className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id={`dietary-${guest.id}`}
-                      value={guest.dietaryRestrictions || ""}
-                      onChange={(e) =>
-                        updateGuest(guest.id, {
-                          dietaryRestrictions: e.target.value,
-                        })
-                      }
-                      placeholder="e.g., Vegetarian, Gluten-free"
-                      className="pl-9"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id={`plusone-${guest.id}`}
-                    checked={guest.hasPlusOne}
-                    onChange={(e) =>
-                      updateGuest(guest.id, {
-                        hasPlusOne: e.target.checked,
-                        plusOneName: e.target.checked
-                          ? guest.plusOneName
-                          : undefined,
-                        plusOneAttending: e.target.checked
-                          ? guest.plusOneAttending
-                          : undefined,
-                      })
-                    }
-                    className="h-4 w-4 rounded border-input"
-                  />
-                  <Label
-                    htmlFor={`plusone-${guest.id}`}
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Allow plus one
-                  </Label>
-                </div>
-
-                {/* Plus One Section */}
-                {guest.hasPlusOne && (
-                  <div className="ml-4 pl-4 border-l-2 border-border space-y-4">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Plus One Details
-                    </p>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor={`plusone-name-${guest.id}`}>
-                          Plus One Name
-                        </Label>
+              <TabsContent value="details" className="space-y-4 mt-4">
+                <FormField
+                  control={form.control}
+                  name="groupName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Invitation Name</FormLabel>
+                      <FormControl>
                         <Input
-                          id={`plusone-name-${guest.id}`}
-                          value={guest.plusOneName || ""}
-                          onChange={(e) =>
-                            updateGuest(guest.id, {
-                              plusOneName: e.target.value,
-                            })
-                          }
-                          placeholder="Guest's +1 name"
+                          placeholder="e.g., The Smith Family"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This is how the invitation will appear in your list
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="email"
+                            placeholder="email@example.com"
+                            className="pl-9"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Used for sending digital invitations and reminders
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+
+              <TabsContent value="guests" className="space-y-4 mt-4">
+                {fields.map((field, index) => {
+                  const guest = watchedGuests[index];
+                  return (
+                    <div
+                      key={field.id}
+                      className="rounded-lg border border-border p-4 space-y-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
+                            {guest?.name
+                              ? guest.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .slice(0, 2)
+                                  .toUpperCase()
+                              : "?"}
+                          </div>
+                          <div>
+                            <p className="font-medium">Guest {index + 1}</p>
+                            {guest?.hasPlusOne && (
+                              <p className="text-xs text-muted-foreground">
+                                Has +1
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {fields.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            onClick={() => removeGuest(index)}
+                            disabled={isSaving}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name={`guests.${index}.name`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Guest name" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`guests.${index}.isAttending`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>RSVP Status</FormLabel>
+                              <Select
+                                value={getAttendanceValue(field.value)}
+                                onValueChange={(v) =>
+                                  field.onChange(parseAttendanceValue(v))
+                                }
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="pending">
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4 text-muted-foreground" />
+                                      Pending
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="yes">
+                                    <div className="flex items-center gap-2">
+                                      <Check className="h-4 w-4 text-green-600" />
+                                      Attending
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="no">
+                                    <div className="flex items-center gap-2">
+                                      <X className="h-4 w-4 text-red-500" />
+                                      Declined
+                                    </div>
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`plusone-attendance-${guest.id}`}>
-                          RSVP Status
-                        </Label>
-                        <Select
-                          value={getAttendanceValue(
-                            guest.plusOneAttending ?? null
-                          )}
-                          onValueChange={(v) =>
-                            updateGuest(guest.id, {
-                              plusOneAttending: parseAttendanceValue(v),
-                            })
-                          }
-                        >
-                          <SelectTrigger id={`plusone-attendance-${guest.id}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-muted-foreground" />
-                                Pending
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="yes">
-                              <div className="flex items-center gap-2">
-                                <Check className="h-4 w-4 text-green-600" />
-                                Attending
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="no">
-                              <div className="flex items-center gap-2">
-                                <X className="h-4 w-4 text-red-500" />
-                                Declined
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name={`guests.${index}.hasPlusOne`}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2 space-y-0">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={(e) =>
+                                  field.onChange(e.target.checked)
+                                }
+                                className="h-4 w-4 rounded border-input"
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal cursor-pointer">
+                              Allow plus one
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  );
+                })}
 
-            <Button
-              variant="outline"
-              className="w-full gap-2 bg-transparent"
-              onClick={addGuest}
-            >
-              <Plus className="h-4 w-4" />
-              Add Another Guest
-            </Button>
-          </TabsContent>
-        </Tabs>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2 bg-transparent"
+                  onClick={addGuest}
+                  disabled={isSaving}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Another Guest
+                </Button>
+              </TabsContent>
+            </Tabs>
 
-        <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>Save Changes</Button>
-        </DialogFooter>
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

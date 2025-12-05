@@ -12,6 +12,9 @@ import {
   GuestListInvitation,
   AddInvitationPayload,
   useAddInvitationDialogStore,
+  EditInvitationDialog,
+  useEditInvitationDialogStore,
+  EditInvitationDialogInvitation,
 } from "component-shelf";
 
 const guestSchema = z.object({
@@ -124,10 +127,38 @@ async function deleteInvitation(invitationId: string): Promise<void> {
   }
 }
 
+async function editInvitation(
+  invitation: EditInvitationDialogInvitation
+): Promise<void> {
+  const res = await fetch("/api/v2/engaged/guests/edit", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      invitationId: invitation.id,
+      groupName: invitation.groupName,
+      email: invitation.email || null,
+      guests: invitation.guests.map((g) => ({
+        id: g.id,
+        name: g.name,
+        isAttending: g.isAttending,
+        hasPlusOne: g.hasPlusOne,
+      })),
+    }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to edit invitation");
+  }
+}
+
 export default function GuestsPage() {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const { closeDialog } = useAddInvitationDialogStore();
+  const { closeDialog: closeEditDialog } = useEditInvitationDialogStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ["guest-list"],
@@ -139,6 +170,14 @@ export default function GuestsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["guest-list"] });
       closeDialog();
+    },
+  });
+
+  const editInvitationMutation = useMutation({
+    mutationFn: editInvitation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guest-list"] });
+      closeEditDialog();
     },
   });
 
@@ -167,10 +206,18 @@ export default function GuestsPage() {
         rsvpLink={rsvpLink}
         onAddInvitation={(payload) => addInvitationMutation.mutate(payload)}
         isAddingInvitation={addInvitationMutation.isPending}
+        onEditInvitation={(invitation) =>
+          editInvitationMutation.mutate(invitation)
+        }
+        isEditingInvitation={editInvitationMutation.isPending}
         onDeleteInvitation={(invitationId) =>
           deleteInvitationMutation.mutate(invitationId)
         }
         isDeletingInvitation={deleteInvitationMutation.isPending}
+      />
+      <EditInvitationDialog
+        onSave={(invitation) => editInvitationMutation.mutate(invitation)}
+        isSaving={editInvitationMutation.isPending}
       />
     </ApplicationDashboardLayout>
   );
