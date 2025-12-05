@@ -185,50 +185,52 @@ export function ApplicationWeddingDetailsSettings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-semibold text-foreground">
-            Wedding Details
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Update your wedding information used across your website and
-            invitations
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {hasChanges && (
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="gap-2 bg-transparent"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Reset
-            </Button>
-          )}
-          <Button
-            onClick={handleSave}
-            disabled={!hasChanges || saveStatus === "saving"}
-            className="gap-2"
-          >
-            {saveStatus === "saving" ? (
-              <>
-                <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                Saving...
-              </>
-            ) : saveStatus === "saved" ? (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Saved
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Save Changes
-              </>
+      {/* Page Header - Sticky */}
+      <div className="sticky top-14 z-10 bg-background/95 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="font-serif text-3xl font-semibold text-foreground">
+              Wedding Details
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Update your wedding information used across your website and
+              invitations
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            {hasChanges && (
+              <Button
+                variant="outline"
+                onClick={handleReset}
+                className="gap-2 bg-transparent"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </Button>
             )}
-          </Button>
+            <Button
+              onClick={handleSave}
+              disabled={!hasChanges || saveStatus === "saving"}
+              className="gap-2"
+            >
+              {saveStatus === "saving" ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : saveStatus === "saved" ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Saved
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
