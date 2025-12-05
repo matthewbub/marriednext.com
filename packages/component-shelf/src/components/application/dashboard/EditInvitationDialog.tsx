@@ -260,25 +260,13 @@ export function EditInvitationDialog({
                       className="rounded-lg border border-border p-4 space-y-4"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
-                            {guest?.name
-                              ? guest.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .slice(0, 2)
-                                  .toUpperCase()
-                              : "?"}
-                          </div>
-                          <div>
-                            <p className="font-medium">Guest {index + 1}</p>
-                            {guest?.hasPlusOne && (
-                              <p className="text-xs text-muted-foreground">
-                                Has +1
-                              </p>
-                            )}
-                          </div>
+                        <div>
+                          <p className="font-medium">Guest {index + 1}</p>
+                          {guest?.hasPlusOne && (
+                            <p className="text-xs text-muted-foreground">
+                              Has +1
+                            </p>
+                          )}
                         </div>
                         {fields.length > 1 && (
                           <Button
