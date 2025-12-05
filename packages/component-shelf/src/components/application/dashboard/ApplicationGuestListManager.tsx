@@ -10,17 +10,7 @@ import {
 } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
 import { Badge } from "../../../components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../../components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +28,6 @@ import {
 import { Skeleton } from "../../../components/ui/skeleton";
 import {
   Users,
-  Plus,
   Search,
   Settings2,
   MoreHorizontal,
@@ -53,10 +42,10 @@ import {
   Upload,
   ChevronDown,
   ChevronRight,
-  User,
   LinkIcon,
   Copy,
 } from "lucide-react";
+import { AddInvitationDialog } from "./AddInvitationDialog";
 
 type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
 
@@ -253,10 +242,6 @@ export function ApplicationGuestListManager({
   );
   const [rsvpLookupMethod, setRsvpLookupMethod] =
     useState<RsvpLookupMethod>("FULL_NAME");
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [invitationType, setInvitationType] = useState<
-    "single" | "plusone" | "group"
-  >("single");
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -288,8 +273,8 @@ export function ApplicationGuestListManager({
 
   const pendingGuests = totalGuests - attendingGuests - declinedGuests;
 
-  const respondedInvitations = invitations.filter(
-    (i) => i.status === "responded"
+  const respondedInvitations = invitations.filter((i) =>
+    i.guests.some((g) => g.isAttending !== null)
   ).length;
   const totalInvitations = invitations.length;
 
@@ -352,124 +337,7 @@ export function ApplicationGuestListManager({
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Invitation
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="font-serif">
-                  Add New Invitation
-                </DialogTitle>
-                <DialogDescription>
-                  Create an invitation for a single guest, guest with +1, or a
-                  group of guests.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>Invitation Type</Label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      type="button"
-                      variant={
-                        invitationType === "single" ? "default" : "outline"
-                      }
-                      className="flex-col h-auto py-3 gap-1"
-                      onClick={() => setInvitationType("single")}
-                    >
-                      <User className="h-5 w-5" />
-                      <span className="text-xs">Single</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={
-                        invitationType === "plusone" ? "default" : "outline"
-                      }
-                      className="flex-col h-auto py-3 gap-1"
-                      onClick={() => setInvitationType("plusone")}
-                    >
-                      <UserPlus className="h-5 w-5" />
-                      <span className="text-xs">Guest +1</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={
-                        invitationType === "group" ? "default" : "outline"
-                      }
-                      className="flex-col h-auto py-3 gap-1"
-                      onClick={() => setInvitationType("group")}
-                    >
-                      <Users className="h-5 w-5" />
-                      <span className="text-xs">Group</span>
-                    </Button>
-                  </div>
-                </div>
-
-                {invitationType === "group" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="groupName">Group Name</Label>
-                    <Input
-                      id="groupName"
-                      placeholder="e.g., The Smith Family"
-                    />
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="guestName">
-                    {invitationType === "group"
-                      ? "Guest Names (one per line)"
-                      : "Guest Name"}
-                  </Label>
-                  {invitationType === "group" ? (
-                    <textarea
-                      id="guestName"
-                      className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      placeholder="John Smith&#10;Jane Smith&#10;Jimmy Smith"
-                    />
-                  ) : (
-                    <Input id="guestName" placeholder="Full name" />
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email (optional)</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="guest@email.com"
-                  />
-                </div>
-
-                {invitationType === "plusone" && (
-                  <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 p-3">
-                    <UserPlus className="h-5 w-5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <p className="font-medium">Plus One Enabled</p>
-                      <p className="text-muted-foreground">
-                        Guest can bring one additional person
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAddDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => setShowAddDialog(false)}>
-                  Add Invitation
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <AddInvitationDialog />
         </div>
       </div>
 
@@ -531,7 +399,9 @@ export function ApplicationGuestListManager({
                 <p className="text-sm text-muted-foreground">Response Rate</p>
                 <p className="text-2xl font-semibold">
                   {totalInvitations > 0
-                    ? Math.round((respondedInvitations / totalInvitations) * 100)
+                    ? Math.round(
+                        (respondedInvitations / totalInvitations) * 100
+                      )
                     : 0}
                   %
                 </p>
@@ -555,7 +425,11 @@ export function ApplicationGuestListManager({
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Input value={rsvpLinkValue} readOnly className="font-mono text-sm" />
+              <Input
+                value={rsvpLinkValue}
+                readOnly
+                className="font-mono text-sm"
+              />
               <Button
                 variant="outline"
                 size="icon"
@@ -630,7 +504,10 @@ export function ApplicationGuestListManager({
                   className="pl-8"
                 />
               </div>
-              <Select value={attendanceFilter} onValueChange={setAttendanceFilter}>
+              <Select
+                value={attendanceFilter}
+                onValueChange={setAttendanceFilter}
+              >
                 <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="All Guests" />
                 </SelectTrigger>
@@ -796,7 +673,9 @@ export function ApplicationGuestListManager({
                                 )}
                                 {guest.plusOneAttending === undefined &&
                                   guest.isAttending !== false && (
-                                    <Badge variant="secondary">Not Responded</Badge>
+                                    <Badge variant="secondary">
+                                      Not Responded
+                                    </Badge>
                                   )}
                               </div>
                             </div>
@@ -804,7 +683,6 @@ export function ApplicationGuestListManager({
                         </div>
                       ))}
                     </div>
-
                   </div>
                 )}
               </div>
