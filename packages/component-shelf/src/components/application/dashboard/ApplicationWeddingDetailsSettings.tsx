@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -11,6 +14,15 @@ import {
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "../../../components/ui/form";
 import {
   Heart,
   MapPin,
@@ -33,23 +45,25 @@ import {
   Info,
 } from "lucide-react";
 
-interface WeddingDetails {
-  displayName: string;
-  nameA: string;
-  nameB: string;
-  eventDate: string;
-  eventTime: string;
-  locationName: string;
-  locationAddress: string;
-  mapsEmbedUrl: string;
-  mapsShareUrl: string;
-  preferredAddressLine1: string;
-  preferredAddressLine2: string;
-  preferredCity: string;
-  preferredState: string;
-  preferredZipCode: string;
-  preferredCountry: string;
-}
+const weddingDetailsSchema = z.object({
+  displayName: z.string().min(1, "Display name is required"),
+  nameA: z.string().min(1, "Partner 1 name is required"),
+  nameB: z.string().min(1, "Partner 2 name is required"),
+  eventDate: z.string().min(1, "Event date is required"),
+  eventTime: z.string().min(1, "Event time is required"),
+  locationName: z.string().min(1, "Location name is required"),
+  locationAddress: z.string().min(1, "Location address is required"),
+  mapsEmbedUrl: z.string().optional(),
+  mapsShareUrl: z.string().optional(),
+  preferredAddressLine1: z.string().min(1, "Address line 1 is required"),
+  preferredAddressLine2: z.string().optional(),
+  preferredCity: z.string().min(1, "City is required"),
+  preferredState: z.string().min(1, "State is required"),
+  preferredZipCode: z.string().min(1, "ZIP code is required"),
+  preferredCountry: z.string().min(1, "Country is required"),
+});
+
+type WeddingDetailsFormData = z.infer<typeof weddingDetailsSchema>;
 
 interface DomainSettings {
   subdomain: string;
@@ -58,7 +72,7 @@ interface DomainSettings {
   domainVerified: boolean;
 }
 
-const initialDetails: WeddingDetails = {
+const initialDetails: WeddingDetailsFormData = {
   displayName: "Sarah & Michael's Wedding",
   nameA: "Sarah",
   nameB: "Michael",
@@ -84,9 +98,12 @@ const initialDomainSettings: DomainSettings = {
 };
 
 export function ApplicationWeddingDetailsSettings() {
-  const [details, setDetails] = useState<WeddingDetails>(initialDetails);
-  const [savedDetails, setSavedDetails] =
-    useState<WeddingDetails>(initialDetails);
+  const form = useForm<WeddingDetailsFormData>({
+    resolver: zodResolver(weddingDetailsSchema),
+    defaultValues: initialDetails,
+    mode: "onChange",
+  });
+
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
@@ -105,24 +122,19 @@ export function ApplicationWeddingDetailsSettings() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const hasChanges = JSON.stringify(details) !== JSON.stringify(savedDetails);
+  const hasChanges = form.formState.isDirty;
   const hasDomainChanges = subdomainInput !== savedDomainSettings.subdomain;
 
-  const updateField = (field: keyof WeddingDetails, value: string) => {
-    setDetails((prev) => ({ ...prev, [field]: value }));
-    setSaveStatus("idle");
-  };
-
-  const handleSave = async () => {
+  const handleSave = form.handleSubmit(async (data) => {
     setSaveStatus("saving");
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    setSavedDetails(details);
+    form.reset(data);
     setSaveStatus("saved");
     setTimeout(() => setSaveStatus("idle"), 3000);
-  };
+  });
 
   const handleReset = () => {
-    setDetails(savedDetails);
+    form.reset();
     setSaveStatus("idle");
   };
 
@@ -185,347 +197,459 @@ export function ApplicationWeddingDetailsSettings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Page Header - Sticky */}
-      <div className="sticky top-14 z-10 bg-background/95 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-3xl font-semibold text-foreground">
-              Wedding Details
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Update your wedding information used across your website and
-              invitations
-            </p>
+      <Form {...form}>
+        <form onSubmit={handleSave}>
+          {/* Page Header - Sticky */}
+          <div className="sticky top-14 z-10 bg-background/95 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
+            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="font-serif text-3xl font-semibold text-foreground">
+                  Wedding Details
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Update your wedding information used across your website and
+                  invitations
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                {hasChanges && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleReset}
+                    className="gap-2 bg-transparent"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    Reset
+                  </Button>
+                )}
+                <Button
+                  type="submit"
+                  disabled={!hasChanges || saveStatus === "saving"}
+                  className="gap-2"
+                >
+                  {saveStatus === "saving" ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      Saving...
+                    </>
+                  ) : saveStatus === "saved" ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4" />
+                      Saved
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            {hasChanges && (
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                className="gap-2 bg-transparent"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-            )}
-            <Button
-              onClick={handleSave}
-              disabled={!hasChanges || saveStatus === "saving"}
-              className="gap-2"
-            >
-              {saveStatus === "saving" ? (
+
+          {/* Unsaved Changes Banner */}
+          {hasChanges && (
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+              <p className="text-sm text-amber-800">
+                You have unsaved changes. Don't forget to save before leaving
+                this page.
+              </p>
+            </div>
+          )}
+
+          {/* Couple Names Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+                  <Heart className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif text-xl">
+                    Couple Information
+                  </CardTitle>
+                  <CardDescription>
+                    Your names as they'll appear on your wedding website
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="nameA"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Partner 1 Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="nameB"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Partner 2 Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="displayName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Sarah & Michael's Wedding"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      This is how your wedding will be titled on your website
+                      and in browser tabs
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Date & Time Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif text-xl">
+                    Date & Time
+                  </CardTitle>
+                  <CardDescription>
+                    When your special day will take place
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="eventDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Wedding Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="date" className="pl-10" {...field} />
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="eventTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ceremony Time</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="time" className="pl-10" {...field} />
+                          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Venue Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif text-xl">
+                    Venue Information
+                  </CardTitle>
+                  <CardDescription>
+                    Where your wedding will be held
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="locationName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Venue Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Rosewood Gardens Estate"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="locationAddress"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Full venue address" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This address will be displayed on your website for guests
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Maps Integration Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+                  <Map className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif text-xl">
+                    Maps Integration
+                  </CardTitle>
+                  <CardDescription>
+                    Help guests find your venue with embedded maps
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="mapsEmbedUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Google Maps Embed URL</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="https://www.google.com/maps/embed?pb=..."
+                          className="pl-10 font-mono text-xs"
+                          {...field}
+                        />
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Get this from Google Maps &gt; Share &gt; Embed a map
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mapsShareUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Google Maps Share Link</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="https://maps.google.com/?q=..."
+                          className="pl-10 font-mono text-xs"
+                          {...field}
+                        />
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Direct link for "Get Directions" button
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Mailing Address Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
+                  <Home className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif text-xl">
+                    Venue Location
+                  </CardTitle>
+                  <CardDescription>
+                    Detailed address for your wedding venue
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="preferredAddressLine1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address Line 1</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Street address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="preferredAddressLine2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address Line 2</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Apartment, suite, unit, etc. (optional)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="preferredCity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="City" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="preferredState"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State / Province</FormLabel>
+                      <FormControl>
+                        <Input placeholder="State" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="preferredZipCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ZIP / Postal Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ZIP code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="preferredCountry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Country" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Bottom Save Bar (sticky on mobile) */}
+          <div className="lg:hidden fixed bottom-16 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t border-border">
+            <div className="flex items-center justify-between gap-3">
+              {hasChanges ? (
                 <>
-                  <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  Saving...
-                </>
-              ) : saveStatus === "saved" ? (
-                <>
-                  <CheckCircle2 className="h-4 w-4" />
-                  Saved
+                  <span className="text-sm text-muted-foreground">
+                    Unsaved changes
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleReset}
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={saveStatus === "saving"}
+                    >
+                      {saveStatus === "saving" ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
                 </>
               ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Save Changes
-                </>
+                <span className="text-sm text-muted-foreground">
+                  All changes saved
+                </span>
               )}
-            </Button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Unsaved Changes Banner */}
-      {hasChanges && (
-        <div className="flex items-center gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-          <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
-          <p className="text-sm text-amber-800">
-            You have unsaved changes. Don't forget to save before leaving this
-            page.
-          </p>
-        </div>
-      )}
+          {/* Spacer for mobile bottom bar */}
+          <div className="lg:hidden h-20" />
+        </form>
+      </Form>
 
-      {/* Couple Names Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-              <Heart className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="font-serif text-xl">
-                Couple Information
-              </CardTitle>
-              <CardDescription>
-                Your names as they'll appear on your wedding website
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="nameA">Partner 1 Name</Label>
-              <Input
-                id="nameA"
-                value={details.nameA}
-                onChange={(e) => updateField("nameA", e.target.value)}
-                placeholder="First name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="nameB">Partner 2 Name</Label>
-              <Input
-                id="nameB"
-                value={details.nameB}
-                onChange={(e) => updateField("nameB", e.target.value)}
-                placeholder="First name"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
-            <Input
-              id="displayName"
-              value={details.displayName}
-              onChange={(e) => updateField("displayName", e.target.value)}
-              placeholder="e.g., Sarah & Michael's Wedding"
-            />
-            <p className="text-xs text-muted-foreground">
-              This is how your wedding will be titled on your website and in
-              browser tabs
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Date & Time Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-              <Calendar className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="font-serif text-xl">Date & Time</CardTitle>
-              <CardDescription>
-                When your special day will take place
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="eventDate">Wedding Date</Label>
-              <div className="relative">
-                <Input
-                  id="eventDate"
-                  type="date"
-                  value={details.eventDate}
-                  onChange={(e) => updateField("eventDate", e.target.value)}
-                  className="pl-10"
-                />
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="eventTime">Ceremony Time</Label>
-              <div className="relative">
-                <Input
-                  id="eventTime"
-                  type="time"
-                  value={details.eventTime}
-                  onChange={(e) => updateField("eventTime", e.target.value)}
-                  className="pl-10"
-                />
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Venue Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-              <MapPin className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="font-serif text-xl">
-                Venue Information
-              </CardTitle>
-              <CardDescription>Where your wedding will be held</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="locationName">Venue Name</Label>
-            <Input
-              id="locationName"
-              value={details.locationName}
-              onChange={(e) => updateField("locationName", e.target.value)}
-              placeholder="e.g., Rosewood Gardens Estate"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="locationAddress">Full Address</Label>
-            <Input
-              id="locationAddress"
-              value={details.locationAddress}
-              onChange={(e) => updateField("locationAddress", e.target.value)}
-              placeholder="Full venue address"
-            />
-            <p className="text-xs text-muted-foreground">
-              This address will be displayed on your website for guests
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Maps Integration Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-              <Map className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="font-serif text-xl">
-                Maps Integration
-              </CardTitle>
-              <CardDescription>
-                Help guests find your venue with embedded maps
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="mapsEmbedUrl">Google Maps Embed URL</Label>
-            <div className="relative">
-              <Input
-                id="mapsEmbedUrl"
-                value={details.mapsEmbedUrl}
-                onChange={(e) => updateField("mapsEmbedUrl", e.target.value)}
-                placeholder="https://www.google.com/maps/embed?pb=..."
-                className="pl-10 font-mono text-xs"
-              />
-              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Get this from Google Maps &gt; Share &gt; Embed a map
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mapsShareUrl">Google Maps Share Link</Label>
-            <div className="relative">
-              <Input
-                id="mapsShareUrl"
-                value={details.mapsShareUrl}
-                onChange={(e) => updateField("mapsShareUrl", e.target.value)}
-                placeholder="https://maps.google.com/?q=..."
-                className="pl-10 font-mono text-xs"
-              />
-              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Direct link for "Get Directions" button
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Mailing Address Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-              <Home className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="font-serif text-xl">
-                Venue Location
-              </CardTitle>
-              <CardDescription>
-                Detailed address for your wedding venue
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="preferredAddressLine1">Address Line 1</Label>
-            <Input
-              id="preferredAddressLine1"
-              value={details.preferredAddressLine1}
-              onChange={(e) =>
-                updateField("preferredAddressLine1", e.target.value)
-              }
-              placeholder="Street address"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="preferredAddressLine2">Address Line 2</Label>
-            <Input
-              id="preferredAddressLine2"
-              value={details.preferredAddressLine2}
-              onChange={(e) =>
-                updateField("preferredAddressLine2", e.target.value)
-              }
-              placeholder="Apartment, suite, unit, etc. (optional)"
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="preferredCity">City</Label>
-              <Input
-                id="preferredCity"
-                value={details.preferredCity}
-                onChange={(e) => updateField("preferredCity", e.target.value)}
-                placeholder="City"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="preferredState">State / Province</Label>
-              <Input
-                id="preferredState"
-                value={details.preferredState}
-                onChange={(e) => updateField("preferredState", e.target.value)}
-                placeholder="State"
-              />
-            </div>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="preferredZipCode">ZIP / Postal Code</Label>
-              <Input
-                id="preferredZipCode"
-                value={details.preferredZipCode}
-                onChange={(e) =>
-                  updateField("preferredZipCode", e.target.value)
-                }
-                placeholder="ZIP code"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="preferredCountry">Country</Label>
-              <Input
-                id="preferredCountry"
-                value={details.preferredCountry}
-                onChange={(e) =>
-                  updateField("preferredCountry", e.target.value)
-                }
-                placeholder="Country"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
+      {/* Domain Settings - Separate from main form */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
@@ -1063,38 +1187,6 @@ export function ApplicationWeddingDetailsSettings() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Bottom Save Bar (sticky on mobile) */}
-      <div className="lg:hidden fixed bottom-16 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t border-border">
-        <div className="flex items-center justify-between gap-3">
-          {hasChanges ? (
-            <>
-              <span className="text-sm text-muted-foreground">
-                Unsaved changes
-              </span>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleReset}>
-                  Reset
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={saveStatus === "saving"}
-                >
-                  {saveStatus === "saving" ? "Saving..." : "Save"}
-                </Button>
-              </div>
-            </>
-          ) : (
-            <span className="text-sm text-muted-foreground">
-              All changes saved
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Spacer for mobile bottom bar */}
-      <div className="lg:hidden h-20" />
     </div>
   );
 }
