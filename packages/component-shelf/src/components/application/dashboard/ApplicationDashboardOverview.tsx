@@ -281,9 +281,9 @@ export function ApplicationDashboardOverview({
                     {data?.websiteTemplate}
                   </span>
                 </div>
-                <div className="text-sm text-muted-foreground ml-auto">
+                {/* <div className="text-sm text-muted-foreground ml-auto">
                   342 visits this month
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
