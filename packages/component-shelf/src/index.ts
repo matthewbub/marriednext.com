@@ -61,6 +61,7 @@ export type {
   GuestListGuest,
   GuestListStats,
   ApplicationGuestListManagerProps,
+  RsvpLookupMethod,
 } from "./components/application/dashboard/ApplicationGuestListManager";
 export { AddInvitationDialog } from "./components/application/dashboard/AddInvitationDialog";
 export type { AddInvitationPayload } from "./components/application/dashboard/AddInvitationDialog";

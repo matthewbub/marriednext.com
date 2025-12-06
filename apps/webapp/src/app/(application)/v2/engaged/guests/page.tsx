@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
+import { toast } from "sonner";
 import {
   ApplicationDashboardLayout,
   ApplicationGuestListManager,
@@ -16,6 +17,7 @@ import {
   EditInvitationDialog,
   useEditInvitationDialogStore,
   EditInvitationDialogInvitation,
+  RsvpLookupMethod,
 } from "component-shelf";
 
 const guestSchema = z.object({
@@ -44,6 +46,7 @@ const guestListResponseSchema = z.object({
   invitations: z.array(invitationSchema),
   stats: statsSchema,
   rsvpLink: z.string(),
+  rsvpLookupMethod: z.enum(["FIRST_NAME_ONLY", "FULL_NAME", "EMAIL"]),
   user: z.object({
     fullName: z.string(),
     imageUrl: z.string().nullable(),
@@ -168,6 +171,21 @@ async function editInvitation(
   }
 }
 
+async function updateRsvpLookupMethod(method: RsvpLookupMethod): Promise<void> {
+  const res = await fetch("/api/v2/engaged/rsvp-settings", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ rsvpLookupMethod: method }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to update RSVP lookup method");
+  }
+}
+
 export default function GuestsPage() {
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -202,11 +220,23 @@ export default function GuestsPage() {
     },
   });
 
+  const updateRsvpLookupMethodMutation = useMutation({
+    mutationFn: updateRsvpLookupMethod,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guest-list"] });
+      toast.success("RSVP lookup method updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update RSVP lookup method");
+    },
+  });
+
   const userData = data ? transformToUserData(data) : undefined;
   const weddingData = data ? transformToWeddingData(data) : undefined;
   const invitations = data ? transformToInvitations(data) : undefined;
   const stats = data ? transformToStats(data) : undefined;
   const rsvpLink = data?.rsvpLink;
+  const rsvpLookupMethod = data?.rsvpLookupMethod;
 
   return (
     <ApplicationDashboardLayout
@@ -230,6 +260,11 @@ export default function GuestsPage() {
           deleteInvitationMutation.mutate(invitationId)
         }
         isDeletingInvitation={deleteInvitationMutation.isPending}
+        rsvpLookupMethod={rsvpLookupMethod}
+        onRsvpLookupMethodChange={(method) =>
+          updateRsvpLookupMethodMutation.mutate(method)
+        }
+        isUpdatingRsvpLookupMethod={updateRsvpLookupMethodMutation.isPending}
       />
       <EditInvitationDialog
         onSave={(invitation) => editInvitationMutation.mutate(invitation)}

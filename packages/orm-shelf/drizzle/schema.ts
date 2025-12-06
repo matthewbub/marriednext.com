@@ -20,6 +20,7 @@ export const invitationStatus = pgEnum("invitation_status", [
 export const rsvpNameFormat = pgEnum("rsvp_name_format", [
   "FIRST_NAME_ONLY",
   "FULL_NAME",
+  "EMAIL",
 ]);
 export const tableType = pgEnum("table_type", [
   "square",

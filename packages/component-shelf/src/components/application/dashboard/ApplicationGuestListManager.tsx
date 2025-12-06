@@ -42,7 +42,6 @@ import {
   Settings2,
   MoreHorizontal,
   Mail,
-  Send,
   Check,
   X,
   Clock,
@@ -53,15 +52,15 @@ import {
   Upload,
   ChevronDown,
   ChevronRight,
-  LinkIcon,
-  Copy,
+  UserCircle,
+  Type,
 } from "lucide-react";
 import { AddInvitationDialog } from "./AddInvitationDialog";
 import type { AddInvitationPayload } from "./AddInvitationDialog";
 import { EditInvitationDialog } from "./EditInvitationDialog";
 import { useEditInvitationDialogStore } from "../../../stores/editInvitationDialogStore";
 
-type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
+export type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
 
 export type GuestListGuest = {
   id: string;
@@ -100,6 +99,9 @@ export interface ApplicationGuestListManagerProps {
   isEditingInvitation?: boolean;
   onDeleteInvitation?: (invitationId: string) => void;
   isDeletingInvitation?: boolean;
+  rsvpLookupMethod?: RsvpLookupMethod;
+  onRsvpLookupMethodChange?: (method: RsvpLookupMethod) => void;
+  isUpdatingRsvpLookupMethod?: boolean;
 }
 
 const mockInvitations: GuestListInvitation[] = [
@@ -199,18 +201,20 @@ export function ApplicationGuestListManager({
   isEditingInvitation = false,
   onDeleteInvitation,
   isDeletingInvitation = false,
+  rsvpLookupMethod: propRsvpLookupMethod,
+  onRsvpLookupMethodChange,
+  isUpdatingRsvpLookupMethod = false,
 }: ApplicationGuestListManagerProps) {
   const { openDialog } = useEditInvitationDialogStore();
   const invitations = propInvitations ?? mockInvitations;
   const rsvpLinkValue = propRsvpLink ?? "marriednext.com/rsvp/sarah-michael";
+  const rsvpLookupMethod = propRsvpLookupMethod ?? "FULL_NAME";
 
   const [searchQuery, setSearchQuery] = useState("");
   const [attendanceFilter, setAttendanceFilter] = useState<string>("all");
   const [expandedInvitations, setExpandedInvitations] = useState<Set<string>>(
     new Set()
   );
-  const [rsvpLookupMethod, setRsvpLookupMethod] =
-    useState<RsvpLookupMethod>("FULL_NAME");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [invitationToDelete, setInvitationToDelete] = useState<string | null>(
     null
@@ -225,11 +229,13 @@ export function ApplicationGuestListManager({
       return acc + count;
     }, 0);
     const attending = invitations.reduce(
-      (acc, inv) => acc + inv.guests.filter((g) => g.isAttending === true).length,
+      (acc, inv) =>
+        acc + inv.guests.filter((g) => g.isAttending === true).length,
       0
     );
     const declined = invitations.reduce(
-      (acc, inv) => acc + inv.guests.filter((g) => g.isAttending === false).length,
+      (acc, inv) =>
+        acc + inv.guests.filter((g) => g.isAttending === false).length,
       0
     );
     return {
@@ -241,8 +247,13 @@ export function ApplicationGuestListManager({
     };
   })();
 
-  const { totalGuests, attendingGuests, declinedGuests, pendingGuests, totalInvitations } =
-    propStats ?? fallbackStats;
+  const {
+    totalGuests,
+    attendingGuests,
+    declinedGuests,
+    pendingGuests,
+    totalInvitations,
+  } = propStats ?? fallbackStats;
 
   const filteredInvitations = invitations.filter((inv) => {
     const matchesSearch =
@@ -340,7 +351,9 @@ export function ApplicationGuestListManager({
               {isLoading ? (
                 <Skeleton className="h-8 w-12 mx-auto mt-1" />
               ) : (
-                <p className="text-2xl font-semibold mt-1">{totalInvitations}</p>
+                <p className="text-2xl font-semibold mt-1">
+                  {totalInvitations}
+                </p>
               )}
             </div>
             <div className="flex-1 p-4 text-center">
@@ -356,7 +369,9 @@ export function ApplicationGuestListManager({
               {isLoading ? (
                 <Skeleton className="h-8 w-12 mx-auto mt-1" />
               ) : (
-                <p className="text-2xl font-semibold text-green-600 mt-1">{attendingGuests}</p>
+                <p className="text-2xl font-semibold text-green-600 mt-1">
+                  {attendingGuests}
+                </p>
               )}
             </div>
             <div className="flex-1 p-4 text-center">
@@ -364,7 +379,9 @@ export function ApplicationGuestListManager({
               {isLoading ? (
                 <Skeleton className="h-8 w-12 mx-auto mt-1" />
               ) : (
-                <p className="text-2xl font-semibold text-red-500 mt-1">{declinedGuests}</p>
+                <p className="text-2xl font-semibold text-red-500 mt-1">
+                  {declinedGuests}
+                </p>
               )}
             </div>
             <div className="flex-1 p-4 text-center">
@@ -372,7 +389,9 @@ export function ApplicationGuestListManager({
               {isLoading ? (
                 <Skeleton className="h-8 w-12 mx-auto mt-1" />
               ) : (
-                <p className="text-2xl font-semibold text-amber-600 mt-1">{pendingGuests}</p>
+                <p className="text-2xl font-semibold text-amber-600 mt-1">
+                  {pendingGuests}
+                </p>
               )}
             </div>
             <div className="flex-1 p-4 text-center">
@@ -381,7 +400,12 @@ export function ApplicationGuestListManager({
                 <Skeleton className="h-8 w-12 mx-auto mt-1" />
               ) : (
                 <p className="text-2xl font-semibold mt-1">
-                  {totalGuests > 0 ? Math.round(((attendingGuests + declinedGuests) / totalGuests) * 100) : 0}%
+                  {totalGuests > 0
+                    ? Math.round(
+                        ((attendingGuests + declinedGuests) / totalGuests) * 100
+                      )
+                    : 0}
+                  %
                 </p>
               )}
             </div>
@@ -389,80 +413,110 @@ export function ApplicationGuestListManager({
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <LinkIcon className="h-4 w-4" />
-              Your RSVP Link
-            </CardTitle>
-            <CardDescription>
-              Share this link with guests to collect RSVPs
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <Input
-                value={rsvpLinkValue}
-                readOnly
-                className="font-mono text-sm"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 bg-transparent"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <Settings2 className="h-4 w-4" />
-              RSVP Settings
+              RSVP Lookup Method
             </CardTitle>
             <CardDescription>
-              How should guests look up their invitation?
+              How should guests find their invitation when they RSVP?
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select
-              value={rsvpLookupMethod}
-              onValueChange={(v) => setRsvpLookupMethod(v as RsvpLookupMethod)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="FIRST_NAME_ONLY">
-                  <div className="flex flex-col items-start">
-                    <span>First Name Only</span>
-                    <span className="text-xs text-muted-foreground">
-                      Guests enter just their first name
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="FULL_NAME">
-                  <div className="flex flex-col items-start">
-                    <span>Full Name</span>
-                    <span className="text-xs text-muted-foreground">
-                      Guests enter first and last name
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="EMAIL">
-                  <div className="flex flex-col items-start">
-                    <span>Email Address</span>
-                    <span className="text-xs text-muted-foreground">
-                      Guests enter their email to find invite
-                    </span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {/* First Name Only Option */}
+              <button
+                onClick={() => onRsvpLookupMethodChange?.("FIRST_NAME_ONLY")}
+                disabled={isUpdatingRsvpLookupMethod}
+                className={`relative flex flex-col items-start gap-2 rounded-lg border-2 p-4 text-left transition-all hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  rsvpLookupMethod === "FIRST_NAME_ONLY"
+                    ? "border-primary bg-primary/5"
+                    : "border-border"
+                }`}
+              >
+                <div
+                  className={`rounded-full p-2 ${
+                    rsvpLookupMethod === "FIRST_NAME_ONLY"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Type className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium">First Name Only</p>
+                  <p className="text-xs text-muted-foreground">
+                    Easiest for guests. Duplicates will be asked to clarify.
+                  </p>
+                </div>
+                {rsvpLookupMethod === "FIRST_NAME_ONLY" && (
+                  <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+                )}
+              </button>
+
+              {/* Full Name Option */}
+              <button
+                onClick={() => onRsvpLookupMethodChange?.("FULL_NAME")}
+                disabled={isUpdatingRsvpLookupMethod}
+                className={`relative flex flex-col items-start gap-2 rounded-lg border-2 p-4 text-left transition-all hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  rsvpLookupMethod === "FULL_NAME"
+                    ? "border-primary bg-primary/5"
+                    : "border-border"
+                }`}
+              >
+                <div
+                  className={`rounded-full p-2 ${
+                    rsvpLookupMethod === "FULL_NAME"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <UserCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium">Full Name</p>
+                  <p className="text-xs text-muted-foreground">
+                    Recommended. Guests will be asked to enter their full name.
+                  </p>
+                </div>
+                {rsvpLookupMethod === "FULL_NAME" && (
+                  <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+                )}
+              </button>
+
+              {/* Email Option */}
+              <button
+                onClick={() => onRsvpLookupMethodChange?.("EMAIL")}
+                disabled={isUpdatingRsvpLookupMethod}
+                className={`relative flex flex-col items-start gap-2 rounded-lg border-2 p-4 text-left transition-all hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  rsvpLookupMethod === "EMAIL"
+                    ? "border-primary bg-primary/5"
+                    : "border-border"
+                }`}
+              >
+                <div
+                  className={`rounded-full p-2 ${
+                    rsvpLookupMethod === "EMAIL"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium">Email Address</p>
+                  <p className="text-xs text-muted-foreground">
+                    Most secure. Guests will be asked to enter their email
+                    address.
+                  </p>
+                </div>
+                {rsvpLookupMethod === "EMAIL" && (
+                  <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+                )}
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -500,197 +554,205 @@ export function ApplicationGuestListManager({
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {isLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
-              ))
-            ) : filteredInvitations.map((invitation) => (
-              <div
-                key={invitation.id}
-                className="rounded-lg border border-border bg-card overflow-hidden"
-              >
-                <div
-                  className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => toggleExpanded(invitation.id)}
-                >
-                  <button className="shrink-0 text-muted-foreground">
-                    {expandedInvitations.has(invitation.id) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                  </button>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium truncate">
-                        {invitation.groupName}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        ({invitation.guests.length}{" "}
-                        {invitation.guests.length === 1 ? "guest" : "guests"}
-                        {invitation.guests.some((g) => g.hasPlusOne) &&
-                          " + plus ones"}
-                        )
-                      </span>
-                    </div>
-                    {invitation.email && (
-                      <p className="text-sm text-muted-foreground truncate">
-                        {invitation.email}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="flex items-center gap-1">
-                      {invitation.guests.map((guest) => (
-                        <span
-                          key={guest.id}
-                          title={`${guest.name}: ${
-                            guest.isAttending === true
-                              ? "Confirmed"
-                              : guest.isAttending === false
-                              ? "Declined"
-                              : "Not Responded"
-                          }`}
-                        >
-                          {getAttendanceIcon(guest.isAttending)}
-                        </span>
-                      ))}
-                    </div>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        asChild
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openDialog({
-                              id: invitation.id,
-                              groupName: invitation.groupName,
-                              email: invitation.email,
-                              guests: invitation.guests.map((g) => ({
-                                id: g.id,
-                                name: g.name,
-                                isAttending: g.isAttending,
-                                hasPlusOne: g.hasPlusOne,
-                              })),
-                            });
-                          }}
-                          disabled={isEditingInvitation}
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        {invitation.email && (
-                          <DropdownMenuItem>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Send Reminder
-                          </DropdownMenuItem>
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full rounded-lg" />
+                ))
+              : filteredInvitations.map((invitation) => (
+                  <div
+                    key={invitation.id}
+                    className="rounded-lg border border-border bg-card overflow-hidden"
+                  >
+                    <div
+                      className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => toggleExpanded(invitation.id)}
+                    >
+                      <button className="shrink-0 text-muted-foreground">
+                        {expandedInvitations.has(invitation.id) ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
                         )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(invitation.id);
-                          }}
-                          disabled={isDeletingInvitation}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
+                      </button>
 
-                {expandedInvitations.has(invitation.id) && (
-                  <div className="border-t border-border bg-muted/30 p-3">
-                    <div className="space-y-2">
-                      {invitation.guests.map((guest) => (
-                        <div key={guest.id}>
-                          <div className="flex items-center gap-3 py-1.5 px-2 rounded-md hover:bg-background transition-colors">
-                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-sm">
-                              {guest.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .slice(0, 2)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm">
-                                {guest.name}
-                              </p>
-                              {guest.dietaryRestrictions && (
-                                <p className="text-xs text-muted-foreground">
-                                  Diet: {guest.dietaryRestrictions}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {guest.isAttending === true && (
-                                <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                                  Confirmed
-                                </Badge>
-                              )}
-                              {guest.isAttending === false && (
-                                <Badge className="bg-red-100 text-red-600 hover:bg-red-100">
-                                  Declined
-                                </Badge>
-                              )}
-                              {guest.isAttending === null && (
-                                <Badge variant="secondary">Not Responded</Badge>
-                              )}
-                            </div>
-                          </div>
-                          {guest.hasPlusOne && (
-                            <div className="flex items-center gap-3 py-1.5 px-2 ml-6 rounded-md hover:bg-background transition-colors">
-                              <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center text-accent-foreground">
-                                <UserPlus className="h-4 w-4" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm">
-                                  {guest.plusOneName || "Plus One"}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Guest of {guest.name.split(" ")[0]}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {guest.plusOneAttending === true && (
-                                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                                    Confirmed
-                                  </Badge>
-                                )}
-                                {guest.plusOneAttending === false && (
-                                  <Badge className="bg-red-100 text-red-600 hover:bg-red-100">
-                                    Declined
-                                  </Badge>
-                                )}
-                                {guest.plusOneAttending === undefined &&
-                                  guest.isAttending !== false && (
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">
+                            {invitation.groupName}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            ({invitation.guests.length}{" "}
+                            {invitation.guests.length === 1
+                              ? "guest"
+                              : "guests"}
+                            {invitation.guests.some((g) => g.hasPlusOne) &&
+                              " + plus ones"}
+                            )
+                          </span>
+                        </div>
+                        {invitation.email && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            {invitation.email}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-1">
+                          {invitation.guests.map((guest) => (
+                            <span
+                              key={guest.id}
+                              title={`${guest.name}: ${
+                                guest.isAttending === true
+                                  ? "Confirmed"
+                                  : guest.isAttending === false
+                                  ? "Declined"
+                                  : "Not Responded"
+                              }`}
+                            >
+                              {getAttendanceIcon(guest.isAttending)}
+                            </span>
+                          ))}
+                        </div>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            asChild
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDialog({
+                                  id: invitation.id,
+                                  groupName: invitation.groupName,
+                                  email: invitation.email,
+                                  guests: invitation.guests.map((g) => ({
+                                    id: g.id,
+                                    name: g.name,
+                                    isAttending: g.isAttending,
+                                    hasPlusOne: g.hasPlusOne,
+                                  })),
+                                });
+                              }}
+                              disabled={isEditingInvitation}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            {invitation.email && (
+                              <DropdownMenuItem>
+                                <Mail className="h-4 w-4 mr-2" />
+                                Send Reminder
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(invitation.id);
+                              }}
+                              disabled={isDeletingInvitation}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+
+                    {expandedInvitations.has(invitation.id) && (
+                      <div className="border-t border-border bg-muted/30 p-3">
+                        <div className="space-y-2">
+                          {invitation.guests.map((guest) => (
+                            <div key={guest.id}>
+                              <div className="flex items-center gap-3 py-1.5 px-2 rounded-md hover:bg-background transition-colors">
+                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-sm">
+                                  {guest.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .slice(0, 2)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm">
+                                    {guest.name}
+                                  </p>
+                                  {guest.dietaryRestrictions && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Diet: {guest.dietaryRestrictions}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {guest.isAttending === true && (
+                                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                                      Confirmed
+                                    </Badge>
+                                  )}
+                                  {guest.isAttending === false && (
+                                    <Badge className="bg-red-100 text-red-600 hover:bg-red-100">
+                                      Declined
+                                    </Badge>
+                                  )}
+                                  {guest.isAttending === null && (
                                     <Badge variant="secondary">
                                       Not Responded
                                     </Badge>
                                   )}
+                                </div>
                               </div>
+                              {guest.hasPlusOne && (
+                                <div className="flex items-center gap-3 py-1.5 px-2 ml-6 rounded-md hover:bg-background transition-colors">
+                                  <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center text-accent-foreground">
+                                    <UserPlus className="h-4 w-4" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-sm">
+                                      {guest.plusOneName || "Plus One"}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Guest of {guest.name.split(" ")[0]}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {guest.plusOneAttending === true && (
+                                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                                        Confirmed
+                                      </Badge>
+                                    )}
+                                    {guest.plusOneAttending === false && (
+                                      <Badge className="bg-red-100 text-red-600 hover:bg-red-100">
+                                        Declined
+                                      </Badge>
+                                    )}
+                                    {guest.plusOneAttending === undefined &&
+                                      guest.isAttending !== false && (
+                                        <Badge variant="secondary">
+                                          Not Responded
+                                        </Badge>
+                                      )}
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                ))}
 
             {!isLoading && filteredInvitations.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">

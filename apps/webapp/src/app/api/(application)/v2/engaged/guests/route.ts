@@ -89,6 +89,7 @@ export async function GET() {
         totalInvitations,
       },
       rsvpLink,
+      rsvpLookupMethod: weddingData.controlRsvpNameFormat || "FULL_NAME",
       user: {
         fullName:
           user.fullName ||
