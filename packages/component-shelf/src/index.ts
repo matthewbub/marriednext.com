@@ -75,6 +75,11 @@ export type {
   ApplicationWebsiteBuilderProps,
 } from "./components/application/dashboard/ApplicationWebsiteBuilder";
 export { ApplicationWeddingDetailsSettings } from "./components/application/dashboard/ApplicationWeddingDetailsSettings";
+export type {
+  DomainSettings,
+  WeddingDetailsData,
+  ApplicationWeddingDetailsSettingsProps,
+} from "./components/application/dashboard/ApplicationWeddingDetailsSettings";
 
 export { ApplicationConnectDomainArticle } from "./components/application/help/ApplicationConnectDomainArticle";
 export { ApplicationHelpCenter } from "./components/application/help/ApplicationHelpCenter";

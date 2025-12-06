@@ -55,52 +55,73 @@ const weddingDetailsSchema = z.object({
   locationAddress: z.string().min(1, "Location address is required"),
   mapsEmbedUrl: z.string().optional(),
   mapsShareUrl: z.string().optional(),
-  preferredAddressLine1: z.string().min(1, "Address line 1 is required"),
+  preferredAddressLine1: z.string().optional(),
   preferredAddressLine2: z.string().optional(),
-  preferredCity: z.string().min(1, "City is required"),
-  preferredState: z.string().min(1, "State is required"),
-  preferredZipCode: z.string().min(1, "ZIP code is required"),
-  preferredCountry: z.string().min(1, "Country is required"),
+  preferredCity: z.string().optional(),
+  preferredState: z.string().optional(),
+  preferredZipCode: z.string().optional(),
+  preferredCountry: z.string().optional(),
 });
 
 type WeddingDetailsFormData = z.infer<typeof weddingDetailsSchema>;
 
-interface DomainSettings {
+export interface DomainSettings {
   subdomain: string;
   customDomain: string | null;
   hasCustomDomainUpgrade: boolean;
   domainVerified: boolean;
 }
 
-const initialDetails: WeddingDetailsFormData = {
-  displayName: "Sarah & Michael's Wedding",
-  nameA: "Sarah",
-  nameB: "Michael",
-  eventDate: "2025-06-15",
-  eventTime: "16:00",
-  locationName: "Rosewood Gardens Estate",
-  locationAddress: "1234 Garden Lane, Napa Valley, CA 94558",
-  mapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18...",
-  mapsShareUrl: "https://maps.google.com/?q=Rosewood+Gardens+Estate",
-  preferredAddressLine1: "1234 Garden Lane",
-  preferredAddressLine2: "",
-  preferredCity: "Napa Valley",
-  preferredState: "CA",
-  preferredZipCode: "94558",
-  preferredCountry: "United States",
-};
+export interface WeddingDetailsData {
+  displayName: string;
+  nameA: string;
+  nameB: string;
+  eventDate: string;
+  eventTime: string;
+  locationName: string;
+  locationAddress: string;
+  mapsEmbedUrl?: string;
+  mapsShareUrl?: string;
+  preferredAddressLine1?: string;
+  preferredAddressLine2?: string;
+  preferredCity?: string;
+  preferredState?: string;
+  preferredZipCode?: string;
+  preferredCountry?: string;
+}
 
-const initialDomainSettings: DomainSettings = {
-  subdomain: "sarah-and-michael",
-  customDomain: null,
-  hasCustomDomainUpgrade: false,
-  domainVerified: false,
-};
+export interface ApplicationWeddingDetailsSettingsProps {
+  weddingDetails: WeddingDetailsData;
+  domainSettings: DomainSettings;
+  onSave?: (data: WeddingDetailsFormData) => Promise<void>;
+  isSaving?: boolean;
+}
 
-export function ApplicationWeddingDetailsSettings() {
+export function ApplicationWeddingDetailsSettings({
+  weddingDetails,
+  domainSettings: initialDomainSettings,
+  onSave,
+  isSaving = false,
+}: ApplicationWeddingDetailsSettingsProps) {
   const form = useForm<WeddingDetailsFormData>({
     resolver: zodResolver(weddingDetailsSchema),
-    defaultValues: initialDetails,
+    defaultValues: {
+      displayName: weddingDetails.displayName,
+      nameA: weddingDetails.nameA,
+      nameB: weddingDetails.nameB,
+      eventDate: weddingDetails.eventDate,
+      eventTime: weddingDetails.eventTime,
+      locationName: weddingDetails.locationName,
+      locationAddress: weddingDetails.locationAddress,
+      mapsEmbedUrl: weddingDetails.mapsEmbedUrl || "",
+      mapsShareUrl: weddingDetails.mapsShareUrl || "",
+      preferredAddressLine1: weddingDetails.preferredAddressLine1 || "",
+      preferredAddressLine2: weddingDetails.preferredAddressLine2 || "",
+      preferredCity: weddingDetails.preferredCity || "",
+      preferredState: weddingDetails.preferredState || "",
+      preferredZipCode: weddingDetails.preferredZipCode || "",
+      preferredCountry: weddingDetails.preferredCountry || "",
+    },
     mode: "onChange",
   });
 
@@ -126,11 +147,18 @@ export function ApplicationWeddingDetailsSettings() {
   const hasDomainChanges = subdomainInput !== savedDomainSettings.subdomain;
 
   const handleSave = form.handleSubmit(async (data) => {
-    setSaveStatus("saving");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    form.reset(data);
-    setSaveStatus("saved");
-    setTimeout(() => setSaveStatus("idle"), 3000);
+    if (onSave) {
+      setSaveStatus("saving");
+      try {
+        await onSave(data);
+        form.reset(data);
+        setSaveStatus("saved");
+        setTimeout(() => setSaveStatus("idle"), 3000);
+      } catch {
+        setSaveStatus("error");
+        setTimeout(() => setSaveStatus("idle"), 3000);
+      }
+    }
   });
 
   const handleReset = () => {
@@ -195,10 +223,29 @@ export function ApplicationWeddingDetailsSettings() {
     setSaveStatus("idle");
   };
 
+  const generateDomainSuggestions = () => {
+    const nameA = weddingDetails.nameA.toLowerCase().replace(/[^a-z]/g, "");
+    const nameB = weddingDetails.nameB.toLowerCase().replace(/[^a-z]/g, "");
+
+    if (!nameA || !nameB) {
+      return {
+        first: "yournames.com",
+        second: "yournames.wedding",
+      };
+    }
+
+    return {
+      first: `${nameA}and${nameB}.com`,
+      second: `${nameA}${nameB}.wedding`,
+    };
+  };
+
+  const domainSuggestions = generateDomainSuggestions();
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <Form {...form}>
-        <form onSubmit={handleSave}>
+        <form onSubmit={handleSave} className="space-y-6">
           {/* Page Header - Sticky */}
           <div className="sticky top-14 z-10 bg-background/95 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
             <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -225,10 +272,10 @@ export function ApplicationWeddingDetailsSettings() {
                 )}
                 <Button
                   type="submit"
-                  disabled={!hasChanges || saveStatus === "saving"}
+                  disabled={!hasChanges || isSaving}
                   className="gap-2"
                 >
-                  {saveStatus === "saving" ? (
+                  {isSaving ? (
                     <>
                       <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                       Saving...
@@ -527,7 +574,7 @@ export function ApplicationWeddingDetailsSettings() {
                 name="preferredAddressLine1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Line 1</FormLabel>
+                    <FormLabel>Address Line 1 (optional)</FormLabel>
                     <FormControl>
                       <Input placeholder="Street address" {...field} />
                     </FormControl>
@@ -540,10 +587,10 @@ export function ApplicationWeddingDetailsSettings() {
                 name="preferredAddressLine2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Line 2</FormLabel>
+                    <FormLabel>Address Line 2 (optional)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Apartment, suite, unit, etc. (optional)"
+                        placeholder="Apartment, suite, unit, etc."
                         {...field}
                       />
                     </FormControl>
@@ -557,7 +604,7 @@ export function ApplicationWeddingDetailsSettings() {
                   name="preferredCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>City (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="City" {...field} />
                       </FormControl>
@@ -570,7 +617,7 @@ export function ApplicationWeddingDetailsSettings() {
                   name="preferredState"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>State / Province</FormLabel>
+                      <FormLabel>State / Province (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="State" {...field} />
                       </FormControl>
@@ -585,7 +632,7 @@ export function ApplicationWeddingDetailsSettings() {
                   name="preferredZipCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ZIP / Postal Code</FormLabel>
+                      <FormLabel>ZIP / Postal Code (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="ZIP code" {...field} />
                       </FormControl>
@@ -598,7 +645,7 @@ export function ApplicationWeddingDetailsSettings() {
                   name="preferredCountry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
+                      <FormLabel>Country (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="Country" {...field} />
                       </FormControl>
@@ -627,12 +674,8 @@ export function ApplicationWeddingDetailsSettings() {
                     >
                       Reset
                     </Button>
-                    <Button
-                      type="submit"
-                      size="sm"
-                      disabled={saveStatus === "saving"}
-                    >
-                      {saveStatus === "saving" ? "Saving..." : "Save"}
+                    <Button type="submit" size="sm" disabled={isSaving}>
+                      {isSaving ? "Saving..." : "Save"}
                     </Button>
                   </div>
                 </>
@@ -741,11 +784,11 @@ export function ApplicationWeddingDetailsSettings() {
                     <p className="text-sm text-muted-foreground mt-1 mb-4">
                       Already own a domain like{" "}
                       <span className="font-medium text-foreground">
-                        sarahandmichael.com
+                        {domainSuggestions.first}
                       </span>{" "}
                       or{" "}
                       <span className="font-medium text-foreground">
-                        thesmiths.wedding
+                        {domainSuggestions.second}
                       </span>
                       ? Connect it to your Married Next website.
                     </p>
