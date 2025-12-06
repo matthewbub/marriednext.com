@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +13,6 @@ import {
 } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
 import {
   Form,
   FormControl,
@@ -63,7 +62,20 @@ const weddingDetailsSchema = z.object({
   preferredCountry: z.string().optional(),
 });
 
+const domainSettingsSchema = z.object({
+  subdomain: z
+    .string()
+    .min(3, "Subdomain must be at least 3 characters")
+    .max(63, "Subdomain must be at most 63 characters")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Subdomain can only contain lowercase letters, numbers, and hyphens"
+    ),
+  customDomain: z.string().optional(),
+});
+
 type WeddingDetailsFormData = z.infer<typeof weddingDetailsSchema>;
+type DomainSettingsFormData = z.infer<typeof domainSettingsSchema>;
 
 export interface DomainSettings {
   subdomain: string;
@@ -95,6 +107,10 @@ export interface ApplicationWeddingDetailsSettingsProps {
   domainSettings: DomainSettings;
   onSave?: (data: WeddingDetailsFormData) => Promise<void>;
   isSaving?: boolean;
+  onSaveSubdomain?: (subdomain: string) => Promise<void>;
+  onSaveCustomDomain?: (customDomain: string) => Promise<void>;
+  onDeleteCustomDomain?: () => Promise<void>;
+  isSavingDomain?: boolean;
 }
 
 export function ApplicationWeddingDetailsSettings({
@@ -102,6 +118,10 @@ export function ApplicationWeddingDetailsSettings({
   domainSettings: initialDomainSettings,
   onSave,
   isSaving = false,
+  onSaveSubdomain,
+  onSaveCustomDomain,
+  onDeleteCustomDomain,
+  isSavingDomain = false,
 }: ApplicationWeddingDetailsSettingsProps) {
   const form = useForm<WeddingDetailsFormData>({
     resolver: zodResolver(weddingDetailsSchema),
@@ -125,26 +145,41 @@ export function ApplicationWeddingDetailsSettings({
     mode: "onChange",
   });
 
+  const domainForm = useForm<DomainSettingsFormData>({
+    resolver: zodResolver(domainSettingsSchema),
+    defaultValues: {
+      subdomain: initialDomainSettings.subdomain,
+      customDomain: "",
+    },
+    mode: "onChange",
+  });
+
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [domainError, setDomainError] = useState<string | null>(null);
 
   const [domainSettings, setDomainSettings] = useState<DomainSettings>(
     initialDomainSettings
   );
-  const [savedDomainSettings, setSavedDomainSettings] =
-    useState<DomainSettings>(initialDomainSettings);
-  const [subdomainInput, setSubdomainInput] = useState(
-    initialDomainSettings.subdomain
-  );
-  const [customDomainInput, setCustomDomainInput] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [dnsTab, setDnsTab] = useState<"a-record" | "nameservers">("a-record");
   const [isVerifying, setIsVerifying] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  useEffect(() => {
+    setDomainSettings(initialDomainSettings);
+  }, [initialDomainSettings]);
+
+  useEffect(() => {
+    domainForm.reset({
+      subdomain: initialDomainSettings.subdomain,
+      customDomain: "",
+    });
+  }, [initialDomainSettings.subdomain, domainForm]);
+
   const hasChanges = form.formState.isDirty;
-  const hasDomainChanges = subdomainInput !== savedDomainSettings.subdomain;
+  const hasDomainChanges = domainForm.formState.isDirty;
 
   const handleSave = form.handleSubmit(async (data) => {
     if (onSave) {
@@ -172,33 +207,66 @@ export function ApplicationWeddingDetailsSettings({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleSaveSubdomain = async () => {
+  const handleSaveSubdomain = domainForm.handleSubmit(async (data) => {
+    if (!onSaveSubdomain) return;
+    setDomainError(null);
+    domainForm.clearErrors("subdomain");
     setSaveStatus("saving");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setDomainSettings((prev) => ({ ...prev, subdomain: subdomainInput }));
-    setSavedDomainSettings((prev) => ({ ...prev, subdomain: subdomainInput }));
-    setSaveStatus("saved");
-    setTimeout(() => setSaveStatus("idle"), 3000);
-  };
+    try {
+      await onSaveSubdomain(data.subdomain);
+      setDomainSettings((prev) => ({ ...prev, subdomain: data.subdomain }));
+      domainForm.reset({ ...data, customDomain: "" });
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    } catch (error) {
+      setSaveStatus("error");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save subdomain";
+      setDomainError(errorMessage);
+      domainForm.setError("subdomain", {
+        type: "server",
+        message: errorMessage,
+      });
+      setTimeout(() => {
+        setSaveStatus("idle");
+        setDomainError(null);
+      }, 5000);
+    }
+  });
 
-  const handleSaveCustomDomain = async () => {
-    if (!customDomainInput.trim()) return;
+  const handleSaveCustomDomain = domainForm.handleSubmit(async (data) => {
+    if (!data.customDomain?.trim() || !onSaveCustomDomain) return;
+    setDomainError(null);
+    domainForm.clearErrors("customDomain");
     setSaveStatus("saving");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setDomainSettings((prev) => ({
-      ...prev,
-      customDomain: customDomainInput.trim(),
-      domainVerified: false,
-    }));
-    setSavedDomainSettings((prev) => ({
-      ...prev,
-      customDomain: customDomainInput.trim(),
-      domainVerified: false,
-    }));
-    setCustomDomainInput("");
-    setSaveStatus("saved");
-    setTimeout(() => setSaveStatus("idle"), 3000);
-  };
+    try {
+      await onSaveCustomDomain(data.customDomain.trim());
+      setDomainSettings((prev) => ({
+        ...prev,
+        customDomain: data.customDomain!.trim(),
+        domainVerified: false,
+      }));
+      domainForm.reset({
+        subdomain: domainForm.getValues("subdomain"),
+        customDomain: "",
+      });
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    } catch (error) {
+      setSaveStatus("error");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save custom domain";
+      setDomainError(errorMessage);
+      domainForm.setError("customDomain", {
+        type: "server",
+        message: errorMessage,
+      });
+      setTimeout(() => {
+        setSaveStatus("idle");
+        setDomainError(null);
+      }, 5000);
+    }
+  });
 
   const handleVerifyDomain = async () => {
     setIsVerifying(true);
@@ -207,20 +275,31 @@ export function ApplicationWeddingDetailsSettings({
   };
 
   const handleDeleteDomain = async () => {
+    if (!onDeleteCustomDomain) return;
+    setDomainError(null);
     setSaveStatus("saving");
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setDomainSettings((prev) => ({
-      ...prev,
-      customDomain: null,
-      domainVerified: false,
-    }));
-    setSavedDomainSettings((prev) => ({
-      ...prev,
-      customDomain: null,
-      domainVerified: false,
-    }));
-    setShowDeleteConfirm(false);
-    setSaveStatus("idle");
+    try {
+      await onDeleteCustomDomain();
+      setDomainSettings((prev) => ({
+        ...prev,
+        customDomain: null,
+        domainVerified: false,
+      }));
+      setShowDeleteConfirm(false);
+      setSaveStatus("idle");
+    } catch (error) {
+      setSaveStatus("error");
+      setDomainError(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete custom domain"
+      );
+      setShowDeleteConfirm(false);
+      setTimeout(() => {
+        setSaveStatus("idle");
+        setDomainError(null);
+      }, 5000);
+    }
   };
 
   const generateDomainSuggestions = () => {
@@ -710,518 +789,586 @@ export function ApplicationWeddingDetailsSettings({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Free Subdomain */}
-          <div className="space-y-3">
-            <Label htmlFor="subdomain">Your Free Subdomain</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Input
-                  id="subdomain"
-                  value={subdomainInput}
-                  onChange={(e) =>
-                    setSubdomainInput(
-                      e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")
-                    )
-                  }
-                  placeholder="your-names"
-                  className="pr-32"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                  .marriednext.com
-                </span>
-              </div>
-              <Button
-                onClick={handleSaveSubdomain}
-                disabled={!hasDomainChanges || saveStatus === "saving"}
-                size="default"
-              >
-                {saveStatus === "saving" ? "Saving..." : "Save"}
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={`https://${domainSettings.subdomain}.marriednext.com`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline flex items-center gap-1"
-              >
-                https://{domainSettings.subdomain}.marriednext.com
-                <ExternalLink className="h-3 w-3" />
-              </a>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 px-2"
-                onClick={() =>
-                  copyToClipboard(
-                    `https://${domainSettings.subdomain}.marriednext.com`,
-                    "subdomain"
-                  )
-                }
-              >
-                {copiedField === "subdomain" ? (
-                  <Check className="h-3 w-3 text-green-600" />
-                ) : (
-                  <Copy className="h-3 w-3" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-6">
-            {/* Custom Domain - Upsell or Configuration */}
-            {!domainSettings.hasCustomDomainUpgrade ? (
-              /* Upsell Card - Updated copy to clarify domain not included */
-              <div className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 shrink-0">
-                    <Crown className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-serif text-lg font-semibold text-foreground">
-                      Connect Your Own Domain
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1 mb-4">
-                      Already own a domain like{" "}
-                      <span className="font-medium text-foreground">
-                        {domainSuggestions.first}
-                      </span>{" "}
-                      or{" "}
-                      <span className="font-medium text-foreground">
-                        {domainSuggestions.second}
-                      </span>
-                      ? Connect it to your Married Next website.
-                    </p>
-                    <ul className="text-sm text-muted-foreground space-y-2 mb-4">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                        Connect any domain you already own
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                        Free SSL certificate included
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                        Keep your subdomain as a backup
-                      </li>
-                    </ul>
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border mb-4">
-                      <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          Note:
-                        </span>{" "}
-                        This upgrade allows you to connect a domain you already
-                        own. The domain itself is not included — you'll need to
-                        purchase one from a registrar like{" "}
-                        <a
-                          href="https://namecheap.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Namecheap
-                        </a>
-                        ,{" "}
-                        <a
-                          href="https://domains.google"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Google Domains
-                        </a>
-                        , or{" "}
-                        <a
-                          href="https://porkbun.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Porkbun
-                        </a>
-                        .
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* Custom Domain Configuration */
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-foreground">
-                      Custom Domain
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Connect your own domain to your wedding website
-                    </p>
-                  </div>
-                  {domainSettings.customDomain &&
-                    domainSettings.domainVerified && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-700 text-xs font-medium">
-                        <CheckCircle2 className="h-3 w-3" />
-                        Connected
-                      </span>
-                    )}
-                </div>
-
-                {/* Info note for upgraded users */}
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border">
-                  <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground">
-                    Enter a domain you own below. Don't have one yet? Purchase
-                    from{" "}
-                    <a
-                      href="https://namecheap.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      Namecheap
-                    </a>
-                    ,{" "}
-                    <a
-                      href="https://domains.google"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      Google Domains
-                    </a>
-                    , or{" "}
-                    <a
-                      href="https://porkbun.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      Porkbun
-                    </a>
-                    .
-                  </p>
-                </div>
-
-                {!domainSettings.customDomain ? (
-                  /* Add Domain Form */
-                  <div className="space-y-3">
+          <Form {...domainForm}>
+            {/* Free Subdomain */}
+            <div className="space-y-3">
+              <FormField
+                control={domainForm.control}
+                name="subdomain"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Free Subdomain</FormLabel>
                     <div className="flex gap-2">
-                      <Input
-                        value={customDomainInput}
-                        onChange={(e) =>
-                          setCustomDomainInput(e.target.value.toLowerCase())
-                        }
-                        placeholder="yourdomain.com"
-                        className="flex-1"
-                      />
+                      <div className="relative flex-1">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value
+                                .toLowerCase()
+                                .replace(/[^a-z0-9-]/g, "");
+                              field.onChange(value);
+                            }}
+                            placeholder="your-names"
+                            className="pr-32"
+                          />
+                        </FormControl>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                          .marriednext.com
+                        </span>
+                      </div>
                       <Button
-                        onClick={handleSaveCustomDomain}
-                        disabled={!customDomainInput.trim()}
+                        onClick={handleSaveSubdomain}
+                        disabled={!hasDomainChanges || isSavingDomain}
+                        size="default"
+                        type="button"
                       >
-                        Add Domain
+                        {isSavingDomain ? "Saving..." : "Save"}
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Enter the domain you want to connect (without https://)
-                    </p>
-                  </div>
-                ) : (
-                  /* Domain Configuration UI */
-                  <div className="space-y-4">
-                    {/* Current Domain Display */}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
-                      <div className="flex items-center gap-3">
-                        <Globe className="h-5 w-5 text-muted-foreground" />
-                        <div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {domainError && saveStatus === "error" && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+                  <p className="text-sm text-destructive">{domainError}</p>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <a
+                  href={`https://${domainSettings.subdomain}.marriednext.com`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                >
+                  https://{domainSettings.subdomain}.marriednext.com
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2"
+                  onClick={() =>
+                    copyToClipboard(
+                      `https://${domainSettings.subdomain}.marriednext.com`,
+                      "subdomain"
+                    )
+                  }
+                >
+                  {copiedField === "subdomain" ? (
+                    <Check className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-6">
+              {/* Custom Domain - Upsell or Configuration */}
+              {!domainSettings.hasCustomDomainUpgrade ? (
+                /* Upsell Card - Updated copy to clarify domain not included */
+                <div className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 shrink-0">
+                      <Crown className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-serif text-lg font-semibold text-foreground">
+                        Connect Your Own Domain
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1 mb-4">
+                        Already own a domain like{" "}
+                        <span className="font-medium text-foreground">
+                          {domainSuggestions.first}
+                        </span>{" "}
+                        or{" "}
+                        <span className="font-medium text-foreground">
+                          {domainSuggestions.second}
+                        </span>
+                        ? Connect it to your Married Next website.
+                      </p>
+                      <ul className="text-sm text-muted-foreground space-y-2 mb-4">
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                          Connect any domain you already own
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                          Free SSL certificate included
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                          Keep your subdomain as a backup
+                        </li>
+                      </ul>
+                      <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border mb-4">
+                        <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">
+                            Note:
+                          </span>{" "}
+                          This upgrade allows you to connect a domain you
+                          already own. The domain itself is not included —
+                          you'll need to purchase one from a registrar like{" "}
                           <a
-                            href={`https://${domainSettings.customDomain}`}
+                            href="https://namecheap.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-medium text-foreground hover:text-primary flex items-center gap-1"
+                            className="text-primary hover:underline"
                           >
-                            {domainSettings.customDomain}
-                            <ExternalLink className="h-3 w-3" />
+                            Namecheap
                           </a>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {!domainSettings.domainVerified && (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-medium">
-                            <AlertCircle className="h-3 w-3" />
-                            Not Connected
-                          </span>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={handleVerifyDomain}
-                          disabled={isVerifying}
-                        >
-                          <RefreshCw
-                            className={`h-4 w-4 ${
-                              isVerifying ? "animate-spin" : ""
-                            }`}
-                          />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* DNS Configuration (show when not verified) */}
-                    {!domainSettings.domainVerified && (
-                      <div className="space-y-4">
-                        {/* Warning Banner */}
-                        <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                          <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                          <div>
-                            <p className="font-medium text-amber-800">
-                              Your domain isn't connected yet
-                            </p>
-                            <p className="text-sm text-amber-700 mt-1">
-                              Update your DNS settings at your domain registrar
-                              to complete the connection.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* DNS Tabs */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <Button
-                            variant={
-                              dnsTab === "a-record" ? "default" : "outline"
-                            }
-                            onClick={() => setDnsTab("a-record")}
-                            className="justify-center"
+                          ,{" "}
+                          <a
+                            href="https://domains.google"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
                           >
-                            DNS Records
-                          </Button>
-                          <Button
-                            variant={
-                              dnsTab === "nameservers" ? "default" : "outline"
-                            }
-                            onClick={() => setDnsTab("nameservers")}
-                            className="justify-center"
+                            Google Domains
+                          </a>
+                          , or{" "}
+                          <a
+                            href="https://porkbun.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
                           >
-                            Nameservers
-                          </Button>
-                        </div>
-
-                        {dnsTab === "a-record" && (
-                          <div className="rounded-lg border border-border overflow-hidden">
-                            <div className="px-4 py-3 bg-muted/50 border-b border-border flex items-center gap-2">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-700 border border-green-500/20">
-                                Recommended
-                              </span>
-                              <span className="text-sm font-medium">
-                                A Record
-                              </span>
-                            </div>
-                            <div className="p-4">
-                              <p className="text-sm text-muted-foreground mb-4">
-                                Add this record at your DNS provider to point
-                                your domain to Married Next.
-                              </p>
-                              <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                  <thead>
-                                    <tr className="border-b border-border">
-                                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">
-                                        Type
-                                      </th>
-                                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">
-                                        Name
-                                      </th>
-                                      <th className="text-left py-2 px-3 font-medium text-muted-foreground">
-                                        Value
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td className="py-2 px-3">
-                                        <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
-                                          A
-                                        </code>
-                                      </td>
-                                      <td className="py-2 px-3">
-                                        <div className="flex items-center gap-2">
-                                          <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
-                                            @
-                                          </code>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-6 px-2"
-                                            onClick={() =>
-                                              copyToClipboard("@", "name")
-                                            }
-                                          >
-                                            {copiedField === "name" ? (
-                                              <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                              <Copy className="h-3 w-3" />
-                                            )}
-                                          </Button>
-                                        </div>
-                                      </td>
-                                      <td className="py-2 px-3">
-                                        <div className="flex items-center gap-2">
-                                          <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
-                                            216.198.79.1
-                                          </code>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-6 px-2"
-                                            onClick={() =>
-                                              copyToClipboard(
-                                                "216.198.79.1",
-                                                "ip"
-                                              )
-                                            }
-                                          >
-                                            {copiedField === "ip" ? (
-                                              <Check className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                              <Copy className="h-3 w-3" />
-                                            )}
-                                          </Button>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {dnsTab === "nameservers" && (
-                          <div className="rounded-lg border border-border overflow-hidden">
-                            <div className="px-4 py-3 bg-muted/50 border-b border-border">
-                              <span className="text-sm font-medium">
-                                Nameservers
-                              </span>
-                            </div>
-                            <div className="p-4 space-y-4">
-                              <p className="text-sm text-muted-foreground">
-                                Update your domain's nameservers to enable
-                                Vercel DNS.
-                              </p>
-                              <div className="space-y-2">
-                                {[
-                                  "ns1.vercel-dns.com",
-                                  "ns2.vercel-dns.com",
-                                ].map((ns, i) => (
-                                  <div
-                                    key={ns}
-                                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                                  >
-                                    <code className="text-sm font-mono">
-                                      {ns}
-                                    </code>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-6 px-2"
-                                      onClick={() =>
-                                        copyToClipboard(ns, `ns${i}`)
-                                      }
-                                    >
-                                      {copiedField === `ns${i}` ? (
-                                        <Check className="h-3 w-3 text-green-600" />
-                                      ) : (
-                                        <Copy className="h-3 w-3" />
-                                      )}
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-                                <p className="text-xs text-blue-700">
-                                  Changing nameservers transfers DNS management.
-                                  You may need to recreate existing records.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <Button
-                            onClick={handleVerifyDomain}
-                            disabled={isVerifying}
-                            className="flex-1 sm:flex-none"
-                          >
-                            {isVerifying ? (
-                              <>
-                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                Checking...
-                              </>
-                            ) : (
-                              "Check Domain Status"
-                            )}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowDeleteConfirm(true)}
-                            className="flex-1 sm:flex-none text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Remove Domain
-                          </Button>
-                        </div>
-
-                        <p className="text-xs text-muted-foreground">
-                          DNS changes can take up to 48 hours to propagate
-                          worldwide.
+                            Porkbun
+                          </a>
+                          .
                         </p>
                       </div>
-                    )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Custom Domain Configuration */
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-foreground">
+                        Custom Domain
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Connect your own domain to your wedding website
+                      </p>
+                    </div>
+                    {domainSettings.customDomain &&
+                      domainSettings.domainVerified && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-700 text-xs font-medium">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Connected
+                        </span>
+                      )}
+                  </div>
 
-                    {/* Delete Confirmation Dialog */}
-                    {showDeleteConfirm && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div
-                          className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-                          onClick={() => setShowDeleteConfirm(false)}
-                        />
-                        <div className="relative z-10 w-full max-w-md p-6 bg-card border border-border rounded-xl shadow-lg">
-                          <h3 className="font-serif text-xl font-semibold mb-2">
-                            Remove custom domain?
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-6">
-                            This will disconnect{" "}
-                            <span className="font-medium">
-                              {domainSettings.customDomain}
-                            </span>{" "}
-                            from your wedding website. Your site will still be
-                            accessible via your subdomain.
+                  {/* Info note for upgraded users */}
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                    <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-xs text-muted-foreground">
+                      Enter a domain you own below. Don't have one yet? Purchase
+                      from{" "}
+                      <a
+                        href="https://namecheap.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Namecheap
+                      </a>
+                      ,{" "}
+                      <a
+                        href="https://domains.google"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Google Domains
+                      </a>
+                      , or{" "}
+                      <a
+                        href="https://porkbun.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Porkbun
+                      </a>
+                      .
+                    </p>
+                  </div>
+
+                  {!domainSettings.customDomain ? (
+                    /* Add Domain Form */
+                    <FormField
+                      control={domainForm.control}
+                      name="customDomain"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="space-y-3">
+                            <div className="flex gap-2">
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.value.toLowerCase();
+                                    field.onChange(value);
+                                  }}
+                                  placeholder="yourdomain.com"
+                                  className="flex-1"
+                                />
+                              </FormControl>
+                              <Button
+                                onClick={handleSaveCustomDomain}
+                                disabled={
+                                  !field.value?.trim() || isSavingDomain
+                                }
+                                type="button"
+                              >
+                                {isSavingDomain ? "Saving..." : "Add Domain"}
+                              </Button>
+                            </div>
+                            {domainError && saveStatus === "error" && (
+                              <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                                <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+                                <p className="text-sm text-destructive">
+                                  {domainError}
+                                </p>
+                              </div>
+                            )}
+                            <FormDescription>
+                              Enter the domain you want to connect (without
+                              https://)
+                            </FormDescription>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    /* Domain Configuration UI */
+                    <div className="space-y-4">
+                      {domainError && saveStatus === "error" && (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                          <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+                          <p className="text-sm text-destructive">
+                            {domainError}
                           </p>
-                          <div className="flex justify-end gap-3">
-                            <Button
-                              variant="outline"
-                              onClick={() => setShowDeleteConfirm(false)}
+                        </div>
+                      )}
+                      {/* Current Domain Display */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
+                        <div className="flex items-center gap-3">
+                          <Globe className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <a
+                              href={`https://${domainSettings.customDomain}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-medium text-foreground hover:text-primary flex items-center gap-1"
                             >
-                              Cancel
+                              {domainSettings.customDomain}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {!domainSettings.domainVerified && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-medium">
+                              <AlertCircle className="h-3 w-3" />
+                              Not Connected
+                            </span>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleVerifyDomain}
+                            disabled={isVerifying}
+                          >
+                            <RefreshCw
+                              className={`h-4 w-4 ${
+                                isVerifying ? "animate-spin" : ""
+                              }`}
+                            />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* DNS Configuration (show when not verified) */}
+                      {!domainSettings.domainVerified && (
+                        <div className="space-y-4">
+                          {/* Warning Banner */}
+                          <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-amber-800">
+                                Your domain isn't connected yet
+                              </p>
+                              <p className="text-sm text-amber-700 mt-1">
+                                Update your DNS settings at your domain
+                                registrar to complete the connection.
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* DNS Tabs */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              variant={
+                                dnsTab === "a-record" ? "default" : "outline"
+                              }
+                              onClick={() => setDnsTab("a-record")}
+                              className="justify-center"
+                            >
+                              DNS Records
                             </Button>
                             <Button
-                              variant="destructive"
-                              onClick={handleDeleteDomain}
+                              variant={
+                                dnsTab === "nameservers" ? "default" : "outline"
+                              }
+                              onClick={() => setDnsTab("nameservers")}
+                              className="justify-center"
                             >
+                              Nameservers
+                            </Button>
+                          </div>
+
+                          {dnsTab === "a-record" && (
+                            <div className="rounded-lg border border-border overflow-hidden">
+                              <div className="px-4 py-3 bg-muted/50 border-b border-border flex items-center gap-2">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-700 border border-green-500/20">
+                                  Recommended
+                                </span>
+                                <span className="text-sm font-medium">
+                                  A Record
+                                </span>
+                              </div>
+                              <div className="p-4">
+                                <p className="text-sm text-muted-foreground mb-4">
+                                  Add this record at your DNS provider to point
+                                  your domain to Married Next.
+                                </p>
+                                <div className="overflow-x-auto">
+                                  <table className="w-full text-sm">
+                                    <thead>
+                                      <tr className="border-b border-border">
+                                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">
+                                          Type
+                                        </th>
+                                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">
+                                          Name
+                                        </th>
+                                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">
+                                          Value
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td className="py-2 px-3">
+                                          <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
+                                            A
+                                          </code>
+                                        </td>
+                                        <td className="py-2 px-3">
+                                          <div className="flex items-center gap-2">
+                                            <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
+                                              @
+                                            </code>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 px-2"
+                                              onClick={() =>
+                                                copyToClipboard("@", "name")
+                                              }
+                                            >
+                                              {copiedField === "name" ? (
+                                                <Check className="h-3 w-3 text-green-600" />
+                                              ) : (
+                                                <Copy className="h-3 w-3" />
+                                              )}
+                                            </Button>
+                                          </div>
+                                        </td>
+                                        <td className="py-2 px-3">
+                                          <div className="flex items-center gap-2">
+                                            <code className="px-2 py-1 rounded bg-muted text-xs font-mono">
+                                              216.198.79.1
+                                            </code>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 px-2"
+                                              onClick={() =>
+                                                copyToClipboard(
+                                                  "216.198.79.1",
+                                                  "ip"
+                                                )
+                                              }
+                                            >
+                                              {copiedField === "ip" ? (
+                                                <Check className="h-3 w-3 text-green-600" />
+                                              ) : (
+                                                <Copy className="h-3 w-3" />
+                                              )}
+                                            </Button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {dnsTab === "nameservers" && (
+                            <div className="rounded-lg border border-border overflow-hidden">
+                              <div className="px-4 py-3 bg-muted/50 border-b border-border">
+                                <span className="text-sm font-medium">
+                                  Nameservers
+                                </span>
+                              </div>
+                              <div className="p-4 space-y-4">
+                                <p className="text-sm text-muted-foreground">
+                                  Update your domain's nameservers to enable
+                                  Vercel DNS.
+                                </p>
+                                <div className="space-y-2">
+                                  {[
+                                    "ns1.vercel-dns.com",
+                                    "ns2.vercel-dns.com",
+                                  ].map((ns, i) => (
+                                    <div
+                                      key={ns}
+                                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                                    >
+                                      <code className="text-sm font-mono">
+                                        {ns}
+                                      </code>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 px-2"
+                                        onClick={() =>
+                                          copyToClipboard(ns, `ns${i}`)
+                                        }
+                                      >
+                                        {copiedField === `ns${i}` ? (
+                                          <Check className="h-3 w-3 text-green-600" />
+                                        ) : (
+                                          <Copy className="h-3 w-3" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                  <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                                  <p className="text-xs text-blue-700">
+                                    Changing nameservers transfers DNS
+                                    management. You may need to recreate
+                                    existing records.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <Button
+                              onClick={handleVerifyDomain}
+                              disabled={isVerifying}
+                              className="flex-1 sm:flex-none"
+                            >
+                              {isVerifying ? (
+                                <>
+                                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                  Checking...
+                                </>
+                              ) : (
+                                "Check Domain Status"
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowDeleteConfirm(true)}
+                              className="flex-1 sm:flex-none text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
                               Remove Domain
                             </Button>
                           </div>
+
+                          <p className="text-xs text-muted-foreground">
+                            DNS changes can take up to 48 hours to propagate
+                            worldwide.
+                          </p>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                      )}
+
+                      {/* Delete Confirmation Dialog */}
+                      {showDeleteConfirm && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                          <div
+                            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+                            onClick={() => setShowDeleteConfirm(false)}
+                          />
+                          <div className="relative z-10 w-full max-w-md p-6 bg-card border border-border rounded-xl shadow-lg">
+                            <h3 className="font-serif text-xl font-semibold mb-2">
+                              Remove custom domain?
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-6">
+                              This will disconnect{" "}
+                              <span className="font-medium">
+                                {domainSettings.customDomain}
+                              </span>{" "}
+                              from your wedding website. Your site will still be
+                              accessible via your subdomain.
+                            </p>
+                            {domainError && saveStatus === "error" && (
+                              <div className="mb-4 flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                                <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+                                <p className="text-sm text-destructive">
+                                  {domainError}
+                                </p>
+                              </div>
+                            )}
+                            <div className="flex justify-end gap-3">
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setShowDeleteConfirm(false);
+                                  setDomainError(null);
+                                }}
+                                disabled={isSavingDomain}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                onClick={handleDeleteDomain}
+                                disabled={isSavingDomain}
+                              >
+                                {isSavingDomain
+                                  ? "Removing..."
+                                  : "Remove Domain"}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Form>
         </CardContent>
       </Card>
     </div>

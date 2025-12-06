@@ -168,6 +168,24 @@ async function updateSettings(data: WeddingDetailsFormData): Promise<void> {
   }
 }
 
+async function updateDomainSettings(data: {
+  subdomain?: string;
+  customDomain?: string | null;
+}): Promise<void> {
+  const res = await fetch("/api/v2/engaged/domain", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to update domain settings");
+  }
+}
+
 export default function SettingsPage() {
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -182,6 +200,33 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
   });
+
+  const updateSubdomainMutation = useMutation({
+    mutationFn: (subdomain: string) => updateDomainSettings({ subdomain }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+  });
+
+  const updateCustomDomainMutation = useMutation({
+    mutationFn: (customDomain: string) =>
+      updateDomainSettings({ customDomain }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+  });
+
+  const deleteCustomDomainMutation = useMutation({
+    mutationFn: () => updateDomainSettings({ customDomain: null }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+  });
+
+  const isSavingDomain =
+    updateSubdomainMutation.isPending ||
+    updateCustomDomainMutation.isPending ||
+    deleteCustomDomainMutation.isPending;
 
   const userData = data ? transformToUserData(data) : undefined;
   const weddingData = data ? transformToWeddingData(data) : undefined;
@@ -218,6 +263,10 @@ export default function SettingsPage() {
         domainSettings={domainSettings!}
         onSave={updateSettingsMutation.mutateAsync}
         isSaving={updateSettingsMutation.isPending}
+        onSaveSubdomain={updateSubdomainMutation.mutateAsync}
+        onSaveCustomDomain={updateCustomDomainMutation.mutateAsync}
+        onDeleteCustomDomain={deleteCustomDomainMutation.mutateAsync}
+        isSavingDomain={isSavingDomain}
       />
     </ApplicationDashboardLayout>
   );
