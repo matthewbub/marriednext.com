@@ -123,40 +123,6 @@ export function ApplicationDashboardOverview({
       ? `${data.coupleNames.nameA} & ${data.coupleNames.nameB}`
       : "");
 
-  const stats = [
-    {
-      name: "Total Invitations",
-      value: data?.totalInvitations ?? 0,
-      subtext: "to send out",
-      icon: Send,
-    },
-    {
-      name: "Total Guests",
-      value: data?.totalGuests ?? 0,
-      subtext: "invited",
-      icon: Users,
-    },
-    {
-      name: "RSVPs Received",
-      value: data?.respondedGuests ?? 0,
-      subtext: `${data?.responseRate ?? 0}% response rate`,
-      icon: Mail,
-    },
-    {
-      name: "Attending",
-      value: data?.attendingGuests ?? 0,
-      subtext: `of ${data?.respondedGuests ?? 0} responses`,
-      icon: CheckCircle2,
-      color: "text-accent",
-    },
-    {
-      name: "Declined",
-      value: data?.declinedGuests ?? 0,
-      subtext: `of ${data?.respondedGuests ?? 0} responses`,
-      icon: XCircle,
-      color: "text-destructive",
-    },
-  ];
 
   const iframeUrl = data?.subdomain ? `/tenant/${data?.subdomain}` : null;
   console.log("iframeUrl", iframeUrl);
@@ -182,34 +148,57 @@ export function ApplicationDashboardOverview({
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {stats.map((stat) => (
-          <Card key={stat.name}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <stat.icon
-                  className={`h-5 w-5 ${stat.color || "text-muted-foreground"}`}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {stat.subtext}
-                </span>
-              </div>
-              <div className="mt-4">
-                {isLoading ? (
-                  <span className="inline-block h-9 w-16 bg-muted animate-pulse rounded" />
-                ) : (
-                  <p className="text-3xl font-semibold text-foreground">
-                    {stat.value}
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground mt-1">
-                  {stat.name}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-border">
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Invitations</p>
+              <p className="text-2xl font-semibold mt-1">
+                {isLoading ? "-" : data?.totalInvitations ?? 0}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Guests</p>
+              <p className="text-2xl font-semibold mt-1">
+                {isLoading ? "-" : data?.totalGuests ?? 0}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Attending</p>
+              <p className="text-2xl font-semibold text-green-600 mt-1">
+                {isLoading ? "-" : data?.attendingGuests ?? 0}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Declined</p>
+              <p className="text-2xl font-semibold text-red-500 mt-1">
+                {isLoading ? "-" : data?.declinedGuests ?? 0}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Awaiting</p>
+              <p className="text-2xl font-semibold text-amber-600 mt-1">
+                {isLoading ? "-" : data?.pendingGuests ?? 0}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Response Rate</p>
+              <p className="text-2xl font-semibold mt-1">
+                {isLoading
+                  ? "-"
+                  : data?.totalGuests && data.totalGuests > 0
+                    ? Math.round(
+                        ((data.attendingGuests + data.declinedGuests) /
+                          data.totalGuests) *
+                          100
+                      )
+                    : 0}
+                %
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">

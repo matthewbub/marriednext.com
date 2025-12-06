@@ -540,36 +540,32 @@ export function ApplicationSeatingPlannerCore({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total Tables</p>
-            <p className="text-2xl font-semibold mt-1">{tables.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total Seats</p>
-            <p className="text-2xl font-semibold mt-1">{totalSeats}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Guests Seated</p>
-            <p className="text-2xl font-semibold mt-1 text-accent">
-              {seatedCount}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Unseated</p>
-            <p className="text-2xl font-semibold mt-1 text-amber-600">
-              {unseatedCount}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-border">
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Tables</p>
+              <p className="text-2xl font-semibold mt-1">{tables.length}</p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Seats</p>
+              <p className="text-2xl font-semibold mt-1">{totalSeats}</p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Guests Seated</p>
+              <p className="text-2xl font-semibold text-green-600 mt-1">
+                {seatedCount}
+              </p>
+            </div>
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Unseated</p>
+              <p className="text-2xl font-semibold text-amber-600 mt-1">
+                {unseatedCount}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Floor Plan */}
       <Card>

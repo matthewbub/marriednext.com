@@ -397,89 +397,38 @@ export function ApplicationGuestListManager({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Total Invitations
-                </p>
-                <p className="text-2xl font-semibold">{totalInvitations}</p>
-              </div>
-              <Send className="h-8 w-8 text-muted-foreground/50" />
+      <Card>
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-border">
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Invitations</p>
+              <p className="text-2xl font-semibold mt-1">{totalInvitations}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Guests</p>
-                <p className="text-2xl font-semibold">{totalGuests}</p>
-              </div>
-              <Users className="h-8 w-8 text-muted-foreground/50" />
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Guests</p>
+              <p className="text-2xl font-semibold mt-1">{totalGuests}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Confirmed</p>
-                <p className="text-2xl font-semibold text-green-600">
-                  {attendingGuests}
-                </p>
-              </div>
-              <Check className="h-8 w-8 text-green-600/50" />
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Attending</p>
+              <p className="text-2xl font-semibold text-green-600 mt-1">{attendingGuests}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Declined</p>
-                <p className="text-2xl font-semibold text-red-500">
-                  {declinedGuests}
-                </p>
-              </div>
-              <X className="h-8 w-8 text-red-500/50" />
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Declined</p>
+              <p className="text-2xl font-semibold text-red-500 mt-1">{declinedGuests}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Not Responded</p>
-                <p className="text-2xl font-semibold text-amber-600">
-                  {pendingGuests}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-amber-600/50" />
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Awaiting</p>
+              <p className="text-2xl font-semibold text-amber-600 mt-1">{pendingGuests}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Response Rate</p>
-                <p className="text-2xl font-semibold">
-                  {totalInvitations > 0
-                    ? Math.round(
-                        (respondedInvitations / totalInvitations) * 100
-                      )
-                    : 0}
-                  %
-                </p>
-              </div>
-              <Mail className="h-8 w-8 text-muted-foreground/50" />
+            <div className="flex-1 p-4 text-center">
+              <p className="text-sm text-muted-foreground">Response Rate</p>
+              <p className="text-2xl font-semibold mt-1">
+                {totalGuests > 0 ? Math.round(((attendingGuests + declinedGuests) / totalGuests) * 100) : 0}%
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
