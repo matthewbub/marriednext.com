@@ -76,7 +76,9 @@ export function AddInvitationDialog({
 
   const [addAnother, setAddAnother] = useState(false);
   const lastSubmittedGuestsRef = useRef<string[] | null>(null);
-  const lastInvitationTypeRef = useRef<"single" | "plusone" | "group">("single");
+  const lastInvitationTypeRef = useRef<"single" | "plusone" | "group">(
+    "single"
+  );
   const wasSubmittingRef = useRef(false);
 
   const form = useForm<AddInvitationFormData>({
@@ -107,14 +109,19 @@ export function AddInvitationDialog({
   }, [isOpen, invitationType, form]);
 
   useEffect(() => {
-    if (wasSubmittingRef.current && !isSubmitting && lastSubmittedGuestsRef.current) {
+    if (
+      wasSubmittingRef.current &&
+      !isSubmitting &&
+      lastSubmittedGuestsRef.current
+    ) {
       const guests = lastSubmittedGuestsRef.current;
-      const guestNamesText = guests.length === 1 
-        ? guests[0]
-        : guests.length === 2
-        ? `${guests[0]} and ${guests[1]}`
-        : `${guests[0]} and ${guests.length - 1} others`;
-      
+      const guestNamesText =
+        guests.length === 1
+          ? guests[0]
+          : guests.length === 2
+          ? `${guests[0]} and ${guests[1]}`
+          : `${guests[0]} and ${guests.length - 1} others`;
+
       toast.success("Invitation added", {
         description: guestNamesText,
       });
@@ -162,9 +169,7 @@ export function AddInvitationDialog({
       guests,
       hasPlusOne: data.invitationType === "plusone",
       inviteGroupName:
-        data.invitationType === "group"
-          ? (data.groupName?.trim() || null)
-          : null,
+        data.invitationType === "group" ? data.groupName?.trim() || null : null,
       email: data.email?.trim() || null,
     };
 
@@ -204,13 +209,18 @@ export function AddInvitationDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 py-4"
+          >
             <div className="space-y-2">
               <FormLabel>Invitation Type</FormLabel>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   type="button"
-                  variant={watchedInvitationType === "single" ? "default" : "outline"}
+                  variant={
+                    watchedInvitationType === "single" ? "default" : "outline"
+                  }
                   className="flex-col h-auto py-3 gap-1"
                   onClick={() => setInvitationType("single")}
                 >
@@ -219,7 +229,9 @@ export function AddInvitationDialog({
                 </Button>
                 <Button
                   type="button"
-                  variant={watchedInvitationType === "plusone" ? "default" : "outline"}
+                  variant={
+                    watchedInvitationType === "plusone" ? "default" : "outline"
+                  }
                   className="flex-col h-auto py-3 gap-1"
                   onClick={() => setInvitationType("plusone")}
                 >
@@ -228,7 +240,9 @@ export function AddInvitationDialog({
                 </Button>
                 <Button
                   type="button"
-                  variant={watchedInvitationType === "group" ? "default" : "outline"}
+                  variant={
+                    watchedInvitationType === "group" ? "default" : "outline"
+                  }
                   className="flex-col h-auto py-3 gap-1"
                   onClick={() => setInvitationType("group")}
                 >
@@ -246,10 +260,7 @@ export function AddInvitationDialog({
                   <FormItem>
                     <FormLabel>Group Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., The Smith Family"
-                        {...field}
-                      />
+                      <Input placeholder="e.g., The Smith Family" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -269,10 +280,7 @@ export function AddInvitationDialog({
                       <FormItem>
                         <div className="flex items-center gap-2">
                           <FormControl>
-                            <Input
-                              placeholder="Full name"
-                              {...field}
-                            />
+                            <Input placeholder="Full name" {...field} />
                           </FormControl>
                           {fields.length > 1 && (
                             <Button
@@ -310,10 +318,7 @@ export function AddInvitationDialog({
                   <FormItem>
                     <FormLabel>Guest Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Full name"
-                        {...field}
-                      />
+                      <Input placeholder="Full name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -353,7 +358,10 @@ export function AddInvitationDialog({
             )}
 
             <div className="flex items-center justify-between space-x-2 py-2">
-              <Label htmlFor="add-another" className="text-sm font-normal cursor-pointer">
+              <Label
+                htmlFor="add-another"
+                className="text-sm font-normal cursor-pointer"
+              >
                 Add another invitation
               </Label>
               <Switch

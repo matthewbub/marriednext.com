@@ -84,25 +84,25 @@ const quickActions = [
   {
     name: "Edit Website",
     icon: Globe,
-    href: "/dashboard/website",
+    href: "/v2/engaged/website",
     color: "bg-primary/10 text-primary",
   },
   {
     name: "Add Guests",
     icon: Users,
-    href: "/dashboard/guests",
+    href: "/v2/engaged/guests",
     color: "bg-accent/10 text-accent",
   },
   {
     name: "Seating Chart",
     icon: Grid3X3,
-    href: "/dashboard/seating",
+    href: "/v2/engaged/seating",
     color: "bg-chart-2/20 text-chart-2",
   },
   {
     name: "Upload Photos",
     icon: Camera,
-    href: "/dashboard/memories",
+    href: "/v2/engaged/memories",
     color: "bg-chart-4/20 text-chart-4",
   },
 ];
@@ -137,11 +137,21 @@ export function ApplicationDashboardOverview({
             Here's what's happening with your wedding planning.
           </p>
         </div>
-        <Button className="sm:w-auto">
-          <Globe className="h-4 w-4 mr-2" />
-          View Live Site
-          <ExternalLink className="h-3 w-3 ml-2" />
-        </Button>
+        {data?.siteUrl ? (
+          <Button className="sm:w-auto" asChild>
+            <a href={data.siteUrl} target="_blank" rel="noopener noreferrer">
+              <Globe className="h-4 w-4 mr-2" />
+              View Live Site
+              <ExternalLink className="h-3 w-3 ml-2" />
+            </a>
+          </Button>
+        ) : (
+          <Button className="sm:w-auto" disabled>
+            <Globe className="h-4 w-4 mr-2" />
+            View Live Site
+            <ExternalLink className="h-3 w-3 ml-2" />
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -241,18 +251,23 @@ export function ApplicationDashboardOverview({
             </CardHeader>
             <CardContent>
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted border border-border">
-                {data?.siteUrl ? (
+                {isLoading ? (
+                  <Skeleton className="w-full h-full" />
+                ) : data?.siteUrl ? (
                   <iframe
                     src={iframeUrl || ""}
                     title="Wedding website preview"
                     className="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none border-0"
                   />
                 ) : (
-                  <img
-                    src="/placeholder-website-preview.jpg"
-                    alt="Wedding website preview"
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                    <div className="text-center p-8">
+                      <Globe className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                      <p className="text-sm text-muted-foreground">
+                        Website preview will appear here
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
@@ -397,8 +412,9 @@ export function ApplicationDashboardOverview({
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
               {quickActions.map((action) => (
-                <button
+                <LinkComponent
                   key={action.name}
+                  href={action.href}
                   className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
                 >
                   <div className={`p-2 rounded-lg ${action.color}`}>
@@ -407,7 +423,7 @@ export function ApplicationDashboardOverview({
                   <span className="text-sm font-medium text-foreground">
                     {action.name}
                   </span>
-                </button>
+                </LinkComponent>
               ))}
             </CardContent>
           </Card>
