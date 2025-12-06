@@ -36,7 +36,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../../components/ui/alert-dialog";
-import { MoreVertical, Check } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 
 export type Role = "spouse" | "family_member" | "wedding_planner";
 
@@ -289,29 +289,12 @@ export function ApplicationTeamPermissions({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="spouse">
-                          <div className="flex items-center justify-between w-full">
-                            <span>Spouse</span>
-                            {collaborator.role === "spouse" && (
-                              <Check className="h-4 w-4 ml-2" />
-                            )}
-                          </div>
-                        </SelectItem>
+                        <SelectItem value="spouse">Spouse</SelectItem>
                         <SelectItem value="family_member">
-                          <div className="flex items-center justify-between w-full">
-                            <span>Family Member</span>
-                            {collaborator.role === "family_member" && (
-                              <Check className="h-4 w-4 ml-2" />
-                            )}
-                          </div>
+                          Family Member
                         </SelectItem>
                         <SelectItem value="wedding_planner">
-                          <div className="flex items-center justify-between w-full">
-                            <span>Wedding Planner</span>
-                            {collaborator.role === "wedding_planner" && (
-                              <Check className="h-4 w-4 ml-2" />
-                            )}
-                          </div>
+                          Wedding Planner
                         </SelectItem>
                       </SelectContent>
                     </Select>
