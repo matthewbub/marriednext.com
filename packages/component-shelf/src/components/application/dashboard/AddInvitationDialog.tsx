@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import { Switch } from "../../../components/ui/switch";
 import { Label } from "../../../components/ui/label";
 import {
   Dialog,
@@ -13,6 +18,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../../components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../../components/ui/form";
 import { User, UserPlus, Users, Plus, Trash2 } from "lucide-react";
 import { useAddInvitationDialogStore } from "../../../stores/addInvitationDialogStore";
 
@@ -23,10 +36,30 @@ export type AddInvitationPayload = {
   email: string | null;
 };
 
+const addInvitationSchema = z.object({
+  invitationType: z.enum(["single", "plusone", "group"]),
+  groupName: z.string().optional(),
+  guestName: z.string().optional(),
+  guestNames: z.array(z.string()).optional(),
+  email: z
+    .union([z.string().email("Invalid email"), z.literal(""), z.null()])
+    .optional(),
+});
+
+type AddInvitationFormData = z.infer<typeof addInvitationSchema>;
+
 interface AddInvitationDialogProps {
   onSubmit?: (data: AddInvitationPayload) => void;
   isSubmitting?: boolean;
 }
+
+const defaultValues: AddInvitationFormData = {
+  invitationType: "single",
+  groupName: "",
+  guestName: "",
+  guestNames: [""],
+  email: "",
+};
 
 export function AddInvitationDialog({
   onSubmit,
@@ -38,43 +71,87 @@ export function AddInvitationDialog({
     openDialog,
     closeDialog,
     setInvitationType,
-    reset,
+    reset: resetStore,
   } = useAddInvitationDialogStore();
 
-  const [groupName, setGroupName] = useState("");
-  const [guestName, setGuestName] = useState("");
-  const [guestNames, setGuestNames] = useState<string[]>([""]);
-  const [email, setEmail] = useState("");
+  const [addAnother, setAddAnother] = useState(false);
+  const lastSubmittedGuestsRef = useRef<string[] | null>(null);
+  const lastInvitationTypeRef = useRef<"single" | "plusone" | "group">("single");
+  const wasSubmittingRef = useRef(false);
 
-  const addGuestName = () => {
-    setGuestNames([...guestNames, ""]);
-  };
+  const form = useForm<AddInvitationFormData>({
+    resolver: zodResolver(addInvitationSchema),
+    defaultValues: {
+      ...defaultValues,
+      invitationType,
+    },
+  });
 
-  const removeGuestName = (index: number) => {
-    setGuestNames(guestNames.filter((_, i) => i !== index));
-  };
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "guestNames",
+  });
 
-  const updateGuestName = (index: number, value: string) => {
-    const updated = [...guestNames];
-    updated[index] = value;
-    setGuestNames(updated);
-  };
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        ...defaultValues,
+        invitationType,
+      });
+    } else {
+      form.reset({
+        ...defaultValues,
+        invitationType: "single",
+      });
+    }
+  }, [isOpen, invitationType, form]);
+
+  useEffect(() => {
+    if (wasSubmittingRef.current && !isSubmitting && lastSubmittedGuestsRef.current) {
+      const guests = lastSubmittedGuestsRef.current;
+      const guestNamesText = guests.length === 1 
+        ? guests[0]
+        : guests.length === 2
+        ? `${guests[0]} and ${guests[1]}`
+        : `${guests[0]} and ${guests.length - 1} others`;
+      
+      toast.success("Invitation added", {
+        description: guestNamesText,
+      });
+
+      if (addAnother && !isOpen) {
+        const timer = setTimeout(() => {
+          form.reset({
+            ...defaultValues,
+            invitationType: lastInvitationTypeRef.current,
+          });
+          setInvitationType(lastInvitationTypeRef.current);
+          openDialog();
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+
+      lastSubmittedGuestsRef.current = null;
+    }
+    wasSubmittingRef.current = isSubmitting;
+  }, [isSubmitting, addAnother, isOpen, form, invitationType, openDialog]);
 
   const handleClose = () => {
     closeDialog();
-    setGroupName("");
-    setGuestName("");
-    setGuestNames([""]);
-    setEmail("");
-    reset();
+    resetStore();
+    setAddAnother(false);
+    form.reset({
+      ...defaultValues,
+      invitationType: "single",
+    });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (data: AddInvitationFormData) => {
     const guests =
-      invitationType === "group"
-        ? guestNames.filter((name) => name.trim() !== "")
-        : guestName.trim()
-        ? [guestName.trim()]
+      data.invitationType === "group"
+        ? (data.guestNames || []).filter((name) => name.trim() !== "")
+        : data.guestName?.trim()
+        ? [data.guestName.trim()]
         : [];
 
     if (guests.length === 0) {
@@ -83,18 +160,29 @@ export function AddInvitationDialog({
 
     const payload: AddInvitationPayload = {
       guests,
-      hasPlusOne: invitationType === "plusone",
+      hasPlusOne: data.invitationType === "plusone",
       inviteGroupName:
-        invitationType === "group" ? groupName.trim() || null : null,
-      email: email.trim() || null,
+        data.invitationType === "group"
+          ? (data.groupName?.trim() || null)
+          : null,
+      email: data.email?.trim() || null,
     };
 
     if (onSubmit) {
+      lastSubmittedGuestsRef.current = guests;
+      lastInvitationTypeRef.current = data.invitationType;
+      wasSubmittingRef.current = true;
       onSubmit(payload);
     } else {
       handleClose();
     }
   };
+
+  const watchedInvitationType = useWatch({
+    control: form.control,
+    name: "invitationType",
+    defaultValue: invitationType,
+  });
 
   return (
     <Dialog
@@ -115,135 +203,181 @@ export function AddInvitationDialog({
             of guests.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Invitation Type</Label>
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                type="button"
-                variant={invitationType === "single" ? "default" : "outline"}
-                className="flex-col h-auto py-3 gap-1"
-                onClick={() => setInvitationType("single")}
-              >
-                <User className="h-5 w-5" />
-                <span className="text-xs">Single</span>
-              </Button>
-              <Button
-                type="button"
-                variant={invitationType === "plusone" ? "default" : "outline"}
-                className="flex-col h-auto py-3 gap-1"
-                onClick={() => setInvitationType("plusone")}
-              >
-                <UserPlus className="h-5 w-5" />
-                <span className="text-xs">Guest +1</span>
-              </Button>
-              <Button
-                type="button"
-                variant={invitationType === "group" ? "default" : "outline"}
-                className="flex-col h-auto py-3 gap-1"
-                onClick={() => setInvitationType("group")}
-              >
-                <Users className="h-5 w-5" />
-                <span className="text-xs">Group</span>
-              </Button>
-            </div>
-          </div>
-
-          {invitationType === "group" && (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="groupName">Group Name</Label>
-              <Input
-                id="groupName"
-                placeholder="e.g., The Smith Family"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-              />
+              <FormLabel>Invitation Type</FormLabel>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  type="button"
+                  variant={watchedInvitationType === "single" ? "default" : "outline"}
+                  className="flex-col h-auto py-3 gap-1"
+                  onClick={() => setInvitationType("single")}
+                >
+                  <User className="h-5 w-5" />
+                  <span className="text-xs">Single</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={watchedInvitationType === "plusone" ? "default" : "outline"}
+                  className="flex-col h-auto py-3 gap-1"
+                  onClick={() => setInvitationType("plusone")}
+                >
+                  <UserPlus className="h-5 w-5" />
+                  <span className="text-xs">Guest +1</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={watchedInvitationType === "group" ? "default" : "outline"}
+                  className="flex-col h-auto py-3 gap-1"
+                  onClick={() => setInvitationType("group")}
+                >
+                  <Users className="h-5 w-5" />
+                  <span className="text-xs">Group</span>
+                </Button>
+              </div>
             </div>
-          )}
 
-          <div className="space-y-2">
-            <Label htmlFor="guestName">
-              {invitationType === "group" ? "Guest Names" : "Guest Name"}
-            </Label>
-            {invitationType === "group" ? (
+            {watchedInvitationType === "group" && (
+              <FormField
+                control={form.control}
+                name="groupName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Group Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., The Smith Family"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {watchedInvitationType === "group" ? (
               <div className="space-y-2">
-                {guestNames.map((name, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Input
-                      id={`guestName-${index}`}
-                      placeholder="Full name"
-                      value={name}
-                      onChange={(e) => updateGuestName(index, e.target.value)}
-                    />
-                    {guestNames.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0"
-                        onClick={() => removeGuestName(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                <FormLabel>Guest Names</FormLabel>
+                {fields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`guestNames.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Input
+                              placeholder="Full name"
+                              {...field}
+                            />
+                          </FormControl>
+                          {fields.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              className="shrink-0"
+                              onClick={() => remove(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </div>
+                  />
                 ))}
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   className="w-full gap-2"
-                  onClick={addGuestName}
+                  onClick={() => append("")}
                 >
                   <Plus className="h-4 w-4" />
                   Add Guest
                 </Button>
               </div>
             ) : (
-              <Input
-                id="guestName"
-                placeholder="Full name"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
+              <FormField
+                control={form.control}
+                name="guestName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Guest Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Full name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email (optional)</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="guest@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="guest@email.com"
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {invitationType === "plusone" && (
-            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 p-3">
-              <UserPlus className="h-5 w-5 text-muted-foreground" />
-              <div className="text-sm">
-                <p className="font-medium">Plus One Enabled</p>
-                <p className="text-muted-foreground">
-                  Guest can bring one additional person
-                </p>
+            {watchedInvitationType === "plusone" && (
+              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 p-3">
+                <UserPlus className="h-5 w-5 text-muted-foreground" />
+                <div className="text-sm">
+                  <p className="font-medium">Plus One Enabled</p>
+                  <p className="text-muted-foreground">
+                    Guest can bring one additional person
+                  </p>
+                </div>
               </div>
+            )}
+
+            <div className="flex items-center justify-between space-x-2 py-2">
+              <Label htmlFor="add-another" className="text-sm font-normal cursor-pointer">
+                Add another invitation
+              </Label>
+              <Switch
+                id="add-another"
+                checked={addAnother}
+                onCheckedChange={setAddAnother}
+              />
             </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add Invitation"}
-          </Button>
-        </DialogFooter>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Adding..." : "Add Invitation"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
