@@ -97,7 +97,7 @@ export async function POST(request: Request) {
   const clerk = await clerkClient();
   const invitation = await clerk.invitations.createInvitation({
     emailAddress: email,
-    redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/onboarding`,
+    redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invitation`,
     ignoreExisting: true,
     // I don't think this data persists through the invitation flow
     // its not there when the user signs up, so we mirror it in the database (below)

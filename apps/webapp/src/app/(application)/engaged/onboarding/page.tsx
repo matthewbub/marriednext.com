@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +19,7 @@ import { ArrowRightIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import clsx from "clsx";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { EngagedShell } from "component-shelf";
 
 const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -42,7 +42,14 @@ type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { user } = useUser();
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      console.log("Clerk publicMetadata:", user.publicMetadata);
+    }
+  }, [user]);
 
   const { data: invitationData, isLoading: isCheckingInvitation } = useQuery({
     queryKey: ["onboarding-invitation"],

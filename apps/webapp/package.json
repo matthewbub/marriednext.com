@@ -55,6 +55,7 @@
     "react-dom": "catalog:",
     "react-hook-form": "catalog:",
     "react-swipeable": "7.0.2",
+    "resend": "6.5.2",
     "sonner": "catalog:",
     "stripe": "19.0.0",
     "style-shelf": "workspace:*",

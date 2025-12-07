@@ -8,7 +8,11 @@ import { getInitials } from "@/lib/siteUtils";
 import { formatDate } from "@/lib/utils";
 import { z } from "zod";
 
-const componentRoleEnum = z.enum(["spouse", "family_member", "wedding_planner"]);
+const componentRoleEnum = z.enum([
+  "spouse",
+  "family_member",
+  "wedding_planner",
+]);
 
 const inviteCollaboratorSchema = z.object({
   email: z.string().email(),
@@ -160,7 +164,7 @@ export async function POST(request: Request) {
     const clerk = await clerkClient();
     const invitation = await clerk.invitations.createInvitation({
       emailAddress: email,
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/onboarding`,
+      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invitation`,
       ignoreExisting: true,
       publicMetadata: {
         onboardingComplete: true,
@@ -351,4 +355,3 @@ export async function PUT(request: Request) {
     );
   }
 }
-
