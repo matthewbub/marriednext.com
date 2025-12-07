@@ -40,60 +40,60 @@ export { ApplicationCtaSection } from "./components/application/CtaSection";
 export { ApplicationFooter } from "./components/application/Footer";
 export { ApplicationThemeProvider } from "./components/application/ThemeProvider";
 
-export { ApplicationBlogHome } from "./components/application/blog/ApplicationBlogHome";
-export { ApplicationRegistryEtiquetteArticle } from "./components/application/blog/ApplicationRegistryEtiquetteArticle";
+export { ApplicationBlogHome } from "./components/application/blog/BlogHome";
+export { ApplicationRegistryEtiquetteArticle } from "./components/application/blog/RegistryEtiquetteArticle";
 
-export { ApplicationDashboardHeader } from "./components/application/dashboard/ApplicationDashboardHeader";
-export { ApplicationDashboardLayout } from "./components/application/dashboard/ApplicationDashboardLayout";
+export { ApplicationDashboardHeader } from "./components/application/dashboard/DashboardHeader";
+export { ApplicationDashboardLayout } from "./components/application/dashboard/DashboardLayout";
 export type {
   DashboardUserData,
   DashboardWeddingData,
-} from "./components/application/dashboard/ApplicationDashboardLayout";
-export { ApplicationDashboardOverview } from "./components/application/dashboard/ApplicationDashboardOverview";
+} from "./components/application/dashboard/DashboardLayout";
+export { ApplicationDashboardOverview } from "./components/application/dashboard/DashboardOverview";
 export type {
   HomeStatsData,
   ApplicationDashboardOverviewProps,
-} from "./components/application/dashboard/ApplicationDashboardOverview";
-export { ApplicationDashboardSidebar } from "./components/application/dashboard/ApplicationDashboardSidebar";
-export { ApplicationGuestListManager } from "./components/application/dashboard/ApplicationGuestListManager";
+} from "./components/application/dashboard/DashboardOverview";
+export { ApplicationDashboardSidebar } from "./components/application/dashboard/DashboardSidebar";
+export { ApplicationGuestListManager } from "./components/application/dashboard/GuestListManager";
 export type {
   GuestListInvitation,
   GuestListGuest,
   GuestListStats,
   ApplicationGuestListManagerProps,
   RsvpLookupMethod,
-} from "./components/application/dashboard/ApplicationGuestListManager";
+} from "./components/application/dashboard/GuestListManager";
 export { AddInvitationDialog } from "./components/application/dashboard/AddInvitationDialog";
 export type { AddInvitationPayload } from "./components/application/dashboard/AddInvitationDialog";
 export { useAddInvitationDialogStore } from "./stores/addInvitationDialogStore";
 export { EditInvitationDialog } from "./components/application/dashboard/EditInvitationDialog";
 export { useEditInvitationDialogStore } from "./stores/editInvitationDialogStore";
 export type { Invitation as EditInvitationDialogInvitation } from "./stores/editInvitationDialogStore";
-export { ApplicationMemoriesGallery } from "./components/application/dashboard/ApplicationMemoriesGallery";
-export { ApplicationWebsiteBuilder } from "./components/application/dashboard/ApplicationWebsiteBuilder";
+export { ApplicationMemoriesGallery } from "./components/application/dashboard/MemoriesGallery";
+export { ApplicationWebsiteBuilder } from "./components/application/dashboard/WebsiteBuilder";
 export type {
   WebsiteBuilderData,
   ApplicationWebsiteBuilderProps,
-} from "./components/application/dashboard/ApplicationWebsiteBuilder";
-export { ApplicationWeddingDetailsSettings } from "./components/application/dashboard/ApplicationWeddingDetailsSettings";
+} from "./components/application/dashboard/WebsiteBuilder";
+export { ApplicationWeddingDetailsSettings } from "./components/application/dashboard/WeddingDetailsSettings";
 export type {
   DomainSettings,
   WeddingDetailsData,
   ApplicationWeddingDetailsSettingsProps,
-} from "./components/application/dashboard/ApplicationWeddingDetailsSettings";
-export { ApplicationTeamPermissions } from "./components/application/dashboard/ApplicationTeamPermissions";
+} from "./components/application/dashboard/WeddingDetailsSettings";
+export { ApplicationTeamPermissions } from "./components/application/dashboard/TeamPermissions";
 export type {
   Role,
   Collaborator,
   PendingInvitation,
   ApplicationTeamPermissionsProps,
-} from "./components/application/dashboard/ApplicationTeamPermissions";
+} from "./components/application/dashboard/TeamPermissions";
 
-export { ApplicationConnectDomainArticle } from "./components/application/help/ApplicationConnectDomainArticle";
-export { ApplicationHelpCenter } from "./components/application/help/ApplicationHelpCenter";
+export { ApplicationConnectDomainArticle } from "./components/application/help/ConnectDomainArticle";
+export { ApplicationHelpCenter } from "./components/application/help/HelpCenter";
 
-export { ApplicationSeatingPlannerCore } from "./components/application/seating/ApplicationSeatingPlannerCore";
+export { ApplicationSeatingPlannerCore } from "./components/application/seating/SeatingPlannerCore";
 
-export { ApplicationTemplatesCta } from "./components/application/templates/ApplicationTemplatesCta";
-export { ApplicationTemplatesGrid } from "./components/application/templates/ApplicationTemplatesGrid";
-export { ApplicationTemplatesHero } from "./components/application/templates/ApplicationTemplatesHero";
+export { ApplicationTemplatesCta } from "./components/application/templates/TemplatesCta";
+export { ApplicationTemplatesGrid } from "./components/application/templates/TemplatesGrid";
+export { ApplicationTemplatesHero } from "./components/application/templates/TemplatesHero";

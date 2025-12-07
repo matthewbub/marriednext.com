@@ -1,6 +1,6 @@
 "use client";
 
-import type { DashboardUserData } from "./ApplicationDashboardLayout";
+import type { DashboardUserData } from "./DashboardLayout";
 import { Menu } from "lucide-react";
 import {
   DropdownMenu,

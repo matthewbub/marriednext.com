@@ -4,8 +4,8 @@ import type React from "react";
 import type { ApplicationLinkComponent } from "../link-types";
 
 import { useState } from "react";
-import { ApplicationDashboardSidebar } from "./ApplicationDashboardSidebar";
-import { ApplicationDashboardHeader } from "./ApplicationDashboardHeader";
+import { ApplicationDashboardSidebar } from "./DashboardSidebar";
+import { ApplicationDashboardHeader } from "./DashboardHeader";
 
 export interface DashboardUserData {
   fullName: string;
