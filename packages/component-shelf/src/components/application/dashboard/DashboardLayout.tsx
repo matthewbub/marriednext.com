@@ -28,6 +28,8 @@ interface DashboardLayoutProps {
   wedding?: DashboardWeddingData;
   Link?: ApplicationLinkComponent;
   pathname?: string;
+  onLogout?: () => void;
+  onInviteClick?: () => void;
 }
 
 export function ApplicationDashboardLayout({
@@ -36,6 +38,8 @@ export function ApplicationDashboardLayout({
   wedding,
   Link,
   pathname,
+  onLogout,
+  onInviteClick,
 }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -52,6 +56,8 @@ export function ApplicationDashboardLayout({
         <ApplicationDashboardHeader
           onMenuClick={() => setMobileMenuOpen(true)}
           user={user}
+          onLogout={onLogout}
+          onInviteClick={onInviteClick}
         />
         <main className="p-6 pb-24 lg:pb-6">{children}</main>
       </div>

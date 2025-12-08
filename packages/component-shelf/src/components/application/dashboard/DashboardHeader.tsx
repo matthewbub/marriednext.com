@@ -24,11 +24,15 @@ function truncateEmail(email: string, maxLength: number = 20): string {
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
   user?: DashboardUserData;
+  onLogout?: () => void;
+  onInviteClick?: () => void;
 }
 
 export function ApplicationDashboardHeader({
   onMenuClick,
   user,
+  onLogout,
+  onInviteClick,
 }: DashboardHeaderProps) {
   const displayName =
     user?.fullName ||
@@ -76,10 +80,15 @@ export function ApplicationDashboardHeader({
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile Settings</DropdownMenuItem>
-              <DropdownMenuItem>Invite Co-Planner</DropdownMenuItem>
+              <DropdownMenuItem onClick={onInviteClick}>
+                Invite Co-Planner
+              </DropdownMenuItem>
               <DropdownMenuItem>Upgrade to Premium</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={onLogout}
+              >
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useClerk } from "@clerk/nextjs";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
@@ -127,9 +128,11 @@ function transformToWeddingData(
 
 export default function PermissionsPage() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useClerk();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["permissions"],
     queryFn: fetchPermissions,
   });
@@ -202,6 +205,8 @@ export default function PermissionsPage() {
       wedding={weddingData}
       Link={Link}
       pathname={pathname}
+      onLogout={() => signOut({ redirectUrl: "/" })}
+      onInviteClick={() => router.push("/v2/engaged/permissions")}
     >
       <ApplicationTeamPermissions
         currentUser={currentUser}
@@ -215,6 +220,7 @@ export default function PermissionsPage() {
         onUserRoleChange={handleUserRoleChange}
         isInviting={inviteMutation.isPending}
         isRemoving={removeMutation.isPending}
+        isLoading={isLoading}
       />
     </ApplicationDashboardLayout>
   );

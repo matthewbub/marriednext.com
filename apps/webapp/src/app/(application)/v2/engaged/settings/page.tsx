@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useClerk } from "@clerk/nextjs";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
@@ -188,6 +189,8 @@ async function updateDomainSettings(data: {
 
 export default function SettingsPage() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useClerk();
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["settings"],
@@ -240,6 +243,8 @@ export default function SettingsPage() {
         wedding={weddingData}
         Link={Link}
         pathname={pathname}
+        onLogout={() => signOut({ redirectUrl: "/" })}
+        onInviteClick={() => router.push("/v2/engaged/permissions")}
       >
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="animate-pulse space-y-4">
@@ -257,6 +262,8 @@ export default function SettingsPage() {
       wedding={weddingData}
       Link={Link}
       pathname={pathname}
+      onLogout={() => signOut({ redirectUrl: "/" })}
+      onInviteClick={() => router.push("/v2/engaged/permissions")}
     >
       <ApplicationWeddingDetailsSettings
         weddingDetails={weddingDetails!}

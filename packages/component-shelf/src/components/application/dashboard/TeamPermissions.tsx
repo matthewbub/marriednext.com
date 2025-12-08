@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -46,7 +46,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../../components/ui/alert-dialog";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Loader2 } from "lucide-react";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 export type Role = "spouse" | "family_member" | "wedding_planner";
 
@@ -93,6 +94,55 @@ export interface ApplicationTeamPermissionsProps {
   onUserRoleChange?: (newRole: Role) => void;
   isInviting?: boolean;
   isRemoving?: boolean;
+  isLoading?: boolean;
+}
+
+function PermissionsSkeleton() {
+  return (
+    <div className="space-y-8 pb-8 max-w-4xl mx-auto">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-5 w-96" />
+        </div>
+        <Skeleton className="h-10 w-40" />
+      </div>
+
+      <div className="space-y-3">
+        <Skeleton className="h-4 w-24" />
+        <div className="p-5 rounded-lg border-2 border-muted bg-card">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-48" />
+                <Skeleton className="h-5 w-12" />
+              </div>
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <Skeleton className="h-10 w-40" />
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Skeleton className="h-4 w-32" />
+        <div className="p-5 rounded-lg border border-border bg-card">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-56" />
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-36" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-10" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function ApplicationTeamPermissions({
@@ -107,6 +157,7 @@ export function ApplicationTeamPermissions({
   onUserRoleChange,
   isInviting = false,
   isRemoving = false,
+  isLoading = false,
 }: ApplicationTeamPermissionsProps) {
   const [userRole, setUserRole] = useState<Role>(currentUser.role);
   const [internalCollaborators, setInternalCollaborators] =
@@ -126,6 +177,20 @@ export function ApplicationTeamPermissions({
       role: "family_member",
     },
   });
+
+  const wasInviting = useRef(false);
+
+  useEffect(() => {
+    if (wasInviting.current && !isInviting) {
+      inviteForm.reset();
+      setShowInviteDialog(false);
+    }
+    wasInviting.current = isInviting;
+  }, [isInviting, inviteForm]);
+
+  if (isLoading) {
+    return <PermissionsSkeleton />;
+  }
 
   const collaborators =
     onInvite || onRemove || onRoleChange
@@ -147,9 +212,9 @@ export function ApplicationTeamPermissions({
         }),
       };
       setInternalCollaborators([...internalCollaborators, newCollaborator]);
+      inviteForm.reset();
+      setShowInviteDialog(false);
     }
-    inviteForm.reset();
-    setShowInviteDialog(false);
   };
 
   const handleDialogChange = (open: boolean) => {
@@ -296,7 +361,14 @@ export function ApplicationTeamPermissions({
                   disabled={isInviting}
                   className="w-full h-12"
                 >
-                  Send Invitation
+                  {isInviting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Invitation"
+                  )}
                 </Button>
               </form>
             </Form>

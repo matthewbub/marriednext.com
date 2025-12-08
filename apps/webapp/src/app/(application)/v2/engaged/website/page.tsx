@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useClerk } from "@clerk/nextjs";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
@@ -23,15 +24,17 @@ const websiteBuilderSchema = z.object({
   nameB: z.string(),
   subdomain: z.string(),
   customDomain: z.string().nullable(),
-  photos: z.array(
-    z.object({
-      id: z.string(),
-      themeId: z.string(),
-      photoType: z.enum(["hero", "story", "gallery", "memory"]),
-      blobUrl: z.string(),
-      displayOrder: z.number(),
-    })
-  ).optional(),
+  photos: z
+    .array(
+      z.object({
+        id: z.string(),
+        themeId: z.string(),
+        photoType: z.enum(["hero", "story", "gallery", "memory"]),
+        blobUrl: z.string(),
+        displayOrder: z.number(),
+      })
+    )
+    .optional(),
   user: z.object({
     fullName: z.string(),
     imageUrl: z.string().nullable(),
@@ -39,14 +42,20 @@ const websiteBuilderSchema = z.object({
     email: z.string(),
   }),
   subscriptionPlan: z.string(),
-  websiteSections: z.array(
-    z.object({
-      id: z.string(),
-      enabled: z.boolean(),
-      order: z.number(),
-    })
-  ).nullable().optional(),
-  websiteLabels: z.record(z.string(), z.record(z.string(), z.string())).nullable().optional(),
+  websiteSections: z
+    .array(
+      z.object({
+        id: z.string(),
+        enabled: z.boolean(),
+        order: z.number(),
+      })
+    )
+    .nullable()
+    .optional(),
+  websiteLabels: z
+    .record(z.string(), z.record(z.string(), z.string()))
+    .nullable()
+    .optional(),
 });
 
 type WebsiteBuilderResponse = z.infer<typeof websiteBuilderSchema>;
@@ -105,6 +114,8 @@ function transformToWeddingData(
 
 export default function WebsitePage() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useClerk();
   const { data, isLoading } = useQuery({
     queryKey: ["website-builder"],
     queryFn: fetchWebsiteBuilder,
@@ -120,6 +131,8 @@ export default function WebsitePage() {
       wedding={weddingData}
       Link={Link}
       pathname={pathname}
+      onLogout={() => signOut({ redirectUrl: "/" })}
+      onInviteClick={() => router.push("/v2/engaged/permissions")}
     >
       <ApplicationWebsiteBuilder data={builderData} isLoading={isLoading} />
     </ApplicationDashboardLayout>

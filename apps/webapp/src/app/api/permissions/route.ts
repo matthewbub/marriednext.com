@@ -76,8 +76,7 @@ export async function GET() {
   });
 }
 
-// Create a new collaborator invitation
-//  This just sends a request to Clerk with metadata about the invitation
+// Create collaborator invitation
 export async function POST(request: Request) {
   const user = await currentUser();
   if (!user) {
@@ -99,8 +98,7 @@ export async function POST(request: Request) {
     emailAddress: email,
     redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invitation`,
     ignoreExisting: true,
-    // I don't think this data persists through the invitation flow
-    // its not there when the user signs up, so we mirror it in the database (below)
+    // https://clerk.com/docs/guides/development/custom-flows/authentication/application-invitations
     publicMetadata: {
       onboardingComplete: true,
       weddingId,

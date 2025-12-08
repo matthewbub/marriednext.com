@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useClerk } from "@clerk/nextjs";
 import { z } from "zod";
 import {
   ApplicationDashboardLayout,
@@ -92,6 +93,8 @@ function transformToWeddingData(
 
 export default function DashboardPage() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useClerk();
   const { data, isLoading } = useQuery({
     queryKey: ["home-stats"],
     queryFn: fetchHomeStats,
@@ -106,6 +109,8 @@ export default function DashboardPage() {
       wedding={weddingData}
       Link={Link}
       pathname={pathname}
+      onLogout={() => signOut({ redirectUrl: "/" })}
+      onInviteClick={() => router.push("/v2/engaged/permissions")}
     >
       <ApplicationDashboardOverview data={overviewData} isLoading={isLoading} />
     </ApplicationDashboardLayout>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSignUp, useUser } from "@clerk/nextjs";
+import { useSignUp, useUser, useClerk } from "@clerk/nextjs";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,7 @@ export default function InvitationPage() {
   const { isSignedIn } = useUser();
   const router = useRouter();
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { client } = useClerk();
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,7 +52,7 @@ export default function InvitationPage() {
 
   useEffect(() => {
     if (isSignedIn) {
-      router.push("/engaged/onboarding");
+      router.push("/v2/engaged");
     }
   }, [isSignedIn, router]);
 
@@ -86,13 +87,38 @@ export default function InvitationPage() {
       const signUpAttempt = await signUp.create({
         strategy: "ticket",
         ticket: token,
-        firstName: data.firstName,
-        lastName: data.lastName,
         password: data.password,
       });
 
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
+
+        const currentUser = client.sessions.find(
+          (s) => s.id === signUpAttempt.createdSessionId
+        )?.user;
+
+        if (currentUser) {
+          await currentUser.update({
+            firstName: data.firstName,
+            lastName: data.lastName,
+          });
+        }
+
+        const acceptResponse = await fetch(
+          "/api/v2/engaged/accept-invitation",
+          {
+            method: "POST",
+          }
+        );
+
+        if (!acceptResponse.ok) {
+          console.error(
+            "Failed to accept invitation:",
+            await acceptResponse.text()
+          );
+        }
+
+        router.push("/v2/engaged");
       } else {
         setApiError(
           "Sign up could not be completed. Please try again or contact support."
