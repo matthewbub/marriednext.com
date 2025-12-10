@@ -10,9 +10,21 @@ const dmSans = DM_Sans({ subsets: ["latin"] });
 const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Married Next — Your Wedding, Your Way",
+  metadataBase: new URL("https://marriednext.com"),
+  title: {
+    default: "Married Next — Your Wedding, Your Way",
+    template: "%s | Married Next",
+  },
   description:
     "The free, open-source wedding planning platform. Beautiful websites, smart guest lists, and seamless RSVPs — free to start with optional upgrades.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Married Next",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

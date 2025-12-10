@@ -91,6 +91,8 @@ export type {
 
 export { ApplicationConnectDomainArticle } from "./components/application/help/ConnectDomainArticle";
 export { ApplicationHelpCenter } from "./components/application/help/HelpCenter";
+export { ApplicationInviteCollaboratorArticle } from "./components/application/help/InviteCollaboratorArticle";
+export { ApplicationRemoveCollaboratorArticle } from "./components/application/help/RemoveCollaboratorArticle";
 
 export { ApplicationSeatingPlannerCore } from "./components/application/seating/SeatingPlannerCore";
 

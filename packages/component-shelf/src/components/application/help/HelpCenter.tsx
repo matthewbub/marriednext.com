@@ -38,7 +38,15 @@ const categories = [
         isPopular: true,
       },
       { title: "Customizing your website", slug: "customizing-website" },
-      { title: "Inviting collaborators", slug: "inviting-collaborators" },
+      {
+        title: "Inviting your spouse or co-planner",
+        slug: "invite-collaborator",
+        isPopular: true,
+      },
+      {
+        title: "Removing a collaborator",
+        slug: "remove-collaborator",
+      },
     ],
   },
   {
@@ -134,6 +142,11 @@ const popularArticles = [
     category: "Getting Started",
   },
   {
+    title: "Inviting your spouse or co-planner",
+    slug: "invite-collaborator",
+    category: "Getting Started",
+  },
+  {
     title: "Adding guests and invitations",
     slug: "adding-guests",
     category: "Guest List & RSVPs",
@@ -154,7 +167,9 @@ interface ApplicationHelpCenterProps {
   Link?: ApplicationLinkComponent;
 }
 
-export function ApplicationHelpCenter({ Link = "a" }: ApplicationHelpCenterProps) {
+export function ApplicationHelpCenter({
+  Link = "a",
+}: ApplicationHelpCenterProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCategories = categories.filter(
