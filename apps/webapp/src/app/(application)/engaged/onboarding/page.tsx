@@ -47,9 +47,17 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (user) {
-      // console.log("Clerk publicMetadata:", user.publicMetadata);
+      console.log(
+        "Clerk publicMetadata?.onboardingComplete:",
+        user.publicMetadata?.onboardingComplete
+      );
 
       if (user.publicMetadata?.onboardingComplete) {
+        console.log(
+          "Redirecting to engaged dashboard",
+          user.publicMetadata?.onboardingComplete,
+          user.id
+        );
         router.push("/engaged");
       }
     }
