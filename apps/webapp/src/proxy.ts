@@ -4,7 +4,7 @@ import { getHostType } from "@/lib/rewrites/multitenancy";
 import { edgeDb } from "@/database/edge";
 import { logs } from "orm-shelf/schema";
 
-interface ClerkPublicMetadata {
+interface ClerkMetadata {
   onboardingComplete?: boolean;
   weddingId?: string;
   role?: string;
@@ -52,14 +52,20 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
 
     // if the user is authenticated and the onboarding is not complete, redirect to the onboarding flow
-    const metadata = sessionClaims?.publicMetadata as ClerkPublicMetadata;
+    const metadata = sessionClaims?.metadata as ClerkMetadata;
 
     const logData = {
       isAuthenticated,
       userId: sessionClaims?.sub,
+      sessionId: sessionClaims?.sid,
+      issuedAt: sessionClaims?.iat,
+      expiresAt: sessionClaims?.exp,
       onboardingComplete: metadata?.onboardingComplete,
       onboardingCompleteType: typeof metadata?.onboardingComplete,
+      weddingId: metadata?.weddingId,
+      role: metadata?.role,
       fullMetadata: metadata,
+      fullSessionClaims: sessionClaims,
       url: req.url,
     };
 
