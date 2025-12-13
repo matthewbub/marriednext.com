@@ -44,7 +44,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     }
 
     // if the user is authenticated and the onboarding is not complete, redirect to the onboarding flow
-    if (isAuthenticated && !sessionClaims?.metadata?.onboardingComplete) {
+    if (isAuthenticated && !sessionClaims?.publicMetadata?.onboardingComplete) {
       const onboardingUrl = new URL("/engaged/onboarding", req.url);
       return NextResponse.redirect(onboardingUrl);
     }
