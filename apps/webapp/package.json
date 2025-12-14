@@ -46,7 +46,7 @@
     "gsap": "3.13.0",
     "hamburger-react": "2.5.2",
     "lucide-react": "catalog:",
-    "next": "16.0.7",
+    "next": "16.0.10",
     "next-themes": "catalog:",
     "orm-shelf": "workspace:*",
     "postgres": "catalog:",
@@ -89,12 +89,5 @@
     "tw-animate-css": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  },
-  "packageManager": "pnpm@8.9.0+sha512.ef8859938e1f0537b9fcf0309044311392f3b38b344176e6cd4fdee21b225524b0ac2a1b08ae2ae2ddd5b3ff4b8ca496d6778e950f3e7c9f555b81325982441c",
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.2.2",
-      "@types/react-dom": "19.2.2"
-    }
   }
 }
