@@ -3,19 +3,25 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
-import { Search, Calendar, Clock, ArrowRight, Gift } from "lucide-react";
+import {
+  Search,
+  Calendar,
+  Clock,
+  ArrowRight,
+  Gift,
+  Users,
+  Globe,
+  Camera,
+  Heart,
+  Sparkles,
+} from "lucide-react";
 
-type CategoryType = {
-  name: string;
-  count: number;
-};
-
-const categories: CategoryType[] | [] = [
-  // { name: "All", count: 12 },
-  // { name: "Planning", count: 5 },
-  // { name: "Etiquette", count: 3 },
-  // { name: "Budget", count: 2 },
-  // { name: "Inspiration", count: 2 },
+const categories = [
+  { name: "All", count: 12 },
+  { name: "Planning", count: 5 },
+  { name: "Etiquette", count: 3 },
+  { name: "Budget", count: 2 },
+  { name: "Inspiration", count: 2 },
 ];
 
 const featuredPost = {
@@ -29,66 +35,56 @@ const featuredPost = {
   icon: Gift,
 };
 
-type PostType = {
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  readTime: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth: number }>;
-};
-
-const posts: PostType[] | [] = [
-  //   {
-  //     slug: "seating-chart-tips",
-  //     title: "How to Create a Stress-Free Seating Chart",
-  //     excerpt:
-  //       "Practical tips for organizing your reception seating without the drama.",
-  //     category: "Planning",
-  //     date: "November 20, 2025",
-  //     readTime: "6 min read",
-  //     icon: Users,
-  //   },
-  //   {
-  //     slug: "wedding-website-checklist",
-  //     title: "What to Include on Your Wedding Website",
-  //     excerpt: "The essential pages and information your guests actually need.",
-  //     category: "Planning",
-  //     date: "November 15, 2025",
-  //     readTime: "5 min read",
-  //     icon: Globe,
-  //   },
-  //   {
-  //     slug: "guest-photo-sharing",
-  //     title: "Getting Guests to Share Their Wedding Photos",
-  //     excerpt:
-  //       "Creative ways to collect those candid moments from everyone who attended.",
-  //     category: "Inspiration",
-  //     date: "November 10, 2025",
-  //     readTime: "4 min read",
-  //     icon: Camera,
-  //   },
-  //   {
-  //     slug: "budget-wedding-tips",
-  //     title: "Planning a Beautiful Wedding on a Budget",
-  //     excerpt:
-  //       "Where to splurge, where to save, and how to prioritize what matters most.",
-  //     category: "Budget",
-  //     date: "November 5, 2025",
-  //     readTime: "7 min read",
-  //     icon: Sparkles,
-  //   },
-  //   {
-  //     slug: "rsvp-follow-up",
-  //     title: "How to Follow Up on Missing RSVPs (Politely)",
-  //     excerpt:
-  //       "Scripts and strategies for getting those final headcounts without awkwardness.",
-  //     category: "Etiquette",
-  //     date: "October 30, 2025",
-  //     readTime: "5 min read",
-  //     icon: Heart,
-  //   },
+const posts = [
+  {
+    slug: "seating-chart-tips",
+    title: "How to Create a Stress-Free Seating Chart",
+    excerpt:
+      "Practical tips for organizing your reception seating without the drama.",
+    category: "Planning",
+    date: "November 20, 2025",
+    readTime: "6 min read",
+    icon: Users,
+  },
+  {
+    slug: "wedding-website-checklist",
+    title: "What to Include on Your Wedding Website",
+    excerpt: "The essential pages and information your guests actually need.",
+    category: "Planning",
+    date: "November 15, 2025",
+    readTime: "5 min read",
+    icon: Globe,
+  },
+  {
+    slug: "guest-photo-sharing",
+    title: "Getting Guests to Share Their Wedding Photos",
+    excerpt:
+      "Creative ways to collect those candid moments from everyone who attended.",
+    category: "Inspiration",
+    date: "November 10, 2025",
+    readTime: "4 min read",
+    icon: Camera,
+  },
+  {
+    slug: "budget-wedding-tips",
+    title: "Planning a Beautiful Wedding on a Budget",
+    excerpt:
+      "Where to splurge, where to save, and how to prioritize what matters most.",
+    category: "Budget",
+    date: "November 5, 2025",
+    readTime: "7 min read",
+    icon: Sparkles,
+  },
+  {
+    slug: "rsvp-follow-up",
+    title: "How to Follow Up on Missing RSVPs (Politely)",
+    excerpt:
+      "Scripts and strategies for getting those final headcounts without awkwardness.",
+    category: "Etiquette",
+    date: "October 30, 2025",
+    readTime: "5 min read",
+    icon: Heart,
+  },
 ];
 
 interface ApplicationBlogHomeProps {

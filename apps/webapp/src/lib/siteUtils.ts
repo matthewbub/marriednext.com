@@ -1,7 +1,7 @@
 export function buildSiteUrl(
   subdomain: string | null,
   customDomain: string | null,
-  plan: string
+  plan: string,
 ): string {
   const subdomainUrl = subdomain ? `https://${subdomain}.marriednext.com` : "";
 
@@ -15,7 +15,7 @@ export function buildSiteUrl(
 export function getInitials(
   fullName: string | null,
   firstName: string | null,
-  lastName: string | null
+  lastName: string | null,
 ): string {
   if (fullName) {
     const parts = fullName.split(" ").filter(Boolean);
