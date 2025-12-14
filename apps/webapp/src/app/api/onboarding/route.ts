@@ -120,6 +120,15 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
+    Sentry.captureMessage("New wedding created", {
+      extra: {
+        weddingId: newWedding.id,
+        userId,
+        fieldNameA: partner1Name,
+        fieldNameB: partner2Name,
+      },
+    });
+
     void (await db.insert(weddingUsers).values({
       weddingId: newWedding.id,
       clerkUserId: userId,
