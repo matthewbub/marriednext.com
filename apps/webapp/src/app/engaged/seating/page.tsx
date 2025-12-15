@@ -7,7 +7,7 @@ import {
   ApplicationDashboardLayout,
   ApplicationSeatingPlannerCore,
 } from "component-shelf";
-import { ComingSoonOverlay } from "@/components/ComingSoonOverlay";
+import { ComingSoonOverlay } from "component-shelf";
 
 export default function SeatingPage() {
   const pathname = usePathname();

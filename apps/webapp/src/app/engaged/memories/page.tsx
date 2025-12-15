@@ -7,7 +7,7 @@ import {
   ApplicationMemoriesGallery,
   ApplicationDashboardLayout,
 } from "component-shelf";
-import { ComingSoonOverlay } from "@/components/ComingSoonOverlay";
+import { ComingSoonOverlay } from "component-shelf";
 
 export default function MemoriesPage() {
   const pathname = usePathname();

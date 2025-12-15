@@ -4,7 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { QueryProvider } from "@/providers/QueryProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "component-shelf/ui";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 const playfair = Playfair_Display({ subsets: ["latin"] });

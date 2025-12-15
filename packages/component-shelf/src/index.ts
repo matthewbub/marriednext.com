@@ -40,6 +40,7 @@ export { ApplicationPricingSection } from "./components/application/PricingSecti
 export { ApplicationCtaSection } from "./components/application/CtaSection";
 export { ApplicationFooter } from "./components/application/Footer";
 export { ApplicationThemeProvider } from "./components/application/ThemeProvider";
+export { ComingSoonOverlay } from "./components/application/ComingSoonOverlay";
 
 export { ApplicationBlogHome } from "./components/application/blog/BlogHome";
 export { ApplicationRegistryEtiquetteArticle } from "./components/application/blog/RegistryEtiquetteArticle";
