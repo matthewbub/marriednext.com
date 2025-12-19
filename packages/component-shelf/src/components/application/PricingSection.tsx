@@ -1,4 +1,4 @@
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 
 const plans = [
@@ -11,71 +11,51 @@ const plans = [
       "Beautiful wedding website",
       "Guest list management",
       "RSVP tracking",
-      "Seating chart planner",
-      "Memory uploads (500MB)",
+      "Save the Date forms",
       "5 free templates",
       "Unlimited guests",
-      "Email notifications",
+      "Collaborative planning",
     ],
     cta: "Get Started Free",
     highlighted: false,
   },
   {
     name: "Premium",
-    price: "$29",
+    price: "$49",
     period: "one-time",
-    description: "Unlock premium templates and extra storage",
+    description: "Premium templates and custom domain hosting",
     features: [
       "Everything in Free",
       "25+ premium templates",
-      "Memory uploads (10GB)",
-      "Priority support",
+      "Custom domain hosting",
+      "SSL certificate included",
       "Remove branding option",
-      "Advanced analytics",
-      "Custom color schemes",
+      "Priority support",
       "Early access to features",
     ],
     cta: "Upgrade to Premium",
     highlighted: true,
   },
-  {
-    name: "Custom Domain",
-    price: "$49",
-    period: "per year",
-    description: "Your wedding site on your own domain",
-    features: [
-      "Everything in Premium",
-      "Custom domain hosting",
-      "SSL certificate included",
-      "Memory uploads (50GB)",
-      "Dedicated support",
-      "Custom email addresses",
-      "Advanced SEO options",
-      "White-label experience",
-    ],
-    cta: "Add Custom Domain",
-    highlighted: false,
-  },
 ];
 
-export function ApplicationPricingSection() {
+export function PricingSection() {
   return (
     <section id="pricing" className="py-24 px-6 lg:px-8 bg-secondary/30">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-3xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <p className="text-sm font-medium text-primary mb-4">
             Simple Pricing
           </p>
           <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground text-balance">
-            Start free, upgrade when ready
+            Free for your entire wedding
           </h2>
           <p className="mt-6 text-lg text-muted-foreground">
-            Most couples never need to pay. But if you want premium templates,
-            more storage, or a custom domain — we've got you covered.
+            Most couples never need to pay. Upgrade only if you want premium
+            templates or a custom domain.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -89,24 +69,20 @@ export function ApplicationPricingSection() {
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-primary-foreground text-sm font-medium">
                     <Sparkles className="h-3.5 w-3.5" />
-                    Most Popular
+                    Best Value
                   </div>
                 </div>
               )}
 
               <div className="mb-6">
                 <h3
-                  className={`text-lg font-medium ${
-                    plan.highlighted ? "text-background" : "text-foreground"
-                  }`}
+                  className={`text-lg font-medium ${plan.highlighted ? "text-background" : "text-foreground"}`}
                 >
                   {plan.name}
                 </h3>
                 <div className="mt-3 flex items-baseline gap-1">
                   <span
-                    className={`text-4xl font-serif font-semibold ${
-                      plan.highlighted ? "text-background" : "text-foreground"
-                    }`}
+                    className={`text-4xl font-serif font-semibold ${plan.highlighted ? "text-background" : "text-foreground"}`}
                   >
                     {plan.price}
                   </span>
@@ -121,11 +97,7 @@ export function ApplicationPricingSection() {
                   </span>
                 </div>
                 <p
-                  className={`mt-3 text-sm ${
-                    plan.highlighted
-                      ? "text-background/80"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`mt-3 text-sm ${plan.highlighted ? "text-background/80" : "text-muted-foreground"}`}
                 >
                   {plan.description}
                 </p>
@@ -135,16 +107,10 @@ export function ApplicationPricingSection() {
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
                     <Check
-                      className={`h-5 w-5 flex-shrink-0 ${
-                        plan.highlighted ? "text-primary" : "text-primary"
-                      }`}
+                      className={`h-5 w-5 flex-shrink-0 ${plan.highlighted ? "text-primary" : "text-primary"}`}
                     />
                     <span
-                      className={`text-sm ${
-                        plan.highlighted
-                          ? "text-background/90"
-                          : "text-muted-foreground"
-                      }`}
+                      className={`text-sm ${plan.highlighted ? "text-background/90" : "text-muted-foreground"}`}
                     >
                       {feature}
                     </span>
@@ -153,11 +119,7 @@ export function ApplicationPricingSection() {
               </ul>
 
               <Button
-                className={`w-full ${
-                  plan.highlighted
-                    ? "bg-background text-foreground hover:bg-background/90"
-                    : ""
-                }`}
+                className={`w-full ${plan.highlighted ? "bg-background text-foreground hover:bg-background/90" : ""}`}
                 variant={plan.highlighted ? "default" : "outline"}
               >
                 {plan.cta}
@@ -167,8 +129,8 @@ export function ApplicationPricingSection() {
         </div>
 
         <p className="text-center mt-12 text-sm text-muted-foreground">
-          All plans include our core features. Open source means you can
-          self-host for free anytime.
+          All plans include our core features. Public source means you can view
+          all the code anytime.
         </p>
       </div>
     </section>

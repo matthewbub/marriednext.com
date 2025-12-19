@@ -1,38 +1,7 @@
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart } from "lucide-react";
-import type { ComponentType } from "react";
 
-type LinkProps = {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-};
-
-type ApplicationCtaSectionProps = {
-  Link?: ComponentType<LinkProps>;
-  signUpUrl?: string;
-};
-
-export function ApplicationCtaSection({
-  Link,
-  signUpUrl = "/register",
-}: ApplicationCtaSectionProps) {
-  const ButtonContent = (
-    <Button size="lg" className="gap-2 text-base px-8" asChild={!!Link}>
-      {Link ? (
-        <Link href={signUpUrl}>
-          Create Your Wedding Site
-          <ArrowRight className="h-5 w-5" />
-        </Link>
-      ) : (
-        <>
-          Create Your Wedding Site
-          <ArrowRight className="h-5 w-5" />
-        </>
-      )}
-    </Button>
-  );
-
+export function CTASection() {
   return (
     <section className="py-24 px-6 lg:px-8">
       <div className="mx-auto max-w-4xl text-center">
@@ -47,14 +16,17 @@ export function ApplicationCtaSection({
           smart guest lists, and seamless RSVPs. And it's free to start.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          {ButtonContent}
-          {/* <Button
+          <Button size="lg" className="gap-2 text-base px-8">
+            Create Your Wedding Site
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+          <Button
             variant="outline"
             size="lg"
             className="text-base px-8 bg-transparent"
           >
             Try the Seating Planner
-          </Button> */}
+          </Button>
         </div>
         <p className="mt-6 text-sm text-muted-foreground">
           No credit card required • Free plan available • Open source

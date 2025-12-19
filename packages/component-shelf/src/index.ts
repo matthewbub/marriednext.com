@@ -2,14 +2,8 @@ export {
   Navbar,
   Navbar as ApplicationNavbar,
 } from "./components/application/NavBar";
-export { HeroSection } from "./components/application/HeroSection";
-export { FeaturesSection } from "./components/application/FeaturesSection";
-export { ApplicationHowItWorksSection } from "./components/application/HowItWorksSection";
-export { ApplicationSeatingPlannerSection } from "./components/application/SeatingPlannerSection";
-export { ApplicationMemoriesSection } from "./components/application/MemoriesSection";
-export { ApplicationPricingSection } from "./components/application/PricingSection";
-export { ApplicationCtaSection } from "./components/application/CtaSection";
-export { ApplicationFooter } from "./components/application/Footer";
+export { default as LandingPage } from "./components/application/LandingPage";
+
 export { ApplicationThemeProvider } from "./components/application/ThemeProvider";
 export { ComingSoonOverlay } from "./components/application/ComingSoonOverlay";
 

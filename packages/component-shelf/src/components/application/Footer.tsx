@@ -1,6 +1,11 @@
-import { Heart, Github } from "lucide-react";
+import { Heart, Github, Twitter } from "lucide-react";
+import type { ApplicationLinkComponent } from "./link-types";
 
-export function ApplicationFooter() {
+type FooterProps = {
+  Link?: ApplicationLinkComponent;
+};
+
+export function Footer({ Link = "a" }: FooterProps) {
   return (
     <footer className="py-12 px-6 lg:px-8 border-t border-border">
       <div className="mx-auto max-w-7xl">
@@ -17,18 +22,18 @@ export function ApplicationFooter() {
               love.
             </p>
             <div className="mt-4 flex gap-4">
-              <a
-                href="https://github.com/matthewbub/marriednext.com"
+              <Link
+                href="https://github.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Github className="h-5 w-5" />
-              </a>
-              {/* <a
+              </Link>
+              <Link
                 href="https://twitter.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Twitter className="h-5 w-5" />
-              </a> */}
+              </Link>
             </div>
           </div>
 
@@ -37,37 +42,29 @@ export function ApplicationFooter() {
             <h4 className="font-medium text-foreground mb-4">Product</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="#features"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Features
-                </a>
+                </Link>
               </li>
-              {/* <li>
-                <a
+              <li>
+                <Link
                   href="/templates"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Templates
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#pricing"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Pricing
-                </a>
+                </Link>
               </li>
-              <li>
-                <a
-                  href="/seating"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Seating Planner
-                </a>
-              </li> */}
             </ul>
           </div>
 
@@ -75,37 +72,37 @@ export function ApplicationFooter() {
             <h4 className="font-medium text-foreground mb-4">Resources</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="/help"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/documentation"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
+                <Link
                   href="/blog"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Wedding Blog
-                </a>
+                </Link>
               </li>
-              {/* <li>
-                <a
+              <li>
+                <Link
+                  href="/changelog"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Changelog
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="#"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Community
-                </a>
-              </li> */}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -113,36 +110,36 @@ export function ApplicationFooter() {
             <h4 className="font-medium text-foreground mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <a
+                <Link
                   href="/about"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://github.com/matthewbub/marriednext.com"
+                <Link
+                  href="https://github.com"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Public Source
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Privacy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Terms
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -153,7 +150,7 @@ export function ApplicationFooter() {
             © 2025 Married Next. Made with love for couples everywhere.
           </p>
           <p className="text-sm text-muted-foreground">
-            Free to start • Public source • Transparent pricing
+            Free forever • Public source • Transparent pricing
           </p>
         </div>
       </div>

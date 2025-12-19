@@ -45,7 +45,7 @@
     "date-fns": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-orm": "catalog:",
-    "gsap": "3.13.0",
+    "gsap": "catalog:",
     "hamburger-react": "2.5.2",
     "lucide-react": "catalog:",
     "next": "16.0.10",

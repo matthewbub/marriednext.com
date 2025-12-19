@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { ComponentType, AnchorHTMLAttributes } from "react";
 import { Button } from "../ui/button";
 import { Menu, X, Heart } from "lucide-react";
+import type { ApplicationLinkComponent } from "./link-types";
 
 interface NavbarProps {
-  Link?: ComponentType<
-    AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
-  >;
+  Link?: ApplicationLinkComponent;
   loginUrl?: string;
   signUpUrl?: string;
   isAuthenticated?: boolean;
@@ -16,9 +14,7 @@ interface NavbarProps {
 }
 
 export function Navbar({
-  Link = "a" as unknown as ComponentType<
-    AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
-  >,
+  Link = "a",
   loginUrl = "/sign-in",
   signUpUrl = "/register",
   isAuthenticated = false,

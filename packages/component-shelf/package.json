@@ -54,6 +54,7 @@
     "clsx": "catalog:",
     "date-fns": "catalog:",
     "cmdk": "catalog:",
+    "gsap": "catalog:",
     "embla-carousel-react": "catalog:",
     "input-otp": "catalog:",
     "label-shelf": "workspace:*",

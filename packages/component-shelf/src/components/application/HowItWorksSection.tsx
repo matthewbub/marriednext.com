@@ -25,7 +25,7 @@ const steps = [
   },
 ];
 
-export function ApplicationHowItWorksSection() {
+export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="py-24 px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
