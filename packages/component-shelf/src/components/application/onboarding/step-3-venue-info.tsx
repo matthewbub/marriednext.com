@@ -43,11 +43,7 @@ export function Step3VenueInfo({ onSubmit, onSkip }: Step3VenueInfoProps) {
   const formData = useAppSelector((state) => state.onboarding.formData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Step3FormData>({
+  const { register, handleSubmit } = useForm<Step3FormData>({
     defaultValues: {
       fieldLocationName: formData.fieldLocationName,
       fieldPreferredLocationAddressLine1:

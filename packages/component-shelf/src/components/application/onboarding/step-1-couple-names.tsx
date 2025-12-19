@@ -13,7 +13,7 @@ import {
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
-import { Heart, ArrowRight, Sparkles } from "lucide-react";
+import { Heart, ArrowRight } from "lucide-react";
 
 type Step1FormData = {
   fieldNameA: string;

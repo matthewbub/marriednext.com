@@ -1,6 +1,8 @@
 import { OnboardingFlow, type OnboardingFlowProps } from "./onboarding-flow";
 import { StoreProvider } from "./store-provider";
-import type { OnboardingFormData } from "./step-3-venue-info";
+import type { OnboardingFormData, Step3FormData } from "./step-3-venue-info";
+
+export type { Step3FormData };
 
 export type OnboardingPageProps = {
   onHandleGoToDashboard: OnboardingFlowProps["onHandleGoToDashboard"];
