@@ -6,7 +6,7 @@ import { wedding } from "orm-shelf/schema";
 import { eq } from "drizzle-orm";
 import { getCurrentWedding } from "@/lib/wedding/getCurrentWedding";
 import { updateWeddingCache } from "@/lib/wedding/cache";
-import { getInitials } from "../../lib/utils/site";
+import { getInitials } from "@/lib/utils/site";
 
 const weddingSettingsSchema = z
   .object({

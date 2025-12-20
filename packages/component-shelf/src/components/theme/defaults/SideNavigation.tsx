@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApplicationLinkComponent } from "@/components/application/link-types";
+import type { ApplicationLinkComponent } from "../../application/link-types";
 import { Twirl as Hamburger } from "hamburger-react";
 // import Link from "next/link";
 import { useEffect, useRef, useState } from "react";

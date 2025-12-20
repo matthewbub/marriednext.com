@@ -2,6 +2,10 @@ export {
   Navbar,
   Navbar as ApplicationNavbar,
 } from "./components/application/NavBar";
+export {
+  Footer,
+  Footer as ApplicationFooter,
+} from "./components/application/Footer";
 export { default as LandingPage } from "./components/application/LandingPage";
 
 export { ApplicationThemeProvider } from "./components/application/ThemeProvider";

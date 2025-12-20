@@ -4,8 +4,8 @@ import { db } from "@/database/drizzle";
 import { collaboratorInvitations, weddingUsers } from "orm-shelf/schema";
 import { eq, and } from "drizzle-orm";
 import { getCurrentWedding } from "@/lib/wedding/getCurrentWedding";
-import { getInitials } from "../../lib/utils/site";
-import { formatDate } from "../../lib/utils/date";
+import { getInitials } from "@/lib/utils/site";
+import { formatDate } from "@/lib/utils/date";
 import { z } from "zod";
 
 const componentRoleEnum = z.enum([
