@@ -37,8 +37,12 @@ export function HeroSection({ Link = "a" }: HeroSectionProps) {
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2 text-base px-8">
-              Start Planning Free
-              <ArrowRight className="h-4 w-4" />
+              <LinkComponent href="/dashboard">
+                <span className="flex items-center gap-2">
+                  Start Planning Free
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </LinkComponent>
             </Button>
             <Button
               variant="outline"
