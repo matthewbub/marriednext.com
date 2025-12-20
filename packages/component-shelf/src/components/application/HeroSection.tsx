@@ -7,8 +7,14 @@ import {
   Calendar,
   Globe,
 } from "lucide-react";
+import type { ApplicationLinkComponent } from "./link-types";
 
-export function HeroSection() {
+type HeroSectionProps = {
+  Link?: ApplicationLinkComponent;
+};
+
+export function HeroSection({ Link = "a" }: HeroSectionProps) {
+  const LinkComponent = Link ?? "a";
   return (
     <section className="pt-32 pb-20 px-6 lg:px-8 overflow-hidden">
       <div className="mx-auto max-w-7xl">
@@ -39,8 +45,12 @@ export function HeroSection() {
               size="lg"
               className="gap-2 text-base px-8 bg-transparent"
             >
-              <Github className="h-4 w-4" />
-              View Source
+              <LinkComponent href="https://github.com/matthewbub/marriednext.com">
+                <span className="flex items-center gap-2">
+                  <Github className="h-4 w-4" />
+                  View Source
+                </span>
+              </LinkComponent>
             </Button>
           </div>
 
