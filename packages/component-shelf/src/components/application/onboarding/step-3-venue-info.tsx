@@ -19,7 +19,8 @@ import {
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
-import { MapPin, ArrowLeft, Check, Loader2 } from "lucide-react";
+import { MapPin, ArrowLeft, Check, Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "../../ui/alert";
 
 export type Step3FormData = {
   fieldLocationName: string;
@@ -42,6 +43,7 @@ export function Step3VenueInfo({ onSubmit, onSkip }: Step3VenueInfoProps) {
   const dispatch = useAppDispatch();
   const formData = useAppSelector((state) => state.onboarding.formData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { register, handleSubmit } = useForm<Step3FormData>({
     defaultValues: {
@@ -59,18 +61,30 @@ export function Step3VenueInfo({ onSubmit, onSkip }: Step3VenueInfoProps) {
 
   const handleFormSubmit = async (data: Step3FormData) => {
     setIsSubmitting(true);
+    setError(null);
     dispatch(updateFormData(data));
     const completeFormData = { ...formData, ...data };
-    await onSubmit?.(completeFormData);
-    dispatch(completeOnboarding());
-    setIsSubmitting(false);
+    try {
+      await onSubmit?.(completeFormData);
+      dispatch(completeOnboarding());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSkip = async () => {
     setIsSubmitting(true);
-    await onSkip?.(formData);
-    dispatch(completeOnboarding());
-    setIsSubmitting(false);
+    setError(null);
+    try {
+      await onSkip?.(formData);
+      dispatch(completeOnboarding());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
@@ -93,6 +107,12 @@ export function Step3VenueInfo({ onSubmit, onSkip }: Step3VenueInfoProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="fieldLocationName" className="text-base">
