@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
 import { ApplicationOnboardingPage } from "component-shelf";
-import { validateSubdomain } from "@/lib/utils/site";
 
 const LinkWrapper = ({
   href = "/",
@@ -13,10 +12,5 @@ const LinkWrapper = ({
 };
 
 export default function OnboardingPage() {
-  return (
-    <ApplicationOnboardingPage
-      link={LinkWrapper}
-      validateSubdomain={validateSubdomain}
-    />
-  );
+  return <ApplicationOnboardingPage link={LinkWrapper} />;
 }

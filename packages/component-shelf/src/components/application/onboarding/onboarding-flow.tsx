@@ -18,16 +18,16 @@ export type OnboardingFlowProps = {
   link: React.ComponentType<ComponentPropsWithoutRef<"a">>;
   onSubmit?: (data: OnboardingFormData) => void | Promise<void>;
   onSkip?: (data: OnboardingFormData) => void | Promise<void>;
-  validateSubdomain: (
+  onSubdomainBlur?: (
     subdomain: string
-  ) => Promise<{ valid: boolean; error?: string }>;
+  ) => Promise<{ available: boolean; error?: string }>;
 };
 
 export function OnboardingFlow({
   link: Link,
   onSubmit,
   onSkip,
-  validateSubdomain,
+  onSubdomainBlur,
 }: OnboardingFlowProps) {
   const { currentStep, isComplete } = useAppSelector(
     (state) => state.onboarding
@@ -136,7 +136,7 @@ export function OnboardingFlow({
         <div className="max-w-2xl mx-auto">
           {currentStep === 1 && <Step1CoupleNames />}
           {currentStep === 2 && (
-            <Step2WeddingDetails validateSubdomain={validateSubdomain} />
+            <Step2WeddingDetails onSubdomainBlur={onSubdomainBlur} />
           )}
           {currentStep === 3 && (
             <Step3VenueInfo onSubmit={onSubmit} onSkip={onSkip} />

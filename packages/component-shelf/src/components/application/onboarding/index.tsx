@@ -8,7 +8,7 @@ export type OnboardingPageProps = {
   link: OnboardingFlowProps["link"];
   onSubmit?: OnboardingFlowProps["onSubmit"];
   onSkip?: OnboardingFlowProps["onSkip"];
-  validateSubdomain: OnboardingFlowProps["validateSubdomain"];
+  onSubdomainBlur?: OnboardingFlowProps["onSubdomainBlur"];
 };
 
 export { type OnboardingFormData };
@@ -17,7 +17,7 @@ export default function OnboardingPage({
   link,
   onSubmit,
   onSkip,
-  validateSubdomain,
+  onSubdomainBlur,
 }: OnboardingPageProps) {
   return (
     <StoreProvider>
@@ -25,7 +25,7 @@ export default function OnboardingPage({
         link={link}
         onSubmit={onSubmit}
         onSkip={onSkip}
-        validateSubdomain={validateSubdomain}
+        onSubdomainBlur={onSubdomainBlur}
       />
     </StoreProvider>
   );

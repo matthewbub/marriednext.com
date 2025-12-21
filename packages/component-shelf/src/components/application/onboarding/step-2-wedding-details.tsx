@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../lib/store/hooks";
 import {
@@ -40,12 +40,12 @@ type Step2FormData = {
 type SubdomainStatus = "idle" | "checking" | "valid" | "invalid";
 
 type Step2Props = {
-  validateSubdomain: (
-    subdomain: string,
-  ) => Promise<{ valid: boolean; error?: string }>;
+  onSubdomainBlur?: (
+    subdomain: string
+  ) => Promise<{ available: boolean; error?: string }>;
 };
 
-export function Step2WeddingDetails({ validateSubdomain }: Step2Props) {
+export function Step2WeddingDetails({ onSubdomainBlur }: Step2Props) {
   const dispatch = useAppDispatch();
   const formData = useAppSelector((state) => state.onboarding.formData);
   const [subdomainStatus, setSubdomainStatus] =
@@ -70,46 +70,20 @@ export function Step2WeddingDetails({ validateSubdomain }: Step2Props) {
 
   const subdomain = watch("subdomain");
 
-  const checkSubdomain = useCallback(
-    async (value: string): Promise<boolean> => {
-      if (!value || value.length < 3) {
-        setSubdomainStatus("idle");
-        setSubdomainError(null);
-        return false;
-      }
-
-      setSubdomainStatus("checking");
-      setSubdomainError(null);
-
-      try {
-        const data = await validateSubdomain(value);
-
-        if (data.valid) {
-          setSubdomainStatus("valid");
-          setSubdomainError(null);
-          return true;
-        } else {
-          setSubdomainStatus("invalid");
-          setSubdomainError(data.error || "This URL is not available");
-          return false;
-        }
-      } catch {
-        setSubdomainStatus("invalid");
-        setSubdomainError("Unable to verify availability. Please try again.");
-        return false;
-      }
-    },
-    [validateSubdomain],
-  );
-
   const onSubmit = async (data: Step2FormData) => {
     setIsSubmitting(true);
 
-    const isValid = await checkSubdomain(data.subdomain);
-
-    if (!isValid) {
+    if (subdomainStatus === "invalid") {
       setError("subdomain", {
         message: subdomainError || "Please choose a different URL",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (data.subdomain.length < 3) {
+      setError("subdomain", {
+        message: "Must be at least 3 characters",
       });
       setIsSubmitting(false);
       return;
@@ -130,6 +104,38 @@ export function Step2WeddingDetails({ validateSubdomain }: Step2Props) {
     clearErrors("subdomain");
     setSubdomainStatus("idle");
     setSubdomainError(null);
+  };
+
+  const handleSubdomainBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (!value || value.length < 3) {
+      setSubdomainStatus("idle");
+      setSubdomainError(null);
+      return;
+    }
+
+    if (!onSubdomainBlur) {
+      return;
+    }
+
+    setSubdomainStatus("checking");
+    setSubdomainError(null);
+
+    try {
+      const result = await onSubdomainBlur(value);
+
+      if (result.available) {
+        setSubdomainStatus("valid");
+        setSubdomainError(null);
+      } else {
+        setSubdomainStatus("invalid");
+        setSubdomainError(result.error || "This URL is not available");
+      }
+    } catch {
+      setSubdomainStatus("invalid");
+      setSubdomainError("Unable to verify availability. Please try again.");
+    }
   };
 
   return (
@@ -169,12 +175,12 @@ export function Step2WeddingDetails({ validateSubdomain }: Step2Props) {
                       subdomainStatus === "valid"
                         ? "border-green-500 focus-visible:ring-green-500"
                         : subdomainStatus === "invalid"
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
+                        ? "border-destructive focus-visible:ring-destructive"
+                        : ""
                     }`}
                     onChange={handleSubdomainChange}
+                    onBlur={handleSubdomainBlur}
                   />
-                  {/* Status indicator */}
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {subdomainStatus === "checking" && (
                       <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
@@ -192,7 +198,6 @@ export function Step2WeddingDetails({ validateSubdomain }: Step2Props) {
                 </span>
               </div>
 
-              {/* URL preview and status messages */}
               <div className="space-y-1">
                 {subdomain && subdomain.length >= 3 && (
                   <p className="text-xs text-muted-foreground">
