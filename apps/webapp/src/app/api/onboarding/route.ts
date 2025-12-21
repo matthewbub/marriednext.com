@@ -1,67 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
-import {
-  wedding,
-  weddingUsers,
-  collaboratorInvitations,
-} from "orm-shelf/schema";
+import { wedding, weddingUsers } from "orm-shelf/schema";
 import { eq } from "drizzle-orm";
 import { updateWeddingCache } from "@/lib/wedding/cache";
-import { RESERVED_SUBDOMAINS } from "@/lib/routing/multitenancy";
+import { subdomainSchema } from "@/lib/utils/site";
 import { Role } from "component-shelf";
 import * as Sentry from "@sentry/nextjs";
 
-const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-export async function GET() {
-  const user = await currentUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const userEmail = user.emailAddresses[0]?.emailAddress;
-  if (!userEmail) {
-    return NextResponse.json(
-      { error: "User email not found" },
-      { status: 400 }
-    );
-  }
-
-  const pendingInvitation = await db.query.collaboratorInvitations.findFirst({
-    where: eq(collaboratorInvitations.invitedEmail, userEmail),
-    columns: {
-      id: true,
-      weddingId: true,
-      role: true,
-      invitedByName: true,
-      sentAt: true,
-    },
-  });
-
-  return NextResponse.json({
-    hasInvitation: !!pendingInvitation,
-    invitation: pendingInvitation || null,
-  });
-}
-
 const onboardingSchema = z.object({
-  subdomain: z
-    .string()
-    .min(3, "Subdomain must be at least 3 characters")
-    .max(63, "Subdomain must be at most 63 characters")
-    .regex(
-      SUBDOMAIN_REGEX,
-      "Subdomain can only contain lowercase letters, numbers, and hyphens"
-    )
-    .refine(
-      (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain),
-      "This subdomain is reserved and cannot be used"
-    ),
-  partner1Name: z.string().min(1, "Partner 1 name is required"),
-  partner2Name: z.string().min(1, "Partner 2 name is required"),
-  weddingDate: z.string().min(1, "Wedding date is required"),
+  fieldNameA: z.string().min(1, "Partner 1 name is required"),
+  fieldNameB: z.string().min(1, "Partner 2 name is required"),
+  subdomain: subdomainSchema,
+  fieldEventDate: z.string().min(1, "Wedding date is required"),
+  fieldEventTime: z.string().optional(),
+  fieldLocationName: z.string().optional(),
+  fieldPreferredLocationAddressLine1: z.string().optional(),
+  fieldPreferredLocationAddressLine2: z.string().optional(),
+  fieldPreferredLocationCity: z.string().optional(),
+  fieldPreferredLocationState: z.string().optional(),
+  fieldPreferredLocationZipCode: z.string().optional(),
+  fieldPreferredLocationCountry: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -77,8 +37,20 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const validatedData = onboardingSchema.parse(body);
-    const { subdomain, partner1Name, partner2Name, weddingDate } =
-      validatedData;
+    const {
+      fieldNameA,
+      fieldNameB,
+      subdomain,
+      fieldEventDate,
+      fieldEventTime,
+      fieldLocationName,
+      fieldPreferredLocationAddressLine1,
+      fieldPreferredLocationAddressLine2,
+      fieldPreferredLocationCity,
+      fieldPreferredLocationState,
+      fieldPreferredLocationZipCode,
+      fieldPreferredLocationCountry,
+    } = validatedData;
 
     const [existingByUserId, existingBySubdomain] = await Promise.all([
       db
@@ -107,15 +79,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const displayName = `${partner1Name} & ${partner2Name}`;
     const [newWedding] = await db
       .insert(wedding)
       .values({
         subdomain,
-        fieldDisplayName: displayName,
-        fieldNameA: partner1Name,
-        fieldNameB: partner2Name,
-        fieldEventDate: weddingDate,
+        fieldDisplayName: `${fieldNameA} & ${fieldNameB}`,
+        fieldNameA,
+        fieldNameB,
+        fieldEventDate,
+        fieldEventTime,
+        fieldLocationName,
+        fieldPreferredLocationAddressLine1,
+        fieldPreferredLocationAddressLine2,
+        fieldPreferredLocationCity,
+        fieldPreferredLocationState,
+        fieldPreferredLocationZipCode,
+        fieldPreferredLocationCountry,
         createdByClerkUserId: userId,
       })
       .returning();
@@ -124,8 +103,8 @@ export async function POST(req: NextRequest) {
       extra: {
         weddingId: newWedding.id,
         userId,
-        fieldNameA: partner1Name,
-        fieldNameB: partner2Name,
+        fieldNameA,
+        fieldNameB,
       },
     });
 
@@ -185,69 +164,6 @@ export async function POST(req: NextRequest) {
     Sentry.captureException(error);
     return NextResponse.json(
       { error: "Failed to complete onboarding" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT() {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userEmail = user.emailAddresses[0]?.emailAddress;
-    if (!userEmail) {
-      return NextResponse.json(
-        { error: "User email not found" },
-        { status: 400 }
-      );
-    }
-
-    const pendingInvitation = await db.query.collaboratorInvitations.findFirst({
-      where: eq(collaboratorInvitations.invitedEmail, userEmail),
-    });
-
-    if (!pendingInvitation) {
-      return NextResponse.json(
-        { error: "No pending invitation found" },
-        { status: 404 }
-      );
-    }
-
-    await db.insert(weddingUsers).values({
-      weddingId: pendingInvitation.weddingId,
-      clerkUserId: user.id,
-      role: pendingInvitation.role,
-    });
-
-    await db
-      .update(collaboratorInvitations)
-      .set({
-        status: "accepted",
-        respondedAt: new Date().toISOString(),
-      })
-      .where(eq(collaboratorInvitations.id, pendingInvitation.id));
-
-    const client = await clerkClient();
-    await client.users.updateUserMetadata(user.id, {
-      publicMetadata: {
-        onboardingComplete: true,
-        weddingId: pendingInvitation.weddingId,
-        role: pendingInvitation.role,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      weddingId: pendingInvitation.weddingId,
-      role: pendingInvitation.role,
-    });
-  } catch (error) {
-    console.error("Error accepting invitation:", error);
-    return NextResponse.json(
-      { error: "Failed to accept invitation" },
       { status: 500 }
     );
   }

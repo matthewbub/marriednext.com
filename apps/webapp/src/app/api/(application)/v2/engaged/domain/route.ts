@@ -9,25 +9,11 @@ import {
   updateWeddingCache,
   invalidateWeddingCache,
 } from "@/lib/wedding/cache";
-import { RESERVED_SUBDOMAINS } from "@/lib/routing/multitenancy";
-
-const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { subdomainSchema } from "@/lib/utils/site";
 
 const domainSettingsSchema = z
   .object({
-    subdomain: z
-      .string()
-      .min(3, "Subdomain must be at least 3 characters")
-      .max(63, "Subdomain must be at most 63 characters")
-      .regex(
-        SUBDOMAIN_REGEX,
-        "Subdomain can only contain lowercase letters, numbers, and hyphens"
-      )
-      .refine(
-        (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain),
-        "This subdomain is reserved and cannot be used"
-      )
-      .optional(),
+    subdomain: subdomainSchema.optional(),
     customDomain: z
       .string()
       .min(1, "Custom domain cannot be empty")

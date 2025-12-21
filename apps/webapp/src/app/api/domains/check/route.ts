@@ -4,23 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
 import { wedding } from "orm-shelf/schema";
 import { eq } from "drizzle-orm";
-import { RESERVED_SUBDOMAINS } from "@/lib/routing/multitenancy";
-
-const SUBDOMAIN_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { subdomainSchema } from "@/lib/utils/site";
 
 const checkSubdomainSchema = z.object({
-  subdomain: z
-    .string()
-    .min(3, "Subdomain must be at least 3 characters")
-    .max(63, "Subdomain must be at most 63 characters")
-    .regex(
-      SUBDOMAIN_REGEX,
-      "Subdomain can only contain lowercase letters, numbers, and hyphens"
-    )
-    .refine(
-      (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain),
-      "This subdomain is reserved and cannot be used"
-    ),
+  subdomain: subdomainSchema,
 });
 
 export async function POST(req: NextRequest) {
