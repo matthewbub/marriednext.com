@@ -9,7 +9,8 @@
     "clean:component-shelf": "rimraf packages/component-shelf/node_modules packages/component-shelf/.turbo packages/component-shelf/dist packages/component-shelf/package-lock.json packages/component-shelf/pnpm-lock.json",
     "clean:label-shelf": "rimraf packages/label-shelf/node_modules packages/label-shelf/.turbo packages/label-shelf/dist packages/label-shelf/package-lock.json packages/label-shelf/pnpm-lock.json",
     "clean:orm-shelf": "rimraf packages/orm-shelf/node_modules packages/orm-shelf/.turbo packages/orm-shelf/dist packages/orm-shelf/package-lock.json packages/orm-shelf/pnpm-lock.json",
-    "clean": "pnpm run clean:webapp && pnpm run clean:style-shelf && pnpm run clean:component-shelf && pnpm run clean:label-shelf && pnpm run clean:orm-shelf && pnpm run clean:root"
+    "clean": "pnpm run clean:webapp && pnpm run clean:style-shelf && pnpm run clean:component-shelf && pnpm run clean:label-shelf && pnpm run clean:orm-shelf && pnpm run clean:root",
+    "fork:env": "cp ./example.env apps/webapp/.env.local"
   },
   "devDependencies": {
     "rimraf": "6.1.2",
