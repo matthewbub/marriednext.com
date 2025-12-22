@@ -187,9 +187,7 @@ export function ApplicationDashboardOverview({
             </CardContent>
           </Card>
 
-          {/* Seating Overview */}
-          {/* Save the Date CTA */}
-          <div className="grid gap-6 sm:grid-cols-2">
+          {/* <div className="grid gap-6 sm:grid-cols-2">
             <Card className="relative overflow-hidden border-primary/20 hover:border-primary/40 transition-colors">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
               <CardContent className="p-6">
@@ -222,8 +220,6 @@ export function ApplicationDashboardOverview({
                 </Button>
               </CardContent>
             </Card>
-
-            {/* Seating Planner CTA */}
             <Card className="relative overflow-hidden border-accent/20 hover:border-accent/40 transition-colors">
               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2" />
               <CardContent className="p-6">
@@ -256,7 +252,7 @@ export function ApplicationDashboardOverview({
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Column - 1/3 width */}

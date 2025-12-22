@@ -387,7 +387,7 @@ export function ApplicationWeddingDetailsSettings({
           )}
 
           {/* Couple Names Section */}
-          <Card>
+          <Card id="couple-information">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -456,7 +456,7 @@ export function ApplicationWeddingDetailsSettings({
           </Card>
 
           {/* Date & Time Section */}
-          <Card>
+          <Card id="date-time">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -511,7 +511,7 @@ export function ApplicationWeddingDetailsSettings({
           </Card>
 
           {/* Venue Section */}
-          <Card>
+          <Card id="venue-information">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -564,7 +564,7 @@ export function ApplicationWeddingDetailsSettings({
           </Card>
 
           {/* Maps Integration Section */}
-          <Card>
+          <Card id="maps-integration">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -631,7 +631,7 @@ export function ApplicationWeddingDetailsSettings({
           </Card>
 
           {/* Mailing Address Section */}
-          <Card>
+          <Card id="venue-location">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -772,7 +772,7 @@ export function ApplicationWeddingDetailsSettings({
       </Form>
 
       {/* Domain Settings - Separate from main form */}
-      <Card>
+      <Card id="domain-settings">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">

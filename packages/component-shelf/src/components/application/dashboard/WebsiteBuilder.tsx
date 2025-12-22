@@ -23,13 +23,6 @@ import {
   TabsTrigger,
 } from "../../../components/ui/tabs";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../components/ui/select";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -41,7 +34,6 @@ import {
   AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog";
 import {
-  Palette,
   ImageIcon,
   Layout,
   ExternalLink,
@@ -49,7 +41,6 @@ import {
   Smartphone,
   Monitor,
   Upload,
-  Check,
   LayoutTemplate,
   RotateCcw,
   Copy,
@@ -65,53 +56,6 @@ import {
   type WebsiteSection,
 } from "../../theme/lisastheme/sections";
 
-const colorPresets = [
-  {
-    name: "Sage & Cream",
-    primary: "#6B7B5F",
-    secondary: "#FAF9F6",
-    accent: "#D4A574",
-  },
-  {
-    name: "Blush & Gold",
-    primary: "#D4A5A5",
-    secondary: "#FFF9F5",
-    accent: "#C9A962",
-  },
-  {
-    name: "Navy & Silver",
-    primary: "#2C3E50",
-    secondary: "#F8F9FA",
-    accent: "#A8A9AD",
-  },
-  {
-    name: "Terracotta",
-    primary: "#C17767",
-    secondary: "#FBF7F4",
-    accent: "#8B7355",
-  },
-  {
-    name: "Lavender",
-    primary: "#9B8AA5",
-    secondary: "#FAF8FC",
-    accent: "#C9B8D4",
-  },
-  {
-    name: "Forest",
-    primary: "#3D5A47",
-    secondary: "#F5F7F4",
-    accent: "#8B9D77",
-  },
-];
-
-const fontOptions = [
-  { value: "playfair", label: "Playfair Display", style: "font-serif" },
-  { value: "cormorant", label: "Cormorant Garamond", style: "font-serif" },
-  { value: "dm-sans", label: "DM Sans", style: "font-sans" },
-  { value: "inter", label: "Inter", style: "font-sans" },
-  { value: "lora", label: "Lora", style: "font-serif" },
-];
-
 const MAX_GALLERY_PHOTOS = 8;
 
 type WebsiteContent = {
@@ -123,12 +67,6 @@ type WebsiteContent = {
   heroImage: string;
   ourStoryImage: string;
   galleryImages: string[];
-};
-
-type WebsiteStyles = {
-  headingFont: string;
-  bodyFont: string;
-  colorPreset: number;
 };
 
 export type WebsiteBuilderPhoto = {
@@ -205,12 +143,6 @@ export function ApplicationWebsiteBuilder({
     galleryImages: [],
   };
 
-  const defaultStyles: WebsiteStyles = {
-    headingFont: "playfair",
-    bodyFont: "dm-sans",
-    colorPreset: 0,
-  };
-
   const [content, setContent] = useState<WebsiteContent>(() => {
     const heroPhoto = data?.photos?.find(
       (p) => p.photoType === "hero" && p.themeId === themeId
@@ -241,15 +173,8 @@ export function ApplicationWebsiteBuilder({
     };
   });
 
-  const [styles, setStyles] = useState<WebsiteStyles>({
-    headingFont: "playfair",
-    bodyFont: "dm-sans",
-    colorPreset: 0,
-  });
-
   const handleReset = () => {
     setContent(defaultContent);
-    setStyles(defaultStyles);
     discardChanges();
     setHasChanges(false);
   };
@@ -275,11 +200,6 @@ export function ApplicationWebsiteBuilder({
 
   const copyUrl = () => {
     navigator.clipboard.writeText(`https://${displayUrl}`);
-  };
-
-  const updateStyles = (key: keyof WebsiteStyles, value: string | number) => {
-    setStyles((prev) => ({ ...prev, [key]: value }));
-    setHasChanges(true);
   };
 
   const handleCollapsedTabClick = (tab: string) => {
@@ -597,19 +517,6 @@ export function ApplicationWebsiteBuilder({
               variant="ghost"
               size="icon"
               className={`h-9 w-9 ${
-                activeTab === "style"
-                  ? "text-foreground bg-muted"
-                  : "text-muted-foreground"
-              }`}
-              title="Style"
-              onClick={() => handleCollapsedTabClick("style")}
-            >
-              <Palette className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`h-9 w-9 ${
                 activeTab === "layout"
                   ? "text-foreground bg-muted"
                   : "text-muted-foreground"
@@ -629,14 +536,10 @@ export function ApplicationWebsiteBuilder({
               className="w-full"
             >
               <div className="flex items-center gap-2">
-                <TabsList className="grid flex-1 grid-cols-3">
+                <TabsList className="grid flex-1 grid-cols-2">
                   <TabsTrigger value="images" className="text-xs">
                     <ImageIcon className="h-4 w-4 sm:mr-1" />
                     <span className="hidden sm:inline">Images</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="style" className="text-xs">
-                    <Palette className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">Style</span>
                   </TabsTrigger>
                   <TabsTrigger value="layout" className="text-xs">
                     <Layout className="h-4 w-4 sm:mr-1" />
@@ -841,107 +744,14 @@ export function ApplicationWebsiteBuilder({
                 </Card>
               </TabsContent>
 
-              {/* Style Tab */}
-              <TabsContent value="style" className="mt-4 space-y-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Typography</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Heading Font</Label>
-                      <Select
-                        value={styles.headingFont}
-                        onValueChange={(value) =>
-                          updateStyles("headingFont", value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {fontOptions.map((font) => (
-                            <SelectItem key={font.value} value={font.value}>
-                              <span className={font.style}>{font.label}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Body Font</Label>
-                      <Select
-                        value={styles.bodyFont}
-                        onValueChange={(value) =>
-                          updateStyles("bodyFont", value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {fontOptions.map((font) => (
-                            <SelectItem key={font.value} value={font.value}>
-                              <span className={font.style}>{font.label}</span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Color Palette</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      {colorPresets.map((preset, index) => (
-                        <button
-                          key={preset.name}
-                          onClick={() => updateStyles("colorPreset", index)}
-                          className={cn(
-                            "relative p-3 rounded-lg border-2 text-left transition-all",
-                            styles.colorPreset === index
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-muted-foreground"
-                          )}
-                        >
-                          {styles.colorPreset === index && (
-                            <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="h-3 w-3 text-primary-foreground" />
-                            </div>
-                          )}
-                          <div className="flex gap-1.5 mb-2">
-                            <div
-                              className="h-6 w-6 rounded-full border border-border"
-                              style={{ backgroundColor: preset.primary }}
-                            />
-                            <div
-                              className="h-6 w-6 rounded-full border border-border"
-                              style={{ backgroundColor: preset.secondary }}
-                            />
-                            <div
-                              className="h-6 w-6 rounded-full border border-border"
-                              style={{ backgroundColor: preset.accent }}
-                            />
-                          </div>
-                          <p className="text-xs font-medium">{preset.name}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
               {/* Layout Tab */}
               <TabsContent value="layout" className="mt-4 space-y-4">
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Sections</CardTitle>
                     <CardDescription>
-                      Toggle and reorder website sections
+                      Toggle website sections to customize how your website
+                      looks and feels.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
