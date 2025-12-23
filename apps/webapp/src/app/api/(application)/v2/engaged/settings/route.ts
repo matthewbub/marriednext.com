@@ -16,7 +16,6 @@ const weddingSettingsSchema = z
     eventDate: z.string().optional(),
     eventTime: z.string().optional(),
     locationName: z.string().optional(),
-    locationAddress: z.string().optional(),
     mapsEmbedUrl: z.string().optional(),
     mapsShareUrl: z.string().optional(),
     preferredAddressLine1: z.string().optional(),
@@ -74,7 +73,6 @@ export async function GET() {
           : "",
         eventTime: weddingData.fieldEventTime || "",
         locationName: weddingData.fieldLocationName || "",
-        locationAddress: weddingData.fieldLocationAddress || "",
         mapsEmbedUrl: weddingData.fieldMapsEmbedUrl || "",
         mapsShareUrl: weddingData.fieldMapsShareUrl || "",
         preferredAddressLine1:
@@ -139,9 +137,6 @@ export async function PATCH(req: NextRequest) {
     }
     if (validatedData.locationName !== undefined) {
       updateData.fieldLocationName = validatedData.locationName;
-    }
-    if (validatedData.locationAddress !== undefined) {
-      updateData.fieldLocationAddress = validatedData.locationAddress;
     }
     if (validatedData.mapsEmbedUrl !== undefined) {
       updateData.fieldMapsEmbedUrl = validatedData.mapsEmbedUrl;
@@ -241,7 +236,6 @@ export async function PATCH(req: NextRequest) {
           : "",
         eventTime: updatedWedding.fieldEventTime || "",
         locationName: updatedWedding.fieldLocationName || "",
-        locationAddress: updatedWedding.fieldLocationAddress || "",
         mapsEmbedUrl: updatedWedding.fieldMapsEmbedUrl || "",
         mapsShareUrl: updatedWedding.fieldMapsShareUrl || "",
         preferredAddressLine1:

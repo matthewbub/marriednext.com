@@ -16,6 +16,7 @@ import {
   Camera,
   Grid3X3,
   CalendarHeart,
+  MapPin,
 } from "lucide-react";
 import { RsvpProgress } from "./RsvpProgress";
 
@@ -28,6 +29,7 @@ export interface HomeStatsData {
   declinedGuests: number;
   pendingGuests: number;
   weddingDate: string | null;
+  weddingLocation: string | null;
   coupleNames: {
     nameA: string;
     nameB: string;
@@ -118,6 +120,44 @@ export function ApplicationDashboardOverview({
           </Button>
         )}
       </div>
+
+      {!isLoading && !data?.weddingDate && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/10">
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 shrink-0">
+            <CalendarHeart className="h-4 w-4 text-primary" />
+          </div>
+          <p className="text-sm text-muted-foreground flex-1">
+            Landed on a wedding date? Update your website and start the
+            countdown!
+          </p>
+          <LinkComponent
+            href="/engaged/settings#date-time"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            Set Date
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </LinkComponent>
+        </div>
+      )}
+
+      {!isLoading && data?.weddingDate && !data?.weddingLocation && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/10">
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 shrink-0">
+            <MapPin className="h-4 w-4 text-primary" />
+          </div>
+          <p className="text-sm text-muted-foreground flex-1">
+            Know where the big day is happening? Add your venue to share with
+            guests!
+          </p>
+          <LinkComponent
+            href="/engaged/settings#location"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            Set Location
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </LinkComponent>
+        </div>
+      )}
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
