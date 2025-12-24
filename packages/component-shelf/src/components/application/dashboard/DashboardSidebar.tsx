@@ -78,7 +78,6 @@ export function ApplicationDashboardSidebar({
   const coupleDisplayName = getCoupleDisplayName(wedding);
   const weddingDateFormatted = formatWeddingDate(wedding?.eventDate ?? null);
   const daysUntil = getDaysUntilWedding(wedding?.eventDate ?? null);
-  const liveWebsiteUrl = process.env.NEXT_PUBLIC_APP_LIVE_URL ?? "";
 
   const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
@@ -93,11 +92,7 @@ export function ApplicationDashboardSidebar({
           {weddingDateFormatted}
         </p>
         {!wedding?.eventDate ? (
-          <Link
-            href={`${liveWebsiteUrl}/engaged/settings#date-time`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href={`/engaged/settings#date-time`}>
             <div className="flex items-center gap-2 mt-3">
               <div className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
               <span className="text-xs text-muted-foreground">{daysUntil}</span>
