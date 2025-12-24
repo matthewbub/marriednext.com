@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`antialiased bg-transparent`}>
+        <body className="antialiased">
           <QueryProvider>
             <div className="mx-auto">{children}</div>
           </QueryProvider>

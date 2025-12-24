@@ -122,8 +122,8 @@ export function ApplicationDashboardOverview({
       </div>
 
       {!isLoading && !data?.weddingDate && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/10">
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 shrink-0">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20">
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/15 shrink-0">
             <CalendarHeart className="h-4 w-4 text-primary" />
           </div>
           <p className="text-sm text-muted-foreground flex-1">
@@ -141,8 +141,8 @@ export function ApplicationDashboardOverview({
       )}
 
       {!isLoading && data?.weddingDate && !data?.weddingLocation && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/10">
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 shrink-0">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20">
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/15 shrink-0">
             <MapPin className="h-4 w-4 text-primary" />
           </div>
           <p className="text-sm text-muted-foreground flex-1">
