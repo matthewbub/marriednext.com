@@ -359,9 +359,11 @@ export function AddInvitationDialog({
                                 </Button>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground flex items-center gap-2">
-                              Full name as written on the invitation
-                            </p>
+                            {index === fields.length - 1 && (
+                              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                Full name as written on the invitation
+                              </p>
+                            )}
                             <FormMessage />
                           </FormItem>
                         )}
