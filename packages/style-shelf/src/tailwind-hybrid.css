@@ -9,7 +9,7 @@
 @custom-variant dark (&:is(.dark *));
 :root {
   /* Warm, romantic palette - cream, sage, and charcoal */
-  --background: oklch(0.97 0.01 80);
+  --background: oklch(0.98 0.01 85);
   --foreground: oklch(0.2 0.02 60);
   --card: oklch(0.99 0.005 80);
   --card-foreground: oklch(0.2 0.02 60);

@@ -149,7 +149,7 @@ export default function SideNavigation({
 
   return (
     <div>
-      <div className="md:hidden fixed top-4 right-4 z-50">
+      <div className="@md:hidden fixed top-4 right-4 z-50">
         <Hamburger
           toggled={isMenuOpen}
           toggle={setIsMenuOpen}
@@ -162,7 +162,7 @@ export default function SideNavigation({
       <div
         ref={overlayRef}
         aria-hidden={!isMenuOpen}
-        className="md:hidden fixed inset-0 z-40 flex items-center justify-center"
+        className="@md:hidden fixed inset-0 z-40 flex items-center justify-center"
         style={{ visibility: "hidden", opacity: 0, pointerEvents: "none" }}
       >
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm" />

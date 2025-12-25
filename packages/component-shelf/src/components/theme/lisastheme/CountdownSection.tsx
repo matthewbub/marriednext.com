@@ -115,30 +115,47 @@ export function CountdownSection({
           />
         )}
 
-        <div className="flex items-center justify-center gap-8 @md:gap-16 mt-12">
-          {timeUnits.map((unit, index) => (
-            <div key={unit.key} className="flex items-center gap-8">
-              <div className="text-center">
-                <span className="block font-serif text-6xl @md:text-8xl text-[#2c2c2c] font-light">
-                  {String(unit.value).padStart(2, "0")}
-                </span>
-                {unit.label && (
-                  <EditableLabel
-                    as="span"
-                    value={unit.label}
-                    editable={editable}
-                    onChange={(v) => handleChange(unit.key, v)}
-                    className="block mt-3 text-[#745656]/70 tracking-[0.3em] uppercase text-xs"
-                  />
+        <div className="flex flex-col @md:flex-row items-center justify-center gap-8 @md:gap-16 mt-12">
+          <div className="text-center">
+            <span className="block font-serif text-7xl @md:text-8xl text-[#2c2c2c] font-light">
+              {String(timeUnits[0].value).padStart(2, "0")}
+            </span>
+            {timeUnits[0].label && (
+              <EditableLabel
+                as="span"
+                value={timeUnits[0].label}
+                editable={editable}
+                onChange={(v) => handleChange(timeUnits[0].key, v)}
+                className="block mt-3 text-[#745656]/70 tracking-[0.3em] uppercase text-xs"
+              />
+            )}
+          </div>
+
+          <div className="flex items-center justify-center gap-8 @md:gap-16">
+            {timeUnits.slice(1).map((unit, index) => (
+              <div key={unit.key} className="flex items-center gap-8">
+                <div className="text-center">
+                  <span className="block font-serif text-6xl @md:text-8xl text-[#2c2c2c] font-light">
+                    {String(unit.value).padStart(2, "0")}
+                  </span>
+                  {unit.label && (
+                    <EditableLabel
+                      as="span"
+                      value={unit.label}
+                      editable={editable}
+                      onChange={(v) => handleChange(unit.key, v)}
+                      className="block mt-3 text-[#745656]/70 tracking-[0.3em] uppercase text-xs"
+                    />
+                  )}
+                </div>
+                {index < timeUnits.length - 2 && (
+                  <span className="text-[#745656]/30 text-4xl @md:text-5xl font-light hidden @md:block">
+                    :
+                  </span>
                 )}
               </div>
-              {index < timeUnits.length - 1 && (
-                <span className="text-[#745656]/30 text-4xl @md:text-5xl font-light hidden @md:block">
-                  :
-                </span>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

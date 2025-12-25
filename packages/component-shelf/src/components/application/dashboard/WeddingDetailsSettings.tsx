@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
+import { Separator } from "../../../components/ui/separator";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import {
@@ -29,7 +30,6 @@ import {
   Clock,
   Globe,
   Map,
-  Home,
   Save,
   RotateCcw,
   CheckCircle2,
@@ -50,8 +50,7 @@ const weddingDetailsSchema = z.object({
   nameB: z.string().min(1, "Partner 2 name is required"),
   eventDate: z.string().min(1, "Event date is required"),
   eventTime: z.string().min(1, "Event time is required"),
-  locationName: z.string().min(1, "Location name is required"),
-  locationAddress: z.string().min(1, "Location address is required"),
+  locationName: z.string().optional(),
   mapsEmbedUrl: z.string().optional(),
   mapsShareUrl: z.string().optional(),
   preferredAddressLine1: z.string().optional(),
@@ -90,8 +89,7 @@ export interface WeddingDetailsData {
   nameB: string;
   eventDate: string;
   eventTime: string;
-  locationName: string;
-  locationAddress: string;
+  locationName?: string;
   mapsEmbedUrl?: string;
   mapsShareUrl?: string;
   preferredAddressLine1?: string;
@@ -131,8 +129,7 @@ export function ApplicationWeddingDetailsSettings({
       nameB: weddingDetails.nameB,
       eventDate: weddingDetails.eventDate,
       eventTime: weddingDetails.eventTime,
-      locationName: weddingDetails.locationName,
-      locationAddress: weddingDetails.locationAddress,
+      locationName: weddingDetails.locationName || "",
       mapsEmbedUrl: weddingDetails.mapsEmbedUrl || "",
       mapsShareUrl: weddingDetails.mapsShareUrl || "",
       preferredAddressLine1: weddingDetails.preferredAddressLine1 || "",
@@ -326,7 +323,7 @@ export function ApplicationWeddingDetailsSettings({
       <Form {...form}>
         <form onSubmit={handleSave} className="space-y-6">
           {/* Page Header - Sticky */}
-          <div className="sticky top-14 z-10 bg-background/95 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
+          <div className="sticky top-14 z-10 backdrop-blur-md border-b border-border -mx-6 px-6 py-4 -mt-6 mb-6">
             <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="font-serif text-3xl font-semibold text-foreground">
@@ -387,7 +384,7 @@ export function ApplicationWeddingDetailsSettings({
           )}
 
           {/* Couple Names Section */}
-          <Card>
+          <Card id="couple-information">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -456,7 +453,7 @@ export function ApplicationWeddingDetailsSettings({
           </Card>
 
           {/* Date & Time Section */}
-          <Card>
+          <Card id="date-time">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -510,61 +507,8 @@ export function ApplicationWeddingDetailsSettings({
             </CardContent>
           </Card>
 
-          {/* Venue Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-                  <MapPin className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="font-serif text-xl">
-                    Venue Information
-                  </CardTitle>
-                  <CardDescription>
-                    Where your wedding will be held
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="locationName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Venue Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., Rosewood Gardens Estate"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="locationAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Full venue address" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This address will be displayed on your website for guests
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
           {/* Maps Integration Section */}
-          <Card>
+          <Card id="maps-integration">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
@@ -630,24 +574,41 @@ export function ApplicationWeddingDetailsSettings({
             </CardContent>
           </Card>
 
-          {/* Mailing Address Section */}
-          <Card>
+          {/* Venue Location Section */}
+          <Card id="venue-location">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">
-                  <Home className="h-5 w-5 text-primary" />
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="font-serif text-xl">
                     Venue Location
                   </CardTitle>
                   <CardDescription>
-                    Detailed address for your wedding venue
+                    Where your wedding will be held
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="locationName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Venue Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Rosewood Gardens Estate"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Separator className="my-8" />
               <FormField
                 control={form.control}
                 name="preferredAddressLine1"
@@ -772,7 +733,7 @@ export function ApplicationWeddingDetailsSettings({
       </Form>
 
       {/* Domain Settings - Separate from main form */}
-      <Card>
+      <Card id="domain-settings">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10">

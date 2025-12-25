@@ -2,6 +2,7 @@
 alwaysApply: true
 ---
 
+- remember our target audience is non-technical users
 - you never need to run a build, or lint, unless explicitly stated.
 - always do the bare minimum, using the path of least resistance to achieve your task.
 - always use pnpm
