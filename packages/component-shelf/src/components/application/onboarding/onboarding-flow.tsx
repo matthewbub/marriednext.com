@@ -5,7 +5,8 @@ import { Step1CoupleNames } from "./step-1-couple-names";
 import { Step2WeddingDetails } from "./step-2-wedding-details";
 import { Step3VenueInfo, type OnboardingFormData } from "./step-3-venue-info";
 import { OnboardingComplete } from "./onboarding-complete";
-import { Heart, Calendar, MapPin, Check } from "lucide-react";
+import { Calendar, MapPin, Check, Heart } from "lucide-react";
+import { MarriedNextLogo } from "../../ui/married-next-logo";
 import type { ComponentPropsWithoutRef } from "react";
 
 const steps = [
@@ -47,7 +48,7 @@ export function OnboardingFlow({
       <header className="relative z-10 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <Heart className="h-6 w-6 text-primary fill-primary" />
+            <MarriedNextLogo className="h-6 w-6" />
             <span className="font-serif text-xl font-semibold text-foreground">
               Married Next
             </span>

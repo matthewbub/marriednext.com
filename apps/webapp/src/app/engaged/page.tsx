@@ -22,6 +22,7 @@ const homeStatsSchema = z.object({
   declinedGuests: z.number(),
   pendingGuests: z.number(),
   weddingDate: z.string().nullable(),
+  weddingLocation: z.string().nullable(),
   coupleNames: z.object({
     nameA: z.string(),
     nameB: z.string(),
@@ -61,6 +62,7 @@ function transformToOverviewData(response: HomeStatsResponse): HomeStatsData {
     declinedGuests: response.declinedGuests,
     pendingGuests: response.pendingGuests,
     weddingDate: response.weddingDate,
+    weddingLocation: response.weddingLocation,
     coupleNames: response.coupleNames,
     subscriptionPlan: response.subscriptionPlan,
     siteUrl: response.siteUrl,

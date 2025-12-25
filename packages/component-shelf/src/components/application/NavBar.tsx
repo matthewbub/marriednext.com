@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Menu, X, Heart } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { MarriedNextLogo } from "../ui/married-next-logo";
 import type { ApplicationLinkComponent } from "./link-types";
 
 interface NavbarProps {
@@ -27,7 +28,7 @@ export function Navbar({
       <nav className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Heart className="h-6 w-6 text-primary fill-primary" />
+            <MarriedNextLogo className="h-6 w-6" />
             <span className="font-serif text-xl font-semibold text-foreground">
               Married Next
             </span>

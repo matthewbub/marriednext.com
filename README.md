@@ -1,70 +1,126 @@
-## marriednext.com
+# marriednext.com
 
-Create and deploy your wedding website in minutes. Manage your guest list and collect reservations. Invite your spouse, wedding planner or long lost uncle to help manage the website. All for free!
+Create and deploy your wedding website in minutes. Manage your guest list and collect reservations. Invite your spouse, wedding planner, or long lost uncle to help manage the website. All for free.
 
-**Whats in this repo?**
+## Tech Stack
 
-This repository contains the full source code for marriednext.com, as well as the tenants of marriednext.com.
+- **Framework:** [Next.js 16](https://nextjs.org/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Database:** [Neon](https://neon.tech/) (PostgreSQL)
+- **ORM:** [Drizzle](https://orm.drizzle.team/)
+- **Auth:** [Clerk](https://clerk.com/)
+- **Cache:** [Upstash Redis](https://upstash.com/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **UI:** [shadcn/ui](https://ui.shadcn.com/) + [Radix](https://www.radix-ui.com/)
+- **Forms:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **Hosting:** [Vercel](https://vercel.com/)
+- **DNS:** [Porkbun](https://porkbun.com/)
+- **Monitoring:** [Sentry](https://sentry.io/)
+- **Monorepo:** [Turborepo](https://turborepo.com/)
+- **Package Manager:** [pnpm](https://pnpm.io/)
 
-## Development
+## Project Structure
 
-**Prerequisites**
+```
+marriednext.com/
+├── apps/
+│   └── webapp/              # Next.js application
+├── packages/
+│   ├── component-shelf/     # Shared React components & Storybook
+│   ├── style-shelf/         # Global CSS & Tailwind configuration
+│   ├── orm-shelf/           # Drizzle schema, migrations & types
+│   └── label-shelf/         # i18n labels & theme text
+└── docs/                    # Internal documentation
+```
 
-We're using https://turborepo.com/, you should install turbo globally if you haven't already.
+### Packages
+
+| Package           | Purpose                                                       |
+| ----------------- | ------------------------------------------------------------- |
+| `component-shelf` | Shared React components, theme templates, and Storybook       |
+| `style-shelf`     | Global Tailwind CSS configuration and shared styles           |
+| `orm-shelf`       | Drizzle ORM schema, database migrations, and type definitions |
+| `label-shelf`     | Internationalization labels and theme-specific text content   |
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 10+
+- Turbo CLI (installed globally)
 
 ```bash
 pnpm add turbo --global
 ```
 
-To run the application locally, you'll need the environment variables below properly configured. After that it's a simple matter of running the dev server via pnpm.
+### Setup
+
+1. Clone the repository and install dependencies:
 
 ```bash
-# run all dev servers (Webapp, Storybook)
+git clone <repo-url>
+cd marriednext.com
+pnpm install
+```
+
+2. Copy the example environment file:
+
+```bash
+pnpm run fork:env
+```
+
+3. Configure your environment variables in `apps/webapp/.env.local` (see [Environment Variables](#environment-variables))
+
+4. Start the development server:
+
+```bash
 pnpm run dev
 ```
 
-Alternatively you can filter out specific apps with the `--filter` flag
+The webapp runs at [http://localhost:3000](http://localhost:3000)
+
+### Running Specific Apps
 
 ```bash
+# Webapp only
 pnpm turbo dev --filter=webapp
-```
 
-Once the _webapp_ is running locally, there's alot of technical documentation in the /documentation route. e.g. http://localhost:3000/documentation or https://marriednext.com/documentation (sorry its not in markdown, there isn't really a need for these to be living documents so i just had AI convert them into markup that looks nice instead of going through the hassle of configuring a markdown parser)
-
-### Running Storybook Locally
-
-```bash
+# Storybook only
 pnpm turbo dev --filter=component-shelf
 ```
 
-Enviroment variable required for a good time (no errors)
+## Environment Variables
 
-- DATABASE_URL (I use postgres)
-- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (Clerk Auth)
-- CLERK_SECRET_KEY
-- NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
-- NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/
-- VERCEL_BEARER_TOKEN (Vercel for Custom Domains)
-- VERCEL_PROJECT_ID
-- VERCEL_TEAM_ID
-- BLOB_READ_WRITE_TOKEN (Vercel Blog Storage)
-- UPSTASH_REDIS_REST_URL (Used as a cache layer for the tenant app)
-- UPSTASH_REDIS_REST_TOKEN
+Copy `example.env` to `apps/webapp/.env.local` and configure:
+
+| Variable                            | Service | Description                  |
+| ----------------------------------- | ------- | ---------------------------- |
+| `DATABASE_URL`                      | Neon    | PostgreSQL connection string |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk   | Public auth key              |
+| `CLERK_SECRET_KEY`                  | Clerk   | Server-side auth key         |
+| `CLERK_FRONTEND_API_URL`            | Clerk   | Frontend API endpoint        |
+| `VERCEL_BEARER_TOKEN`               | Vercel  | API authentication           |
+| `VERCEL_PROJECT_ID`                 | Vercel  | Project identifier           |
+| `VERCEL_TEAM_ID`                    | Vercel  | Team identifier              |
+| `BLOB_READ_WRITE_TOKEN`             | Vercel  | Blob storage access          |
+| `PORKBUN_API_KEY`                   | Porkbun | DNS management key           |
+| `PORKBUN_SECRET_KEY`                | Porkbun | DNS management secret        |
+| `UPSTASH_REDIS_REST_URL`            | Upstash | Redis endpoint               |
+| `UPSTASH_REDIS_REST_TOKEN`          | Upstash | Redis auth token             |
 
 ## Setting up Clerk
 
-In Clerk we need to enable the ability to capture the First and Last name of the Engaged users. You'll receive application errors in the invitation flow if you don't have the proper settings enabled.
+### Enable Name Capture
 
-1. Go to the "Configure" tab
-2. Select "User & authentication" from the "Configure" sidebar
-3. Select the "User model" tab
-4. Enable the "First and last name" switch. (We DO NOT require first and last name)
+1. Go to the **Configure** tab in Clerk Dashboard
+2. Select **User & authentication** → **User model**
+3. Enable the **First and last name** switch
 
-**Configure Clerk's JWT Template**:
+### Configure JWT Template
 
-1. Go to your Clerk Dashboard
-2. Navigate to Configure → Sessions → Customize session token
-3. Add this JSON template:
+1. Go to **Configure** → **Sessions** → **Customize session token**
+2. Add this template:
 
 ```json
 {
@@ -76,47 +132,55 @@ In Clerk we need to enable the ability to capture the First and Last name of the
 }
 ```
 
-4. Save the template
+### Configure Domain Paths
 
-**Configure Domain Paths**
-
-1. Go to your Clerk Dashboard
-2. Navigate to **Configure** → **Developers** → **Paths**
-3. Configure the **Application Paths**:
+1. Go to **Configure** → **Developers** → **Paths**
+2. Set **Application Paths**:
    - **Home Url:** `marriednext.com/engaged`
-4. Configure the **Component Paths**:
-   - **Sign In**
-     - Select "Sign-in page on application domain"
-     - Set value to `marriednext.com/sign-in`
-   - **Sign Up**
-     - Select "Sign-up page on application domain"
-     - Set value to `marriednext.com/register`
-   - **Signed Out**
-     - Select "Path on application domain"
-     - Set value to `marriednext.com/sign-in`
+3. Set **Component Paths**:
+   - **Sign In:** `marriednext.com/sign-in` (on application domain)
+   - **Sign Up:** `marriednext.com/register` (on application domain)
+   - **Signed Out:** `marriednext.com/sign-in` (path on application domain)
 
-Make sure you have the paths configured
+![Clerk Domain Paths](https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/ClerkDomainPaths.png)
 
-![https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/ClerkDomainPaths.png](https://4ctc36zdopsyz0ok.public.blob.vercel-storage.com/photos/marketing/ClerkDomainPaths.png)
+## Documentation
+
+Once the webapp is running locally, visit [http://localhost:3000/documentation](http://localhost:3000/documentation) for detailed technical documentation.
+
+Additional internal docs:
+
+- [`docs/onboarding.md`](docs/onboarding.md) - Onboarding flow & testing guide
+- [`docs/github/branching.md`](docs/github/branching.md) - Git workflow
 
 ## Cron Jobs
 
-We run basic health checks on all 3rd party services for telemetry into their uptime relative to our services. All errors are reported to Sentry
+Health checks run on all 3rd party services for telemetry. Errors are reported to Sentry.
 
 ## Troubleshooting
 
-If you need a sanity check, run the following command to clear all auto-generated assets.
+### Reset the Project
 
-```shell
+Clear all auto-generated assets:
+
+```bash
 pnpm run clean
+pnpm install
 ```
 
-_Don't forget to reinstall the project dependencies before running the dev server or production build_
+### Clerk `form_param_unknown` Errors
 
-### Clerk `form_param_unknown` errors when Accepting Invitations
+Enable the **First and last name** switch in Clerk Dashboard. See [Setting up Clerk](#setting-up-clerk).
 
-You need to enable the "First and last name" switch in the Clerk Dashboard. See [Setting Up Clerk](#setting-up-clerk) for more information.
+### Stuck on `/onboarding` Screen
 
-### Stuck on the /onboarding screen
+Configure the JWT Template in Clerk. See [Configure JWT Template](#configure-jwt-template).
 
-You need to **Configure Clerk's JWT Template** as documented in the [Setting up Clerk](#setting-up-clerk) section
+### Resetting a Test User
+
+After submitting the onboarding form, records are created in multiple services. To fully reset:
+
+1. Delete the user in Clerk Dashboard
+2. Delete the Wedding record from Neon
+3. Remove the subdomain from Vercel → Project → Domains
+4. Delete the CNAME records from Porkbun

@@ -62,6 +62,7 @@ export async function GET() {
       declinedGuests: guestStats?.declinedGuests ?? 0,
       pendingGuests: guestStats?.pendingGuests ?? 0,
       weddingDate: weddingData.fieldEventDate || null,
+      weddingLocation: weddingData.fieldLocationName || null,
       coupleNames: {
         nameA: weddingData.fieldNameA || "",
         nameB: weddingData.fieldNameB || "",

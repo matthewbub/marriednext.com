@@ -9,11 +9,13 @@
     "clean:component-shelf": "rimraf packages/component-shelf/node_modules packages/component-shelf/.turbo packages/component-shelf/dist packages/component-shelf/package-lock.json packages/component-shelf/pnpm-lock.json",
     "clean:label-shelf": "rimraf packages/label-shelf/node_modules packages/label-shelf/.turbo packages/label-shelf/dist packages/label-shelf/package-lock.json packages/label-shelf/pnpm-lock.json",
     "clean:orm-shelf": "rimraf packages/orm-shelf/node_modules packages/orm-shelf/.turbo packages/orm-shelf/dist packages/orm-shelf/package-lock.json packages/orm-shelf/pnpm-lock.json",
-    "clean": "pnpm run clean:webapp && pnpm run clean:style-shelf && pnpm run clean:component-shelf && pnpm run clean:label-shelf && pnpm run clean:orm-shelf && pnpm run clean:root"
+    "clean": "pnpm run clean:webapp && pnpm run clean:style-shelf && pnpm run clean:component-shelf && pnpm run clean:label-shelf && pnpm run clean:orm-shelf && pnpm run clean:root",
+    "fork:env": "cp ./example.env apps/webapp/.env.local"
   },
   "devDependencies": {
     "rimraf": "6.1.2",
     "turbo": "2.6.1"
   },
-  "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b"
+  "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b",
+  "version": "0.1.1"
 }

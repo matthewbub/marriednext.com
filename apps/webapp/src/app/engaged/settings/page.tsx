@@ -21,7 +21,6 @@ const weddingDetailsSchema = z.object({
   eventDate: z.string(),
   eventTime: z.string(),
   locationName: z.string(),
-  locationAddress: z.string(),
   mapsEmbedUrl: z.string(),
   mapsShareUrl: z.string(),
   preferredAddressLine1: z.string(),
@@ -99,7 +98,6 @@ function transformToWeddingDetailsData(
     eventDate: response.weddingDetails.eventDate,
     eventTime: response.weddingDetails.eventTime,
     locationName: response.weddingDetails.locationName,
-    locationAddress: response.weddingDetails.locationAddress,
     mapsEmbedUrl: response.weddingDetails.mapsEmbedUrl,
     mapsShareUrl: response.weddingDetails.mapsShareUrl,
     preferredAddressLine1: response.weddingDetails.preferredAddressLine1,
@@ -126,8 +124,7 @@ type WeddingDetailsFormData = {
   nameB: string;
   eventDate: string;
   eventTime: string;
-  locationName: string;
-  locationAddress: string;
+  locationName?: string;
   mapsEmbedUrl?: string;
   mapsShareUrl?: string;
   preferredAddressLine1?: string;
@@ -150,8 +147,7 @@ async function updateSettings(data: WeddingDetailsFormData): Promise<void> {
       nameB: data.nameB,
       eventDate: data.eventDate || null,
       eventTime: data.eventTime,
-      locationName: data.locationName,
-      locationAddress: data.locationAddress,
+      locationName: data.locationName || "",
       mapsEmbedUrl: data.mapsEmbedUrl || "",
       mapsShareUrl: data.mapsShareUrl || "",
       preferredAddressLine1: data.preferredAddressLine1 || "",

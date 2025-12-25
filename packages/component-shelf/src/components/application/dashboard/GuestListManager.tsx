@@ -48,8 +48,6 @@ import {
   UserPlus,
   Trash2,
   Edit,
-  Download,
-  Upload,
   ChevronDown,
   ChevronRight,
   UserCircle,
@@ -59,6 +57,7 @@ import { AddInvitationDialog } from "./AddInvitationDialog";
 import type { AddInvitationPayload } from "./AddInvitationDialog";
 import { EditInvitationDialog } from "./EditInvitationDialog";
 import { useEditInvitationDialogStore } from "../../../stores/editInvitationDialogStore";
+import { RsvpProgress } from "./RsvpProgress";
 
 export type RsvpLookupMethod = "FIRST_NAME_ONLY" | "FULL_NAME" | "EMAIL";
 
@@ -326,14 +325,14 @@ export function ApplicationGuestListManager({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+          {/* <Button variant="outline" size="sm" className="gap-2 bg-transparent">
             <Upload className="h-4 w-4" />
             Import
           </Button>
           <Button variant="outline" size="sm" className="gap-2 bg-transparent">
             <Download className="h-4 w-4" />
             Export
-          </Button>
+          </Button> */}
           <AddInvitationDialog
             onSubmit={onAddInvitation}
             isSubmitting={isAddingInvitation}
@@ -341,75 +340,22 @@ export function ApplicationGuestListManager({
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-border">
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Total Invitations</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold mt-1">
-                  {totalInvitations}
-                </p>
-              )}
-            </div>
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Total Guests</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold mt-1">{totalGuests}</p>
-              )}
-            </div>
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Attending</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold text-green-600 mt-1">
-                  {attendingGuests}
-                </p>
-              )}
-            </div>
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Declined</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold text-red-500 mt-1">
-                  {declinedGuests}
-                </p>
-              )}
-            </div>
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Awaiting</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold text-amber-600 mt-1">
-                  {pendingGuests}
-                </p>
-              )}
-            </div>
-            <div className="flex-1 p-4 text-center">
-              <p className="text-sm text-muted-foreground">Response Rate</p>
-              {isLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto mt-1" />
-              ) : (
-                <p className="text-2xl font-semibold mt-1">
-                  {totalGuests > 0
-                    ? Math.round(
-                        ((attendingGuests + declinedGuests) / totalGuests) * 100
-                      )
-                    : 0}
-                  %
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <RsvpProgress
+        isLoading={isLoading}
+        totalInvitations={totalInvitations}
+        totalGuests={totalGuests}
+        respondedGuests={attendingGuests + declinedGuests}
+        responseRate={
+          totalGuests > 0
+            ? Math.round(
+                ((attendingGuests + declinedGuests) / totalGuests) * 100
+              )
+            : 0
+        }
+        attendingGuests={attendingGuests}
+        declinedGuests={declinedGuests}
+        pendingGuests={pendingGuests}
+      />
 
       <div className="">
         <Card>

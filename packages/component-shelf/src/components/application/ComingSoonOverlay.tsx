@@ -10,7 +10,7 @@ export function ComingSoonOverlay({
   description = "We're working hard to bring you this feature. Check back soon!",
 }: ComingSoonOverlayProps) {
   return (
-    <div className="flex items-center justify-center bg-background/80 backdrop-blur-sm mt-28">
+    <div className="flex items-center justify-center backdrop-blur-sm mt-28">
       <div className="mx-4 max-w-md text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
           <Construction className="h-8 w-8 text-primary" />

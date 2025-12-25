@@ -159,7 +159,7 @@ export function LisasTheme({
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen @container">
       <StickyNav
         customization={getSectionLabels("stickyNav")}
         editable={editable}
