@@ -1,16 +1,12 @@
 {
   "scripts": {
+    "postinstall": "chmod +x scripts/*.sh",
+    "fork:env": "./scripts/fork-env.sh",
+    "backup:env": "./scripts/backup-env.sh",
     "dev": "turbo dev",
     "build": "turbo build",
     "test:storybook": "pnpm --filter component-shelf test",
-    "clean:root": "rimraf package-lock.json pnpm-lock.json dist node_modules .turbo",
-    "clean:webapp": "rimraf apps/webapp/node_modules apps/webapp/.turbo apps/webapp/dist apps/webapp/package-lock.json apps/webapp/pnpm-lock.json apps/webapp/.next",
-    "clean:style-shelf": "rimraf packages/style-shelf/node_modules packages/style-shelf/.turbo packages/style-shelf/dist packages/style-shelf/package-lock.json packages/style-shelf/pnpm-lock.json",
-    "clean:component-shelf": "rimraf packages/component-shelf/node_modules packages/component-shelf/.turbo packages/component-shelf/dist packages/component-shelf/package-lock.json packages/component-shelf/pnpm-lock.json",
-    "clean:label-shelf": "rimraf packages/label-shelf/node_modules packages/label-shelf/.turbo packages/label-shelf/dist packages/label-shelf/package-lock.json packages/label-shelf/pnpm-lock.json",
-    "clean:orm-shelf": "rimraf packages/orm-shelf/node_modules packages/orm-shelf/.turbo packages/orm-shelf/dist packages/orm-shelf/package-lock.json packages/orm-shelf/pnpm-lock.json",
-    "clean": "pnpm run clean:webapp && pnpm run clean:style-shelf && pnpm run clean:component-shelf && pnpm run clean:label-shelf && pnpm run clean:orm-shelf && pnpm run clean:root",
-    "fork:env": "cp ./example.env apps/webapp/.env.local"
+    "clean": "./scripts/clean.sh"
   },
   "devDependencies": {
     "rimraf": "6.1.2",

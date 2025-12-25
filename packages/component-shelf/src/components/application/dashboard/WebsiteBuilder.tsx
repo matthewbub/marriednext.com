@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   useWebsiteBuilderStore,
   areLabelsEqual,
   areSectionsEqual,
 } from "../../../stores/websiteBuilderStore";
+import { isBuilderMessage, postToIframe } from "../../../lib/builderMessages";
 import {
   Card,
   CardContent,
@@ -115,6 +116,7 @@ export function ApplicationWebsiteBuilder({
     Map<string, string>
   >(new Map());
   const [isSaving, setIsSaving] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const {
     pendingLabels,
@@ -126,7 +128,48 @@ export function ApplicationWebsiteBuilder({
     commitSections,
     discardChanges,
     hasUnsavedChanges,
+    selectedElement,
+    setSelectedElement,
+    clearSelectedElement,
   } = useWebsiteBuilderStore();
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (!isBuilderMessage(event)) return;
+
+      const message = event.data;
+      if (message.type === "SECTION_CLICKED") {
+        setSelectedElement({
+          sectionId: message.payload.sectionId,
+        });
+      } else if (message.type === "LABEL_CLICKED") {
+        setSelectedElement({
+          sectionId: message.payload.sectionId,
+          labelKey: message.payload.labelKey,
+          currentValue: message.payload.currentValue,
+        });
+      } else if (message.type === "DESELECT") {
+        clearSelectedElement();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [setSelectedElement, clearSelectedElement]);
+
+  const updatePreviewLabel = useCallback(
+    (sectionId: string, labelKey: string, value: string) => {
+      if (iframeRef.current) {
+        postToIframe(iframeRef.current, {
+          type: "UPDATE_LABEL",
+          payload: { sectionId, labelKey, value },
+        });
+      }
+    },
+    []
+  );
+
+  void updatePreviewLabel;
 
   const getInitialContent = (): WebsiteContent => {
     const heroPhoto = data?.photos?.find(
@@ -795,6 +838,40 @@ export function ApplicationWebsiteBuilder({
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {selectedElement && (
+              <Card className="border-primary">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base">
+                      {SECTION_DISPLAY_NAMES[selectedElement.sectionId] ||
+                        selectedElement.sectionId}
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={clearSelectedElement}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    Click on elements in the preview to edit them
+                  </CardDescription>
+                </CardHeader>
+                {selectedElement.labelKey && (
+                  <CardContent>
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Editing: </span>
+                      <span className="font-medium">
+                        {selectedElement.labelKey}
+                      </span>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            )}
           </div>
         )}
 
@@ -883,7 +960,8 @@ export function ApplicationWebsiteBuilder({
                 </div>
               ) : data ? (
                 <iframe
-                  src={`/tenant/${data?.subdomain}/?preview=true`}
+                  ref={iframeRef}
+                  src={`/builder/${data?.subdomain}`}
                   className="w-full h-[calc(100dvh-12rem)]"
                   title="Wedding website preview"
                   loading="lazy"

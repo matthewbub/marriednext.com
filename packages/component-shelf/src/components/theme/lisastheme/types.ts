@@ -31,6 +31,7 @@ export interface LisasThemeTypes {
   editable?: boolean;
   contained?: boolean;
   onCustomizationChange?: (section: string, key: string, value: string) => void;
+  onSectionClick?: (sectionId: string) => void;
 }
 
 /**
