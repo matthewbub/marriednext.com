@@ -19,6 +19,7 @@ export type OnboardingFlowProps = {
   link: React.ComponentType<ComponentPropsWithoutRef<"a">>;
   onSubmit?: (data: OnboardingFormData) => void | Promise<void>;
   onSkip?: (data: OnboardingFormData) => void | Promise<void>;
+  onComplete?: () => void | Promise<void>;
   onSubdomainBlur?: (
     subdomain: string
   ) => Promise<{ available: boolean; error?: string }>;
@@ -28,6 +29,7 @@ export function OnboardingFlow({
   link: Link,
   onSubmit,
   onSkip,
+  onComplete,
   onSubdomainBlur,
 }: OnboardingFlowProps) {
   const { currentStep, isComplete } = useAppSelector(
@@ -35,7 +37,7 @@ export function OnboardingFlow({
   );
 
   if (isComplete) {
-    return <OnboardingComplete link={Link} />;
+    return <OnboardingComplete link={Link} onComplete={onComplete} />;
   }
 
   return (

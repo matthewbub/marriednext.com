@@ -1,17 +1,23 @@
 "use client";
 
+import { useEffect, type ComponentPropsWithoutRef } from "react";
 import { useAppSelector } from "../../../lib/store/hooks";
 import { Card, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Check, Sparkles, ArrowRight } from "lucide-react";
-import type { ComponentPropsWithoutRef } from "react";
 
 export function OnboardingComplete({
   link: Link,
+  onComplete,
 }: {
   link: React.ComponentType<ComponentPropsWithoutRef<"a">>;
+  onComplete?: () => void | Promise<void>;
 }) {
   const formData = useAppSelector((state) => state.onboarding.formData);
+
+  useEffect(() => {
+    onComplete?.();
+  }, [onComplete]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-background relative overflow-hidden">

@@ -8,6 +8,7 @@ export type OnboardingPageProps = {
   link: OnboardingFlowProps["link"];
   onSubmit?: OnboardingFlowProps["onSubmit"];
   onSkip?: OnboardingFlowProps["onSkip"];
+  onComplete?: OnboardingFlowProps["onComplete"];
   onSubdomainBlur?: OnboardingFlowProps["onSubdomainBlur"];
 };
 
@@ -17,6 +18,7 @@ export default function OnboardingPage({
   link,
   onSubmit,
   onSkip,
+  onComplete,
   onSubdomainBlur,
 }: OnboardingPageProps) {
   return (
@@ -25,6 +27,7 @@ export default function OnboardingPage({
         link={link}
         onSubmit={onSubmit}
         onSkip={onSkip}
+        onComplete={onComplete}
         onSubdomainBlur={onSubdomainBlur}
       />
     </StoreProvider>
