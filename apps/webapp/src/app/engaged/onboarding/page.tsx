@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { ApplicationOnboardingPage } from "component-shelf";
 import { LinkWrapper } from "@/components/LinkWrapper";
 import { useSession } from "@clerk/nextjs";
@@ -11,9 +12,9 @@ import {
 export default function OnboardingPage() {
   const { session } = useSession();
 
-  const handleComplete = async () => {
+  const handleComplete = useCallback(async () => {
     await session?.reload();
-  };
+  }, [session]);
 
   return (
     <ApplicationOnboardingPage

@@ -10,6 +10,9 @@ import {
   invalidateWeddingCache,
 } from "@/lib/wedding/cache";
 import { subdomainSchema } from "@/lib/utils/site";
+import * as Sentry from "@sentry/nextjs";
+
+const SLOW_REQUEST_THRESHOLD_MS = 3000;
 
 const domainSettingsSchema = z
   .object({
@@ -32,6 +35,8 @@ const domainSettingsSchema = z
   .strict();
 
 export async function PATCH(req: NextRequest) {
+  const startTime = performance.now();
+
   try {
     const [user, currentWedding] = await Promise.all([
       currentUser(),
@@ -156,6 +161,22 @@ export async function PATCH(req: NextRequest) {
     const hasCustomDomainUpgrade = !!updatedWedding.customDomain;
     const domainVerified = !!updatedWedding.customDomain;
 
+    const duration = performance.now() - startTime;
+    if (duration > SLOW_REQUEST_THRESHOLD_MS) {
+      Sentry.captureMessage("Domain API route took too long", {
+        level: "warning",
+        tags: {
+          service: "engaged-domain",
+        },
+        extra: {
+          durationMs: Math.round(duration),
+          thresholdMs: SLOW_REQUEST_THRESHOLD_MS,
+          weddingId: currentWedding.id,
+          updatedFields: Object.keys(updateData),
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
       domainSettings: {
@@ -166,14 +187,35 @@ export async function PATCH(req: NextRequest) {
       },
     });
   } catch (error) {
+    const duration = performance.now() - startTime;
+
     if (error instanceof z.ZodError) {
+      Sentry.captureException(error, {
+        level: "warning",
+        tags: {
+          service: "engaged-domain",
+          errorType: "validation",
+        },
+        extra: {
+          durationMs: Math.round(duration),
+          issues: error.issues,
+        },
+      });
       return NextResponse.json(
         { error: "Invalid request data", details: error.issues },
         { status: 400 }
       );
     }
 
-    console.error("Error updating domain settings:", error);
+    Sentry.captureException(error, {
+      tags: {
+        service: "engaged-domain",
+        errorType: "server",
+      },
+      extra: {
+        durationMs: Math.round(duration),
+      },
+    });
     return NextResponse.json(
       { error: "Failed to update domain settings" },
       { status: 500 }

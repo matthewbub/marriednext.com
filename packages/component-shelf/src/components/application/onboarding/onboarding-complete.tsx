@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ComponentPropsWithoutRef } from "react";
+import { useEffect, useRef, type ComponentPropsWithoutRef } from "react";
 import { useAppSelector } from "../../../lib/store/hooks";
 import { Card, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
@@ -14,8 +14,11 @@ export function OnboardingComplete({
   onComplete?: () => void | Promise<void>;
 }) {
   const formData = useAppSelector((state) => state.onboarding.formData);
+  const hasCalledComplete = useRef(false);
 
   useEffect(() => {
+    if (hasCalledComplete.current) return;
+    hasCalledComplete.current = true;
     onComplete?.();
   }, [onComplete]);
 
