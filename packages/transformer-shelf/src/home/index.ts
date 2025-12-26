@@ -1,7 +1,9 @@
 import type { HomeStatsResponse, HomeStatsData } from "types-shelf/home";
+import type { ShellResponse } from "types-shelf/shell";
 
 export function transformHomeStatsToOverviewData(
-  response: HomeStatsResponse
+  response: HomeStatsResponse,
+  shell: ShellResponse
 ): HomeStatsData {
   return {
     totalGuests: response.totalGuests,
@@ -11,10 +13,14 @@ export function transformHomeStatsToOverviewData(
     attendingGuests: response.attendingGuests,
     declinedGuests: response.declinedGuests,
     pendingGuests: response.pendingGuests,
-    weddingDate: response.weddingDate,
+    weddingDate: shell.wedding.eventDate,
     weddingLocation: response.weddingLocation,
-    coupleNames: response.coupleNames,
-    subscriptionPlan: response.subscriptionPlan,
+    coupleNames: {
+      nameA: shell.wedding.nameA,
+      nameB: shell.wedding.nameB,
+      displayName: shell.wedding.displayName,
+    },
+    subscriptionPlan: shell.subscriptionPlan,
     siteUrl: response.siteUrl,
     subdomain: response.subdomain,
     customDomain: response.customDomain,

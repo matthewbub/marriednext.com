@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/database/drizzle";
 import { guest, invitation } from "orm-shelf/schema";
 import { eq, sql } from "drizzle-orm";
-import { getCurrentWedding } from "@/lib/wedding/getCurrentWedding";
-import { buildSiteUrl, getInitials } from "@/lib/utils/site";
+import { getHomeStatsWedding } from "@/lib/wedding/getHomeStatsWedding";
+import { buildSiteUrl } from "@/lib/utils/site";
 
 export async function GET() {
   try {
-    const [user, weddingData] = await Promise.all([
-      currentUser(),
-      getCurrentWedding(),
-    ]);
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const weddingData = await getHomeStatsWedding();
 
     if (!weddingData) {
       return NextResponse.json({ error: "Wedding not found" }, { status: 404 });
@@ -46,11 +38,10 @@ export async function GET() {
     const responseRate =
       totalGuests > 0 ? Math.round((respondedGuests / totalGuests) * 100) : 0;
 
-    const subscriptionPlan = "Free";
     const siteUrl = buildSiteUrl(
       weddingData.subdomain,
       weddingData.customDomain,
-      subscriptionPlan
+      "Free"
     );
 
     return NextResponse.json({
@@ -61,27 +52,10 @@ export async function GET() {
       attendingGuests: guestStats?.attendingGuests ?? 0,
       declinedGuests: guestStats?.declinedGuests ?? 0,
       pendingGuests: guestStats?.pendingGuests ?? 0,
-      weddingDate: weddingData.fieldEventDate || null,
       weddingLocation: weddingData.fieldLocationName || null,
-      coupleNames: {
-        nameA: weddingData.fieldNameA || "",
-        nameB: weddingData.fieldNameB || "",
-        displayName: weddingData.fieldDisplayName || "",
-      },
-      subscriptionPlan,
       siteUrl,
       subdomain: weddingData.subdomain || null,
       customDomain: weddingData.customDomain || null,
-      user: {
-        fullName:
-          user.fullName ||
-          user.firstName ||
-          user.emailAddresses[0]?.emailAddress ||
-          "User",
-        imageUrl: user.imageUrl || null,
-        initials: getInitials(user.fullName, user.firstName, user.lastName),
-        email: user.emailAddresses[0]?.emailAddress || "",
-      },
       websiteTemplate: weddingData.websiteTemplate,
     });
   } catch (error) {

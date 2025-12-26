@@ -30,9 +30,10 @@ export default function DashboardPage() {
     queryFn: fetchHomeStats,
   });
 
-  const overviewData = homeStatsData
-    ? transformHomeStatsToOverviewData(homeStatsData)
-    : undefined;
+  const overviewData =
+    homeStatsData && shellData
+      ? transformHomeStatsToOverviewData(homeStatsData, shellData)
+      : undefined;
   const userData = shellData ? transformShellToUserData(shellData) : undefined;
   const weddingData = shellData
     ? transformShellToWeddingData(shellData)
