@@ -55,10 +55,11 @@ export function RsvpProgress({
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Responses received</span>
             <span className="font-medium text-foreground">
-              {respondedGuests} of {totalGuests} guests
+              {isLoading ? "-" : respondedGuests} of{" "}
+              {isLoading ? "-" : totalGuests} guests
             </span>
           </div>
-          <Progress value={responseRate} className="h-2" />
+          <Progress value={isLoading ? 0 : responseRate} className="h-2" />
         </div>
         <div className="grid grid-cols-3 gap-4 pt-2">
           <div className="text-center p-4 rounded-lg bg-accent/10">
@@ -84,4 +85,3 @@ export function RsvpProgress({
     </Card>
   );
 }
-

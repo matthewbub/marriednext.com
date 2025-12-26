@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "chromatic": "npx chromatic"
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
@@ -52,6 +53,7 @@
     "@tailwindcss/vite": "4.1.17",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "chromatic": "13.3.4",
     "date-fns": "catalog:",
     "cmdk": "catalog:",
     "gsap": "catalog:",

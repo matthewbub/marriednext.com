@@ -53,6 +53,15 @@ export type {
   ApplicationWebsiteBuilderProps,
 } from "./components/application/dashboard/WebsiteBuilder";
 
+export { WebsiteBuilderPreview } from "./components/application/dashboard/WebsiteBuilderPreview";
+export type {
+  WebsiteBuilderPreviewProps,
+  WebsiteBuilderData as WebsiteBuilderPreviewData,
+} from "./components/application/dashboard/WebsiteBuilderPreview";
+
+export { useWebsiteBuilderStore } from "./stores/websiteBuilderStore";
+export type { SelectedElement } from "./stores/websiteBuilderStore";
+
 export { ApplicationWeddingDetailsSettings } from "./components/application/dashboard/WeddingDetailsSettings";
 export type {
   DomainSettings,
@@ -91,6 +100,20 @@ export { googleMapsDefaults } from "./stories/GoogleMaps/GoogleMaps.constants";
 export type { GoogleMapsTypes } from "./stories/GoogleMaps/GoogleMaps.types";
 
 export { LisasTheme } from "./components/theme/lisastheme/LisasTheme";
+
+export {
+  postToParent,
+  postToIframe,
+  isBuilderMessage,
+  BUILDER_MESSAGE_SOURCE,
+} from "./lib/builderMessages";
+export type {
+  BuilderMessage,
+  BuilderMessageType,
+  SectionClickedPayload,
+  LabelClickedPayload,
+  UpdateLabelPayload,
+} from "./lib/builderMessages";
 
 export {
   Separator,

@@ -34,6 +34,7 @@ export function LisasTheme({
   editable = false,
   contained = false,
   onCustomizationChange,
+  onSectionClick,
 }: LisasThemeTypes) {
   const handleSectionChange =
     (section: string) => (key: string, value: string) => {
@@ -158,6 +159,17 @@ export function LisasTheme({
     return sectionsMap.get(sectionId)?.enabled ?? true;
   };
 
+  const handleSectionClick = (sectionId: string) => (e: React.MouseEvent) => {
+    if (editable && onSectionClick) {
+      e.stopPropagation();
+      onSectionClick(sectionId);
+    }
+  };
+
+  const sectionWrapperClass = editable
+    ? "cursor-pointer hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-2 transition-all"
+    : "";
+
   return (
     <div className="min-h-screen @container">
       <StickyNav
@@ -180,23 +192,25 @@ export function LisasTheme({
         ariaLabel="Main navigation"
       />
       {isSectionEnabled("hero") && (
-        <HeroSection
-          data={{
-            nameA: fieldNameA,
-            nameB: fieldNameB,
-            eventDate: fieldEventDate,
-            location: fieldLocationName,
-            imageUrl: heroImageUrl,
-            imageComponent: heroImageComponent,
-          }}
-          customization={getSectionLabels("hero")}
-          editable={editable}
-          contained={contained}
-          onCustomizationChange={handleSectionChange("hero")}
-        />
+        <div onClick={handleSectionClick("hero")} className={sectionWrapperClass}>
+          <HeroSection
+            data={{
+              nameA: fieldNameA,
+              nameB: fieldNameB,
+              eventDate: fieldEventDate,
+              location: fieldLocationName,
+              imageUrl: heroImageUrl,
+              imageComponent: heroImageComponent,
+            }}
+            customization={getSectionLabels("hero")}
+            editable={editable}
+            contained={contained}
+            onCustomizationChange={handleSectionChange("hero")}
+          />
+        </div>
       )}
       {isSectionEnabled("countdown") && (
-        <div suppressHydrationWarning>
+        <div onClick={handleSectionClick("countdown")} className={sectionWrapperClass} suppressHydrationWarning>
           <CountdownSection
             data={{ eventDate: fieldEventDate }}
             customization={getSectionLabels("countdown")}
@@ -206,72 +220,84 @@ export function LisasTheme({
         </div>
       )}
       {isSectionEnabled("ourStory") && (
-        <OurStorySection
+        <div onClick={handleSectionClick("ourStory")} className={sectionWrapperClass}>
+          <OurStorySection
+            data={{
+              nameA: fieldNameA,
+              nameB: fieldNameB,
+              imageUrl: ourStoryImageUrl,
+              imageComponent: ourStoryImageComponent,
+            }}
+            customization={getSectionLabels("ourStory")}
+            editable={editable}
+            onCustomizationChange={handleSectionChange("ourStory")}
+          />
+        </div>
+      )}
+      {isSectionEnabled("eventDetails") && (
+        <div onClick={handleSectionClick("eventDetails")} className={sectionWrapperClass}>
+          <EventDetailsSection
+            data={{
+              locationName: fieldLocationName,
+              locationAddress: fieldLocationAddress,
+              eventDate: fieldEventDate,
+              eventTime: fieldEventTime,
+              mapsShareUrl: fieldMapsShareUrl,
+            }}
+            customization={getSectionLabels("eventDetails")}
+            editable={editable}
+            onCustomizationChange={handleSectionChange("eventDetails")}
+          />
+        </div>
+      )}
+      {isSectionEnabled("gallery") && (
+        <div onClick={handleSectionClick("gallery")} className={sectionWrapperClass}>
+          <GallerySection
+            data={{
+              images:
+                galleryImages && galleryImages.length > 0
+                  ? galleryImages.map((url) => ({ src: url }))
+                  : undefined,
+            }}
+            customization={getSectionLabels("gallery")}
+            editable={editable}
+            onCustomizationChange={handleSectionChange("gallery")}
+          />
+        </div>
+      )}
+      {isSectionEnabled("faq") && (
+        <div onClick={handleSectionClick("faq")} className={sectionWrapperClass}>
+          <FaqSection
+            data={{}}
+            customization={getSectionLabels("faq")}
+            editable={editable}
+            onCustomizationChange={handleSectionChange("faq")}
+          />
+        </div>
+      )}
+      {isSectionEnabled("rsvp") && (
+        <div onClick={handleSectionClick("rsvp")} className={sectionWrapperClass}>
+          <RsvpSection
+            data={{ rsvpFormComponent }}
+            customization={getSectionLabels("rsvp")}
+            editable={editable}
+            onCustomizationChange={handleSectionChange("rsvp")}
+          />
+        </div>
+      )}
+      <div onClick={handleSectionClick("footer")} className={sectionWrapperClass}>
+        <FooterSection
           data={{
             nameA: fieldNameA,
             nameB: fieldNameB,
-            imageUrl: ourStoryImageUrl,
-            imageComponent: ourStoryImageComponent,
-          }}
-          customization={getSectionLabels("ourStory")}
-          editable={editable}
-          onCustomizationChange={handleSectionChange("ourStory")}
-        />
-      )}
-      {isSectionEnabled("eventDetails") && (
-        <EventDetailsSection
-          data={{
-            locationName: fieldLocationName,
-            locationAddress: fieldLocationAddress,
             eventDate: fieldEventDate,
-            eventTime: fieldEventTime,
-            mapsShareUrl: fieldMapsShareUrl,
+            location: fieldLocationName,
           }}
-          customization={getSectionLabels("eventDetails")}
+          customization={getSectionLabels("footer")}
           editable={editable}
-          onCustomizationChange={handleSectionChange("eventDetails")}
+          onCustomizationChange={handleSectionChange("footer")}
         />
-      )}
-      {isSectionEnabled("gallery") && (
-        <GallerySection
-          data={{
-            images:
-              galleryImages && galleryImages.length > 0
-                ? galleryImages.map((url) => ({ src: url }))
-                : undefined,
-          }}
-          customization={getSectionLabels("gallery")}
-          editable={editable}
-          onCustomizationChange={handleSectionChange("gallery")}
-        />
-      )}
-      {isSectionEnabled("faq") && (
-        <FaqSection
-          data={{}}
-          customization={getSectionLabels("faq")}
-          editable={editable}
-          onCustomizationChange={handleSectionChange("faq")}
-        />
-      )}
-      {isSectionEnabled("rsvp") && (
-        <RsvpSection
-          data={{ rsvpFormComponent }}
-          customization={getSectionLabels("rsvp")}
-          editable={editable}
-          onCustomizationChange={handleSectionChange("rsvp")}
-        />
-      )}
-      <FooterSection
-        data={{
-          nameA: fieldNameA,
-          nameB: fieldNameB,
-          eventDate: fieldEventDate,
-          location: fieldLocationName,
-        }}
-        customization={getSectionLabels("footer")}
-        editable={editable}
-        onCustomizationChange={handleSectionChange("footer")}
-      />
+      </div>
     </div>
   );
 }

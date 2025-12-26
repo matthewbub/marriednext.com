@@ -8,11 +8,18 @@ export type WebsiteSection = {
   order: number;
 };
 
+export type SelectedElement = {
+  sectionId: string;
+  labelKey?: string;
+  currentValue?: string;
+} | null;
+
 interface WebsiteBuilderStore {
   savedLabels: WebsiteLabels;
   pendingLabels: WebsiteLabels;
   savedSections: WebsiteSection[];
   pendingSections: WebsiteSection[];
+  selectedElement: SelectedElement;
   initializeLabels: (labels: WebsiteLabels) => void;
   initializeSections: (sections: WebsiteSection[]) => void;
   updateLabel: (section: string, key: string, value: string) => void;
@@ -21,6 +28,8 @@ interface WebsiteBuilderStore {
   commitSections: (sections: WebsiteSection[]) => void;
   discardChanges: () => void;
   hasUnsavedChanges: () => boolean;
+  setSelectedElement: (element: SelectedElement) => void;
+  clearSelectedElement: () => void;
 }
 
 export const areLabelsEqual = (
@@ -85,6 +94,7 @@ export const useWebsiteBuilderStore = create<WebsiteBuilderStore>(
     pendingLabels: {},
     savedSections: [],
     pendingSections: [],
+    selectedElement: null,
 
     initializeLabels: (labels) => {
       set({
@@ -148,6 +158,14 @@ export const useWebsiteBuilderStore = create<WebsiteBuilderStore>(
         !areLabelsEqual(savedLabels, pendingLabels) ||
         !areSectionsEqual(savedSections, pendingSections)
       );
+    },
+
+    setSelectedElement: (element) => {
+      set({ selectedElement: element });
+    },
+
+    clearSelectedElement: () => {
+      set({ selectedElement: null });
     },
   })
 );
