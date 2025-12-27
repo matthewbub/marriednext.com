@@ -144,10 +144,6 @@ export async function POST(req: NextRequest) {
       role: "spouse" as Role,
     };
 
-    console.log("[Onboarding API] About to update Clerk metadata:", {
-      userId,
-      metadataToSet,
-    });
     Sentry.addBreadcrumb({
       category: "onboarding",
       message: "About to update Clerk publicMetadata",
@@ -159,7 +155,6 @@ export async function POST(req: NextRequest) {
       publicMetadata: metadataToSet,
     });
 
-    console.log("[Onboarding API] Clerk metadata updated. New publicMetadata:", updatedUser.publicMetadata);
     Sentry.addBreadcrumb({
       category: "onboarding",
       message: "Clerk publicMetadata updated successfully",

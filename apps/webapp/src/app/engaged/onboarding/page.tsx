@@ -17,16 +17,18 @@ export default function OnboardingPage() {
   const handleSubmit = useCallback(
     async (data: ApplicationOnboardingFormData) => {
       const beforeMetadata = session?.user?.publicMetadata;
-      console.log("[Onboarding] Before submit - session metadata:", beforeMetadata);
       Sentry.addBreadcrumb({
         category: "onboarding",
         message: "Before createWeddingWithDomain",
         level: "info",
-        data: { subdomain: data.subdomain, hasSession: !!session, beforeMetadata },
+        data: {
+          subdomain: data.subdomain,
+          hasSession: !!session,
+          beforeMetadata,
+        },
       });
 
       await createWeddingWithDomain(data);
-      console.log("[Onboarding] createWeddingWithDomain completed");
 
       Sentry.addBreadcrumb({
         category: "onboarding",
@@ -38,12 +40,14 @@ export default function OnboardingPage() {
       await session?.reload();
 
       const afterMetadata = session?.user?.publicMetadata;
-      console.log("[Onboarding] After session.reload() - session metadata:", afterMetadata);
       Sentry.addBreadcrumb({
         category: "onboarding",
         message: "After session.reload()",
         level: "info",
-        data: { afterMetadata, metadataChanged: beforeMetadata !== afterMetadata },
+        data: {
+          afterMetadata,
+          metadataChanged: beforeMetadata !== afterMetadata,
+        },
       });
     },
     [session]
