@@ -71,7 +71,8 @@ async function inviteCollaborator(payload: { email: string; role: Role }) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    throw new Error("Failed to invite collaborator");
+    const data = await res.json();
+    throw new Error(data.error || "Failed to invite collaborator");
   }
   return res.json();
 }
@@ -150,6 +151,7 @@ export default function PermissionsPage() {
     : undefined;
 
   const handleInvite = (email: string, role: Role) => {
+    inviteMutation.reset();
     inviteMutation.mutate({ email, role });
   };
 
@@ -209,6 +211,7 @@ export default function PermissionsPage() {
         isInviting={inviteMutation.isPending}
         isRemoving={removeMutation.isPending}
         isLoading={isLoading}
+        inviteError={inviteMutation.error?.message ?? null}
       />
     </ApplicationDashboardLayout>
   );

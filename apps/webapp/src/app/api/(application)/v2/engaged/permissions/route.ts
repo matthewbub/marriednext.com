@@ -162,6 +162,18 @@ export async function POST(request: Request) {
     const dbRole = mapComponentRoleToDatabaseRole(role);
 
     const clerk = await clerkClient();
+
+    const existingUsers = await clerk.users.getUserList({
+      emailAddress: [email],
+    });
+
+    if (existingUsers.data.length > 0) {
+      return NextResponse.json(
+        { error: "Email already registered" },
+        { status: 409 }
+      );
+    }
+
     const invitation = await clerk.invitations.createInvitation({
       emailAddress: email,
       redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invitation`,

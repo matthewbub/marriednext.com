@@ -95,6 +95,7 @@ export interface ApplicationTeamPermissionsProps {
   isInviting?: boolean;
   isRemoving?: boolean;
   isLoading?: boolean;
+  inviteError?: string | null;
 }
 
 function PermissionsSkeleton() {
@@ -158,6 +159,7 @@ export function ApplicationTeamPermissions({
   isInviting = false,
   isRemoving = false,
   isLoading = false,
+  inviteError = null,
 }: ApplicationTeamPermissionsProps) {
   const [userRole, setUserRole] = useState<Role>(currentUser.role);
   const [internalCollaborators, setInternalCollaborators] =
@@ -182,11 +184,15 @@ export function ApplicationTeamPermissions({
 
   useEffect(() => {
     if (wasInviting.current && !isInviting) {
-      inviteForm.reset();
-      setShowInviteDialog(false);
+      if (inviteError) {
+        inviteForm.setError("email", { type: "server", message: inviteError });
+      } else {
+        inviteForm.reset();
+        setShowInviteDialog(false);
+      }
     }
     wasInviting.current = isInviting;
-  }, [isInviting, inviteForm]);
+  }, [isInviting, inviteForm, inviteError]);
 
   if (isLoading) {
     return <PermissionsSkeleton />;
